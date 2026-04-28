@@ -1,21 +1,23 @@
 import prisma from "@/lib/prisma";
-import { Search, Plus, Palette } from "lucide-react";
+import { Search, Plus, Palette, Edit2 } from "lucide-react";
 import Link from "next/link";
+import DeleteDesignButton from "@/components/DeleteDesignButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function DesignCatalog({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const query = searchParams.q || "";
+  const { q } = await searchParams;
+  const query = q || "";
   
   const designs = await prisma.design.findMany({
     where: {
       OR: [
-        { name: { contains: query } },
-        { code: { contains: query } },
+        { name: { contains: query, mode: 'insensitive' } },
+        { code: { contains: query, mode: 'insensitive' } },
       ],
     },
     orderBy: { createdAt: "desc" },
@@ -74,9 +76,21 @@ export default async function DesignCatalog({
                 </span>
               </div>
             </div>
-            <div className="p-4 bg-white">
-              <h4 className="font-bold text-slate-900 text-sm truncate">{design.name}</h4>
-              <p className="text-[10px] text-slate-400 mt-1 uppercase">Ref: {design.code}</p>
+            <div className="p-4 bg-white flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-slate-900 text-sm truncate">{design.name}</h4>
+                <p className="text-[10px] text-slate-400 mt-1 uppercase">Ref: {design.code}</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <Link 
+                  href={`/designs/edit/${design.id}`}
+                  className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
+                  title="Edit Design"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </Link>
+                <DeleteDesignButton id={design.id} />
+              </div>
             </div>
           </div>
         ))}

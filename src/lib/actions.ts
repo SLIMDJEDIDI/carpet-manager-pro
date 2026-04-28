@@ -353,23 +353,83 @@ export async function shipOrder(formData: FormData) {
   revalidatePath("/shipping");
 }
 
-export async function markItemWrapped(itemId: string) {
+export async function deleteDesign(id: string) {
   try {
-    const item = await prisma.orderItem.update({
-      where: { id: itemId },
-      data: { status: "WRAPPED" },
-      include: { order: true, design: true }
+    await prisma.design.delete({
+      where: { id },
     });
-
-    await logActivity(
-      "ITEM_WRAPPED", 
-      `Article ${item.design.code} (${item.size}) from REF #${item.order.reference} marked as wrapped.`,
-      { reference: item.order.reference, designCode: item.design.code, size: item.size }
-    );
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed to wrap item ${itemId}: ${e.message}`);
-    throw e;
+    revalidatePath("/designs");
+  } catch (error) {
+    console.error("Failed to delete design:", error);
+    throw new Error("Failed to delete design");
   }
+}
+
+import { put } from "@vercel/blob";
+
+export async function createDesign(formData: FormData) {
+  const code = formData.get("code") as string;
+  const name = formData.get("name") as string;
+  const imageFile = formData.get("image") as File;
+  
+  let imageUrl = null;
+
+  try {
+    if (imageFile && imageFile.size > 0) {
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        console.warn("BLOB_READ_WRITE_TOKEN is missing. Upload will fail on Vercel.");
+      }
+      const blob = await put(imageFile.name, imageFile, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    }
+
+    await prisma.design.create({
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+    revalidatePath("/designs");
+  } catch (error: any) {
+    console.error("Failed to create design:", error);
+    throw new Error(error.message || "Failed to create design");
+  }
+}
+
+export async function updateDesign(id: string, formData: FormData) {
+  const code = formData.get("code") as string;
+  const name = formData.get("name") as string;
+  const imageFile = formData.get("image") as File;
+  const existingImageUrl = formData.get("existingImageUrl") as string;
+
+  let imageUrl = existingImageUrl;
+
+  try {
+    if (imageFile && imageFile.size > 0) {
+      const blob = await put(imageFile.name, imageFile, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    }
+
+    await prisma.design.update({
+      where: { id },
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+    revalidatePath("/designs");
+  } catch (error) {
+    console.error("Failed to update design:", error);
+    throw new Error("Failed to update design");
+  }
+}
+
 
   revalidatePath("/shipping");
 }
