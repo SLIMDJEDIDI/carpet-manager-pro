@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { History, Clock, FileText, Search } from "lucide-react";
 import { format } from "date-fns";
 
+export const dynamic = "force-dynamic";
+
 export default async function HistoryPage({
   searchParams,
 }: {

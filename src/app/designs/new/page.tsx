@@ -1,9 +1,7 @@
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Save, Upload } from "lucide-react";
-import fs from "fs/promises";
-import path from "path";
+
+export const dynamic = "force-dynamic";
 
 export default function NewDesignPage() {
   async function createDesign(formData: FormData) {

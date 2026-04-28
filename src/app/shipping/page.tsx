@@ -1,8 +1,9 @@
 import prisma from "@/lib/prisma";
-import { Truck, Package, Search, ExternalLink, MessageSquare, Tag } from "lucide-react";
+import { Truck, Package, CheckCircle2, MapPin } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
-import { revalidatePath } from "next/cache";
 import { shipOrder, markItemWrapped } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function ShippingPage() {
   const orders = await prisma.order.findMany({
@@ -18,9 +19,11 @@ export default async function ShippingPage() {
         include: { brand: true, design: true }
       }
     },
-    take: 20, // Only show top 20 orders in shipping pipeline
+    take: 20,
     orderBy: { updatedAt: "desc" },
   });
+
+  const getWrappedCount = (items: any[]) => items.filter(i => i.status === "WRAPPED").length;
 
   return (
     <div className="space-y-8">
@@ -33,8 +36,8 @@ export default async function ShippingPage() {
 
       <div className="space-y-6">
         {orders.map((order) => {
-          const allWrapped = order.items.every(i => i.status === "WRAPPED");
-          const wrappedCount = order.items.filter(i => i.status === "WRAPPED").length;
+          const wrappedCount = getWrappedCount(order.items);
+          const allWrapped = wrappedCount === order.items.length;
 
           return (
             <div key={order.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300">
@@ -127,7 +130,3 @@ export default async function ShippingPage() {
     </div>
   );
 }
-
-const CheckCircle2 = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-);

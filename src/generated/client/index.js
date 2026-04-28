@@ -85,6 +85,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -161,6 +164,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -198,6 +206,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "windows"
       }
     ],
     "previewFeatures": [],
@@ -214,18 +226,18 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": null,
-        "value": "file:./dev.db"
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = \"file:./dev.db\"\n}\n\nmodel Brand {\n  id        String      @id @default(cuid())\n  name      String      @unique\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel Design {\n  id        String      @id @default(cuid())\n  code      String      @unique\n  name      String\n  imageUrl  String?\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel Order {\n  id              String      @id @default(cuid())\n  reference       Int?        @unique\n  customerName    String\n  customerPhone   String\n  customerAddress String\n  status          String      @default(\"PENDING\")\n  parcelNumber    String?\n  totalAmount     Float       @default(0)\n  items           OrderItem[]\n  createdAt       DateTime    @default(now())\n  updatedAt       DateTime    @updatedAt\n}\n\nmodel OrderItem {\n  id               String   @id @default(cuid())\n  orderId          String\n  size             String\n  price            Float    @default(0)\n  isPack           Boolean  @default(false)\n  parentItemId     String?\n  brandId          String\n  designId         String\n  status           String   @default(\"PENDING\")\n  productionListId String?\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n\n  productionList ProductionList? @relation(fields: [productionListId], references: [id])\n  design         Design          @relation(fields: [designId], references: [id])\n  brand          Brand           @relation(fields: [brandId], references: [id])\n  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)\n  parentItem     OrderItem?      @relation(\"PackItems\", fields: [parentItemId], references: [id])\n  subItems       OrderItem[]     @relation(\"PackItems\")\n}\n\nmodel Product {\n  id         String   @id @default(cuid())\n  brandId    String\n  category   String // Salon, Chambre, Couloir, etc.\n  name       String // e.g. \"Tapis 160 x 210\" or \"Pack Chambre\"\n  size       String // for display\n  price      Float\n  isPack     Boolean  @default(false)\n  components String? // JSON string: [{size: \"100x150\", qty: 1}, {size: \"75x100\", qty: 2}]\n  createdAt  DateTime @default(now())\n}\n\nmodel ProductionList {\n  id        String      @id @default(cuid())\n  batchName String\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel ActivityLog {\n  id        String   @id @default(cuid())\n  action    String // e.g., \"CREATE_ORDER\", \"START_PRODUCTION\", \"SHIP_ORDER\"\n  details   String // Text description\n  metadata  String? // JSON string for technical details\n  createdAt DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "8dcebd1b0104c6dde521d950dccfccc4734aa187e1d5ecff5a731dcb054b07d3",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/client\"\n  binaryTargets = [\"native\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Brand {\n  id        String      @id @default(cuid())\n  name      String      @unique\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel Design {\n  id        String      @id @default(cuid())\n  code      String      @unique\n  name      String\n  imageUrl  String?\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel Order {\n  id              String      @id @default(cuid())\n  reference       Int?        @unique\n  customerName    String\n  customerPhone   String\n  customerAddress String\n  status          String      @default(\"PENDING\")\n  parcelNumber    String?\n  totalAmount     Float       @default(0)\n  items           OrderItem[]\n  createdAt       DateTime    @default(now())\n  updatedAt       DateTime    @updatedAt\n}\n\nmodel OrderItem {\n  id               String   @id @default(cuid())\n  orderId          String\n  size             String\n  price            Float    @default(0)\n  isPack           Boolean  @default(false)\n  parentItemId     String?\n  brandId          String\n  designId         String\n  status           String   @default(\"PENDING\")\n  productionListId String?\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n\n  productionList ProductionList? @relation(fields: [productionListId], references: [id])\n  design         Design          @relation(fields: [designId], references: [id])\n  brand          Brand           @relation(fields: [brandId], references: [id])\n  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)\n  parentItem     OrderItem?      @relation(\"PackItems\", fields: [parentItemId], references: [id])\n  subItems       OrderItem[]     @relation(\"PackItems\")\n}\n\nmodel Product {\n  id         String   @id @default(cuid())\n  brandId    String\n  category   String // Salon, Chambre, Couloir, etc.\n  name       String // e.g. \"Tapis 160 x 210\" or \"Pack Chambre\"\n  size       String // for display\n  price      Float\n  isPack     Boolean  @default(false)\n  components String? // JSON string: [{size: \"100x150\", qty: 1}, {size: \"75x100\", qty: 2}]\n  createdAt  DateTime @default(now())\n}\n\nmodel ProductionList {\n  id        String      @id @default(cuid())\n  batchName String\n  createdAt DateTime    @default(now())\n  items     OrderItem[]\n}\n\nmodel ActivityLog {\n  id        String   @id @default(cuid())\n  action    String // e.g., \"CREATE_ORDER\", \"START_PRODUCTION\", \"SHIP_ORDER\"\n  details   String // Text description\n  metadata  String? // JSON string for technical details\n  createdAt DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "df91d144ca6b9ee00b05ff859d08c3fa520becffe1ea0d72e66cb8b02e9c8c00",
   "copyEngine": true
 }
 

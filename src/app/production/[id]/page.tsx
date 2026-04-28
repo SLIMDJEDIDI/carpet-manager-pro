@@ -4,6 +4,8 @@ import { Factory, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import BatchItemSelector from "@/components/BatchItemSelector";
 
+export const dynamic = "force-dynamic";
+
 export default async function BatchDetailsPage({
   params,
 }: {

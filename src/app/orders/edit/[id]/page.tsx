@@ -1,18 +1,17 @@
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import OrderForm from "@/components/OrderForm";
-import { updateOrder } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function EditOrderPage({ params }: { params: { id: string } }) {
+  const { id } = await params;
   const brands = await prisma.brand.findMany();
   const designs = await prisma.design.findMany({ 
     orderBy: { code: "asc" } 
   });
 
   const order = await prisma.order.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       items: {
         include: { brand: true, design: true }
@@ -33,7 +32,7 @@ export default async function EditOrderPage({ params }: { params: { id: string }
     status: item.status
   }));
 
-  const updateOrderWithId = updateOrder.bind(null, params.id);
+  const updateOrderWithId = updateOrder.bind(null, id);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

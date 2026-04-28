@@ -8,12 +8,12 @@ import {
   Package
 } from "lucide-react";
 
-export default async function Dashboard() {
-  const brandsData = await prisma.brand.findMany({
-    include: { _count: { select: { items: true } } }
-  });
+export const dynamic = "force-dynamic";
 
-  const totalItemsCount = await prisma.orderItem.count();
+export default async function Dashboard() {
+  let brandsData: any[] = [];
+  let totalItemsCount = 0;
+  let recentOrders: any[] = [];
   
   const stats = [
     { label: "Total Orders", value: "0", icon: ShoppingCart, color: "text-blue-600", bg: "bg-blue-100", href: "/orders" },
@@ -22,14 +22,19 @@ export default async function Dashboard() {
     { label: "Total Customers", value: "0", icon: Users, color: "text-purple-600", bg: "bg-purple-100", href: "/orders" },
   ];
 
-  const recentOrders = await prisma.order.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { items: true } } }
-  });
-
-  // Fetch real stats
   try {
+    brandsData = await prisma.brand.findMany({
+      include: { _count: { select: { items: true } } }
+    });
+
+    totalItemsCount = await prisma.orderItem.count();
+    
+    recentOrders = await prisma.order.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { items: true } } }
+    });
+
     const totalOrdersCount = await prisma.order.count();
     const pendingProduction = await prisma.orderItem.count({ where: { status: "PENDING" } });
     const totalCustomers = await prisma.order.groupBy({ by: ['customerPhone'] }).then(res => res.length);
@@ -45,7 +50,7 @@ export default async function Dashboard() {
     stats[2].value = producedToday.toString();
     stats[3].value = totalCustomers.toString();
   } catch (e) {
-    console.error("Failed to fetch stats", e);
+    console.error("Failed to fetch dashboard data", e);
   }
 
   return (

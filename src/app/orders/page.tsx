@@ -1,12 +1,11 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import Link from "next/link";
-import { format } from "date-fns";
-import { revalidatePath } from "next/cache";
-import DeleteOrderButton from "@/components/DeleteOrderButton";
-import { deleteOrder } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function OrdersPage({
+
   searchParams,
 }: {
   searchParams: { q?: string; page?: string };
@@ -210,7 +209,3 @@ export default async function OrdersPage({
     </div>
   );
 }
-
-const MapPin = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-);

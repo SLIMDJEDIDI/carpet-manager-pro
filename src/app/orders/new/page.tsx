@@ -1,9 +1,7 @@
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import OrderForm from "@/components/OrderForm";
-import { createOrder } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function NewOrderPage() {
   const brands = await prisma.brand.findMany();

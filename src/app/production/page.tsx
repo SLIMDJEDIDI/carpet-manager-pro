@@ -1,12 +1,10 @@
 import prisma from "@/lib/prisma";
 import { Factory, Printer, PlusCircle, CheckCircle2 } from "lucide-react";
-import { revalidatePath } from "next/cache";
-import Link from "next/link";
-import ExportProductionList from "@/components/ExportProductionList";
-import PrintProductionList from "@/components/PrintProductionList";
-import { createBatch } from "@/lib/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function ProductionPage() { 
+
   const brands = await prisma.brand.findMany();
   
   const pendingItems = await prisma.orderItem.findMany({
