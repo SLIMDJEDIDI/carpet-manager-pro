@@ -1,11 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/client"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/client"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Brand {
@@ -77,4 +78,12 @@ model ProductionList {
   batchName String
   createdAt DateTime    @default(now())
   items     OrderItem[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String // e.g., "CREATE_ORDER", "START_PRODUCTION", "SHIP_ORDER"
+  details   String // Text description
+  metadata  String? // JSON string for technical details
+  createdAt DateTime @default(now())
 }

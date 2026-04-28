@@ -194,7 +194,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\ThinkPad\\.accio\\accounts\\1740634437\\agents\\DID-DB9653-02DB9653U1776425-7175-78CF1B\\project\\carpet-manager\\src\\generated\\client",
+      "value": "/vercel/sandbox/primary/src/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -203,7 +203,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "rhel-openssl-3.0.x",
         "native": true
       },
       {
@@ -212,12 +212,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\ThinkPad\\.accio\\accounts\\1740634437\\agents\\DID-DB9653-02DB9653U1776425-7175-78CF1B\\project\\carpet-manager\\prisma\\schema.prisma",
+    "sourceFilePath": "/vercel/sandbox/primary/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.22.0",
