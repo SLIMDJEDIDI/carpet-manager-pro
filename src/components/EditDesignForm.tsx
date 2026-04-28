@@ -34,9 +34,10 @@ export default function EditDesignForm({ design }: { design: Design }) {
     try {
       await updateDesign(design.id, formData);
       router.push("/designs");
-    } catch (error) {
+      router.refresh();
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to update design.");
+      alert("Error: " + error.message);
     } finally {
       setIsPending(false);
     }

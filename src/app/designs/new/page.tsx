@@ -29,9 +29,10 @@ export default function NewDesignPage() {
     try {
       await createDesign(formData);
       router.push("/designs");
-    } catch (error) {
+      router.refresh();
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to create design. If you are on Vercel, make sure Vercel Blob is configured.");
+      alert("Error: " + error.message);
     } finally {
       setIsPending(false);
     }

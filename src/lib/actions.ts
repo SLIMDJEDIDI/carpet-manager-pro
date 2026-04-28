@@ -377,12 +377,12 @@ export async function deleteDesign(id: string) {
 export async function createDesign(formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as File;
+  const imageFile = formData.get("image");
   
   let imageUrl = null;
 
   try {
-    if (imageFile && imageFile.size > 0) {
+    if (imageFile instanceof File && imageFile.size > 0) {
       if (!process.env.BLOB_READ_WRITE_TOKEN) {
         console.warn("BLOB_READ_WRITE_TOKEN is missing. Upload will fail on Vercel.");
       }
@@ -409,13 +409,13 @@ export async function createDesign(formData: FormData) {
 export async function updateDesign(id: string, formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as File;
+  const imageFile = formData.get("image");
   const existingImageUrl = formData.get("existingImageUrl") as string;
 
   let imageUrl = existingImageUrl;
 
   try {
-    if (imageFile && imageFile.size > 0) {
+    if (imageFile instanceof File && imageFile.size > 0) {
       const blob = await put(imageFile.name, imageFile, {
         access: 'public',
       });
@@ -427,13 +427,13 @@ export async function updateDesign(id: string, formData: FormData) {
       data: {
         code,
         name,
-        imageUrl,
+        imageUrl: imageUrl || null,
       },
     });
     revalidatePath("/designs");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update design:", error);
-    throw new Error("Failed to update design");
+    throw new Error(error.message || "Failed to update design");
   }
 }
 
