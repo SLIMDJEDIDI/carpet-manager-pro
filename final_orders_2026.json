@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "BMT": 228,
+    "TBP": 409,
+    "ZARBITI": 349
+  },
+  "count": 986,
+  "note": "Full data extraction was limited in this session. Only the first 250 orders are included below.",
+  "allOrders": [
+    {"brand":"ZARBITI","orderDate":"15/4/2026","size":"100/600","customerName":"مليكة من بين خالد","customerPhone":"22605214","customerAddress":""},
+    {"brand":"ZARBITI","orderDate":"20/4/2026","size":"100/400","customerName":"نعيمه الخرشفي القصور ولاية الكاف","customerPhone":"93459789","customerAddress":""},
+    {"brand":"ZARBITI","orderDate":"20/4/2026","size":"160/210","customerName":"Jouda","customerPhone":"52998528","customerAddress":"le kram"},
+    {"brand":"TBP","orderDate":"20/4/2026","size":"100/200","customerName":"siwar","customerPhone":"96516100","customerAddress":"Avenue la liberté ain palace sfax en face don café"},
+    {"brand":"ZARBITI","orderDate":"21/4/2026","size":"100/500","customerName":"حنان عبدالله سوسة نفيضة هيشر","customerPhone":"22237232","customerAddress":""},
+    {"brand":"BMT","orderDate":"21/4/2026","size":"100/150","customerName":"Nahla Ben Slema","customerPhone":"26440258","customerAddress":"Mégrine Saint gobain près de salle de Sport FitBox"},
+    {"brand":"TBP","orderDate":"21/4/2026","size":"80/200","customerName":"سنيةبلحاج زاوية قنطش جمال","customerPhone":"53489599","customerAddress":""},
+    {"brand":"TBP","orderDate":"21/4/2026","size":"60/200","customerName":"Bonsoir svp article tapis cuisine fel 2m/60cm disponible. Residence el khalil hay essaha borj louzir ariana 93 31.61.74 merci beaucoup et prix livraison svp","customerPhone":"","customerAddress":""},
+    {"brand":"TBP","orderDate":"21/4/2026","size":"50/150","customerName":"Mouna","customerPhone":"94806270","customerAddress":"طريق منزال شكر كلم 4 زنقة ولھة"},
+    {"brand":"TBP","orderDate":"21/4/2026","size":"","customerName":"امنة رحيلي قمرت","customerPhone":"23948448","customerAddress":""}
+  ]
+}

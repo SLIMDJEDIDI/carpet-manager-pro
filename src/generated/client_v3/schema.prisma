@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client_v3"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Brand {
+  id        String      @id @default(cuid())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model Design {
+  id        String      @id @default(cuid())
+  code      String      @unique
+  name      String
+  imageUrl  String?
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  reference       Int?        @unique
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  status          String      @default("PENDING")
+  parcelNumber    String?
+  totalAmount     Float       @default(0)
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id               String   @id @default(cuid())
+  orderId          String
+  size             String
+  price            Float    @default(0)
+  isPack           Boolean  @default(false)
+  parentItemId     String?
+  brandId          String
+  designId         String
+  status           String   @default("PENDING")
+  productionListId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  productionList ProductionList? @relation(fields: [productionListId], references: [id])
+  design         Design          @relation(fields: [designId], references: [id])
+  brand          Brand           @relation(fields: [brandId], references: [id])
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  parentItem     OrderItem?      @relation("PackItems", fields: [parentItemId], references: [id])
+  subItems       OrderItem[]     @relation("PackItems")
+}
+
+model Product {
+  id         String   @id @default(cuid())
+  brandId    String
+  category   String // Salon, Chambre, Couloir, etc.
+  name       String // e.g. "Tapis 160 x 210" or "Pack Chambre"
+  size       String // for display
+  price      Float
+  isPack     Boolean  @default(false)
+  components String? // JSON string: [{size: "100x150", qty: 1}, {size: "75x100", qty: 2}]
+  createdAt  DateTime @default(now())
+}
+
+model ProductionList {
+  id        String      @id @default(cuid())
+  batchName String
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String // e.g., "CREATE_ORDER", "START_PRODUCTION", "SHIP_ORDER"
+  details   String // Text description
+  metadata  String? // JSON string for technical details
+  createdAt DateTime @default(now())
+}
