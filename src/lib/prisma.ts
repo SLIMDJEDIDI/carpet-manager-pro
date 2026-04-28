@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/client_v6';
+import { PrismaClient } from '../generated/client';
 
 // Force new client if old one doesn't have activityLog
 const prismaClientSingleton = () => {
