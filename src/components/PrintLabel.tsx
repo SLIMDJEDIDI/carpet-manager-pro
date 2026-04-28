@@ -8,6 +8,7 @@ interface Order {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  customerPostalCode?: string;
   items: {
     size: string;
     brand: { name: string };
@@ -45,7 +46,10 @@ export default function PrintLabel({ order }: { order: Order }) {
     doc.text(order.customerName.toUpperCase(), 15, 45);
     
     doc.setFontSize(12);
-    const splitAddress = doc.splitTextToSize(order.customerAddress, 120);
+    const addressLine = order.customerPostalCode 
+      ? `${order.customerAddress} - ${order.customerPostalCode}` 
+      : order.customerAddress;
+    const splitAddress = doc.splitTextToSize(addressLine, 120);
     doc.text(splitAddress, 15, 55);
     
     doc.setFont("helvetica", "bold");

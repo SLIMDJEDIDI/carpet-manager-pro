@@ -25,17 +25,18 @@ model Design {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  reference       Int?        @unique
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  status          String      @default("PENDING")
-  parcelNumber    String?
-  totalAmount     Float       @default(0)
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                 String      @id @default(cuid())
+  reference          Int?        @unique
+  customerName       String
+  customerPhone      String
+  customerAddress    String
+  customerPostalCode String?
+  status             String      @default("PENDING")
+  parcelNumber       String?
+  totalAmount        Float       @default(0)
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 }
 
 model OrderItem {

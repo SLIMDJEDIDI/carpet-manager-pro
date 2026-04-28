@@ -27,6 +27,7 @@ export async function GET(request: Request) {
     found: !!latestOrder,
     name: latestOrder?.customerName,
     address: latestOrder?.customerAddress,
+    postalCode: latestOrder?.customerPostalCode,
     hasPending: !!pendingOrder,
   });
 }

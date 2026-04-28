@@ -49,6 +49,7 @@ export default function OrderForm({
   const [name, setName] = useState(initialData?.customerName || "");
   const [phone, setPhone] = useState(initialData?.customerPhone || "");
   const [address, setAddress] = useState(initialData?.customerAddress || "");
+  const [postalCode, setPostalCode] = useState(initialData?.customerPostalCode || "");
   
   // Use a stable initial state to prevent hydration mismatch
   const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
@@ -92,6 +93,7 @@ export default function OrderForm({
           if (data.found) {
             setName(data.name);
             setAddress(data.address);
+            setPostalCode(data.postalCode || "");
           }
           setHasPending(data.hasPending);
         } catch (e) {
@@ -191,8 +193,8 @@ export default function OrderForm({
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-4 space-y-3">
             <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
               <User className="w-4 h-4 text-emerald-600" />
               Full Name
@@ -203,10 +205,10 @@ export default function OrderForm({
               required 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black" 
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
             />
           </div>
-          <div className="space-y-3">
+          <div className="md:col-span-5 space-y-3">
             <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-600" />
               Delivery Address
@@ -217,7 +219,21 @@ export default function OrderForm({
               required 
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black" 
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+            />
+          </div>
+          <div className="md:col-span-3 space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <Search className="w-4 h-4 text-emerald-600" />
+              Postal Code
+            </label>
+            <input 
+              type="text" 
+              name="customerPostalCode" 
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              placeholder="e.g. 1001"
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
             />
           </div>
         </div>
