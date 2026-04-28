@@ -377,19 +377,30 @@ export async function deleteDesign(id: string) {
 export async function createDesign(formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as any;
+  const imageFile = formData.get("image");
   
   let imageUrl = null;
 
   try {
-    if (imageFile && typeof imageFile !== 'string' && imageFile.size > 0) {
-      if (!process.env.BLOB_READ_WRITE_TOKEN) {
-        console.warn("BLOB_READ_WRITE_TOKEN is missing. Upload will fail on Vercel.");
-      }
-      const blob = await put(imageFile.name || 'design-image', imageFile, {
+    // Extensive logging for debugging on Vercel
+    const fileInfo = imageFile ? {
+      name: (imageFile as any).name,
+      size: (imageFile as any).size,
+      type: (imageFile as any).type,
+      isBlob: imageFile instanceof Blob,
+      isFile: imageFile instanceof File,
+    } : "NULL";
+
+    await logActivity("DEBUG_UPLOAD", `Attempting upload for ${code}`, { fileInfo });
+
+    if (imageFile && (imageFile as any).size > 0) {
+      const blob = await put((imageFile as any).name || 'design.png', imageFile as any, {
         access: 'public',
       });
       imageUrl = blob.url;
+      await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded to ${imageUrl}`);
+    } else {
+      await logActivity("DEBUG_UPLOAD_SKIPPED", `File missing or size 0`);
     }
 
     await prisma.design.create({
@@ -402,6 +413,7 @@ export async function createDesign(formData: FormData) {
     revalidatePath("/designs");
   } catch (error: any) {
     console.error("Failed to create design:", error);
+    await logActivity("DEBUG_UPLOAD_ERROR", error.message);
     throw new Error(error.message || "Failed to create design");
   }
 }
