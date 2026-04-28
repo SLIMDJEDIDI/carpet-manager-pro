@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { put } from "@vercel/blob";
 
 // UTILS
 async function logActivity(action: string, details: string, metadata?: any) {
@@ -213,7 +214,6 @@ export async function updateOrder(orderId: string, formData: FormData) {
 
         if (id) {
           // For existing items, we update core fields
-          // Note: We don't change Pack status or regenerate components for simplicity in editing
           await tx.orderItem.update({
             where: { id },
             data: { 
@@ -365,8 +365,6 @@ export async function deleteDesign(id: string) {
   }
 }
 
-import { put } from "@vercel/blob";
-
 export async function createDesign(formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
@@ -428,10 +426,6 @@ export async function updateDesign(id: string, formData: FormData) {
     console.error("Failed to update design:", error);
     throw new Error("Failed to update design");
   }
-}
-
-
-  revalidatePath("/shipping");
 }
 
 export async function updateItemStatuses(itemIds: string[], status: string) {
