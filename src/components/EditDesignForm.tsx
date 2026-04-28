@@ -4,7 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import { updateDesign } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button 
+      type="submit" 
+      disabled={pending}
+      className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50"
+    >
+      <Save className="w-5 h-5" />
+      {pending ? "Updating..." : "Save Changes"}
+    </button>
+  );
+}
 
 interface Design {
   id: string;
@@ -14,8 +28,6 @@ interface Design {
 }
 
 export default function EditDesignForm({ design }: { design: Design }) {
-  const router = useRouter();
-  const [isPending, setIsPending] = useState(false);
   const [preview, setPreview] = useState<string | null>(design.imageUrl);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,19 +41,7 @@ export default function EditDesignForm({ design }: { design: Design }) {
     }
   };
 
-  async function handleSubmit(formData: FormData) {
-    setIsPending(true);
-    try {
-      await updateDesign(design.id, formData);
-      router.push("/designs");
-      router.refresh();
-    } catch (error: any) {
-      console.error(error);
-      alert("Error: " + error.message);
-    } finally {
-      setIsPending(false);
-    }
-  }
+  const updateDesignWithId = updateDesign.bind(null, design.id);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -55,7 +55,7 @@ export default function EditDesignForm({ design }: { design: Design }) {
         <p className="text-slate-500 font-bold">Modify design details or update the image.</p>
       </div>
 
-      <form action={handleSubmit} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={updateDesignWithId} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <input type="hidden" name="existingImageUrl" value={design.imageUrl || ""} />
         
         <div className="space-y-6">
@@ -112,14 +112,7 @@ export default function EditDesignForm({ design }: { design: Design }) {
         </div>
 
         <div className="pt-4">
-          <button 
-            type="submit" 
-            disabled={isPending}
-            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50"
-          >
-            <Save className="w-5 h-5" />
-            {isPending ? "Updating..." : "Save Changes"}
-          </button>
+          <SubmitButton />
         </div>
       </form>
     </div>

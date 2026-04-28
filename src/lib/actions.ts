@@ -377,31 +377,67 @@ export async function deleteDesign(id: string) {
 export async function createDesign(formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image");
+  const imageFile = formData.get("image") as File;
   
   let imageUrl = null;
 
   try {
-    // Extensive logging for debugging on Vercel
-    const fileInfo = imageFile ? {
-      name: (imageFile as any).name,
-      size: (imageFile as any).size,
-      type: (imageFile as any).type,
-      isBlob: imageFile instanceof Blob,
-      isFile: imageFile instanceof File,
-    } : "NULL";
-
-    await logActivity("DEBUG_UPLOAD", `Attempting upload for ${code}`, { fileInfo });
-
-    if (imageFile && (imageFile as any).size > 0) {
-      const blob = await put((imageFile as any).name || 'design.png', imageFile as any, {
+    if (imageFile && imageFile.size > 0) {
+      const blob = await put(imageFile.name || `${code}.png`, imageFile, {
         access: 'public',
       });
       imageUrl = blob.url;
-      await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded to ${imageUrl}`);
-    } else {
-      await logActivity("DEBUG_UPLOAD_SKIPPED", `File missing or size 0`);
     }
+
+    await prisma.design.create({
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+  } catch (error: any) {
+    console.error("Failed to create design:", error);
+    throw new Error(error.message || "Failed to create design");
+  }
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}
+
+export async function updateDesign(id: string, formData: FormData) {
+  const code = formData.get("code") as string;
+  const name = formData.get("name") as string;
+  const imageFile = formData.get("image") as File;
+  const existingImageUrl = formData.get("existingImageUrl") as string;
+
+  let imageUrl = existingImageUrl;
+
+  try {
+    if (imageFile && imageFile.size > 0) {
+      const blob = await put(imageFile.name || `${code}.png`, imageFile, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    }
+
+    await prisma.design.update({
+      where: { id },
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+  } catch (error: any) {
+    console.error("Failed to update design:", error);
+    throw new Error(error.message || "Failed to update design");
+  }
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}
+
 
     await prisma.design.create({
       data: {

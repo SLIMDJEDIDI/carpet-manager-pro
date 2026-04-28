@@ -4,11 +4,23 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import { createDesign } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button 
+      type="submit" 
+      disabled={pending}
+      className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <Save className="w-5 h-5" />
+      {pending ? "Uploading..." : "Create Design"}
+    </button>
+  );
+}
 
 export default function NewDesignPage() {
-  const router = useRouter();
-  const [isPending, setIsPending] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,20 +36,6 @@ export default function NewDesignPage() {
     }
   };
 
-  async function handleSubmit(formData: FormData) {
-    setIsPending(true);
-    try {
-      await createDesign(formData);
-      router.push("/designs");
-      router.refresh();
-    } catch (error: any) {
-      console.error(error);
-      alert("Error: " + error.message);
-    } finally {
-      setIsPending(false);
-    }
-  }
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Link href="/designs" className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-black uppercase text-xs tracking-widest group">
@@ -50,7 +48,7 @@ export default function NewDesignPage() {
         <p className="text-slate-500 font-bold">Upload a new design pattern from your computer.</p>
       </div>
 
-      <form action={handleSubmit} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={createDesign} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Code (Unique)</label>
@@ -105,14 +103,7 @@ export default function NewDesignPage() {
         </div>
 
         <div className="pt-4">
-          <button 
-            type="submit" 
-            disabled={isPending}
-            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-5 h-5" />
-            {isPending ? "Uploading..." : "Create Design"}
-          </button>
+          <SubmitButton />
         </div>
       </form>
     </div>
