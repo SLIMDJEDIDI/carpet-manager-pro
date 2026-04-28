@@ -7,10 +7,11 @@ export const dynamic = "force-dynamic";
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string };
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const query = searchParams.q || "";
-  const page = parseInt(searchParams.page || "1");
+  const { q, page: pageParam } = await searchParams;
+  const query = q || "";
+  const page = parseInt(pageParam || "1");
   const pageSize = 50;
 
   if (!prisma.activityLog) {

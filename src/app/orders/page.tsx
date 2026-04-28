@@ -1,17 +1,20 @@
 import prisma from "@/lib/prisma";
 import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import Link from "next/link";
+import { format } from "date-fns";
+import DeleteOrderButton from "@/components/DeleteOrderButton";
+import { deleteOrder } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage({
-
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string };
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const query = searchParams.q || "";
-  const page = parseInt(searchParams.page || "1");
+  const { q, page: pageParam } = await searchParams;
+  const query = q || "";
+  const page = parseInt(pageParam || "1");
   const pageSize = 20;
 
   const orders = await prisma.order.findMany({

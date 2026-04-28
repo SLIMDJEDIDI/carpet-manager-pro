@@ -42,10 +42,18 @@ export async function deleteOrder(formData: FormData) {
 }
 
 export async function createOrder(formData: FormData) {
+  console.log("--- CREATE ORDER START ---");
   const customerName = formData.get("customerName") as string;
   const customerPhone = formData.get("customerPhone") as string;
   const customerAddress = formData.get("customerAddress") as string;
-  const itemCount = parseInt(formData.get("itemCount") as string || "1");
+  const itemCount = parseInt(formData.get("itemCount") as string || "0");
+
+  console.log("Customer Info:", { customerName, customerPhone, customerAddress, itemCount });
+
+  if (!customerName || !customerPhone || itemCount === 0) {
+    console.error("Validation failed: Missing customer info or items");
+    throw new Error("Missing required order information");
+  }
 
   let nextReference = 1;
   try {
@@ -54,12 +62,14 @@ export async function createOrder(formData: FormData) {
       select: { reference: true }
     });
     nextReference = (lastOrder?.reference || 0) + 1;
+    console.log("Calculated Reference:", nextReference);
   } catch (e) {
-    console.error("Failed to get reference", e);
+    console.error("Failed to get reference, defaulting to 1", e);
   }
 
   try {
     await prisma.$transaction(async (tx) => {
+      console.log("Starting Transaction...");
       const order = await tx.order.create({
         data: {
           customerName,
@@ -69,6 +79,7 @@ export async function createOrder(formData: FormData) {
           totalAmount: 0,
         },
       });
+      console.log("Order Header Created:", order.id);
 
       let orderTotal = 0;
 
@@ -77,10 +88,18 @@ export async function createOrder(formData: FormData) {
         const designId = formData.get(`designId_${i}`) as string;
         const productId = formData.get(`productId_${i}`) as string;
         
-        if (!brandId || !designId || !productId) continue;
+        console.log(`Processing Item ${i}:`, { brandId, designId, productId });
+
+        if (!brandId || !designId || !productId) {
+          console.warn(`Skipping item ${i} due to missing IDs`);
+          continue;
+        }
 
         const product = await tx.product.findUnique({ where: { id: productId } });
-        if (!product) continue;
+        if (!product) {
+          console.error(`Product not found: ${productId}`);
+          continue;
+        }
 
         orderTotal += product.price;
 
@@ -95,9 +114,11 @@ export async function createOrder(formData: FormData) {
             status: product.isPack ? "PACK_PARENT" : "PENDING",
           }
         });
+        console.log(`Main Item Created: ${mainItem.id} (Price: ${product.price})`);
 
         if (product.isPack && product.components) {
           const components = JSON.parse(product.components);
+          console.log(`Expanding Pack: ${product.name} with ${components.length} components`);
           for (const comp of components) {
             for (let q = 0; q < (comp.qty || 1); q++) {
               await tx.orderItem.create({
@@ -121,8 +142,9 @@ export async function createOrder(formData: FormData) {
         where: { id: order.id },
         data: { totalAmount: orderTotal }
       });
+      console.log("Order Total Updated:", orderTotal);
     }, {
-      timeout: 10000 // 10s timeout for transaction
+      timeout: 20000 // Increased to 20s for cloud DB
     });
 
     await logActivity(
@@ -130,11 +152,10 @@ export async function createOrder(formData: FormData) {
       `New Order REF #${nextReference} created for ${customerName}.`,
       { reference: nextReference, customerName }
     );
+    console.log("--- CREATE ORDER SUCCESS ---");
   } catch (e: any) {
     console.error("Transaction failed", e);
-    await logActivity("ERROR", `Failed to create order: ${e.message}`);
-    // We don't throw here so we can redirect to a friendly page or show error
-    // But for server actions, throwing is the way to trigger error boundaries
+    await logActivity("ERROR", `Failed to create order: ${e.message || "Unknown error"}`);
     throw e;
   }
 
@@ -179,25 +200,69 @@ export async function updateOrder(orderId: string, formData: FormData) {
         const id = formData.get(`itemId_${i}`) as string;
         const brandId = formData.get(`brandId_${i}`) as string;
         const designId = formData.get(`designId_${i}`) as string;
-        const size = formData.get(`size_${i}`) as string;
+        const productId = formData.get(`productId_${i}`) as string;
+        
+        if (!brandId || !designId || !productId) continue;
+
+        const product = await tx.product.findUnique({ where: { id: productId } });
+        if (!product) continue;
 
         if (id) {
+          // For existing items, we update core fields
+          // Note: We don't change Pack status or regenerate components for simplicity in editing
           await tx.orderItem.update({
             where: { id },
-            data: { brandId, designId, size }
+            data: { 
+              brandId, 
+              designId, 
+              size: product.size,
+              price: product.price 
+            }
           });
         } else {
-          await tx.orderItem.create({
+          // For new items added during edit, use the full expansion logic
+          const mainItem = await tx.orderItem.create({
             data: {
               orderId: orderId,
               brandId,
               designId,
-              size,
-              status: "PENDING",
+              size: product.size,
+              price: product.price,
+              isPack: product.isPack,
+              status: product.isPack ? "PACK_PARENT" : "PENDING",
             }
           });
+
+          if (product.isPack && product.components) {
+            const components = JSON.parse(product.components);
+            for (const comp of components) {
+              for (let q = 0; q < (comp.qty || 1); q++) {
+                await tx.orderItem.create({
+                  data: {
+                    orderId: orderId,
+                    brandId,
+                    designId,
+                    size: comp.size,
+                    price: 0,
+                    isPack: false,
+                    parentItemId: mainItem.id,
+                    status: "PENDING",
+                  }
+                });
+              }
+            }
+          }
         }
       }
+
+      // Recalculate totalAmount
+      const allItems = await tx.orderItem.findMany({ where: { orderId: orderId } });
+      const newTotal = allItems.reduce((sum, item) => sum + (item.price || 0), 0);
+      
+      await tx.order.update({
+        where: { id: orderId },
+        data: { totalAmount: newTotal }
+      });
     });
 
     if (order) {

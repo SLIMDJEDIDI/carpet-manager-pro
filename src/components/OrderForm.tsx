@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, User, MapPin, Phone, Palette, Ruler, ShoppingBag, Plus, Trash2 } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2 } from "lucide-react";
 
 interface Item {
   id: string | number;
@@ -24,32 +24,59 @@ interface Product {
 }
 
 export default function OrderForm({ 
-  brands, 
-  designs, 
+  brands = [], 
+  designs = [], 
   action, 
   initialData 
 }: { 
-  brands: any[], 
-  designs: any[], 
+  brands?: any[], 
+  designs?: any[], 
   action: any, 
   initialData?: any 
 }) {
-  const [name, setName] = useState(initialData?.name || "");
-  const [phone, setPhone] = useState(initialData?.phone || "");
-  const [address, setAddress] = useState(initialData?.address || "");
-  const [items, setItems] = useState<Item[]>(initialData?.items || [{ 
-    id: 'init-' + Math.random().toString(36).substr(2, 9), 
-    brandId: "", 
-    designId: "", 
-    productId: "", 
-    size: "", 
-    price: 0 
-  }]);
+  if (!brands || !Array.isArray(brands) || !designs || !Array.isArray(designs)) {
+    return (
+      <div className="p-10 bg-white rounded-[2.5rem] border-2 border-red-100 text-center space-y-4">
+        <h2 className="text-xl font-black text-red-600 uppercase">Configuration Error</h2>
+        <p className="text-slate-500 font-bold">The order form could not initialize correctly due to missing catalog data.</p>
+        <div className="text-xs text-slate-400 font-mono p-4 bg-slate-50 rounded-xl overflow-auto text-left">
+          Brands: {brands ? "Loaded" : "Missing"}<br/>
+          Designs: {designs ? "Loaded" : "Missing"}
+        </div>
+      </div>
+    );
+  }
+  const [name, setName] = useState(initialData?.customerName || "");
+  const [phone, setPhone] = useState(initialData?.customerPhone || "");
+  const [address, setAddress] = useState(initialData?.customerAddress || "");
+  
+  // Use a stable initial state to prevent hydration mismatch
+  const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
+    id: 'init-1',
+    brandId: "",
+    designId: "",
+    productId: "",
+    size: "",
+    price: 0
+  }]));
+
   const [isSearching, setIsSearching] = useState(false);
   const [hasPending, setHasPending] = useState(false);
   const [availableProducts, setAvailableProducts] = useState<Record<string, Product[]>>({});
-  const [designSearch, setDesignSearch] = useState<Record<string, string>>({});
-  const [showDesignList, setShowDesignList] = useState<Record<string, boolean>>({});
+  const [designSearch, setDesignSearch] = useState<Record<string | number, string>>({});
+  const [showDesignList, setShowDesignList] = useState<Record<string | number, boolean>>({});
+
+  useEffect(() => {
+    // Populate design search text when editing
+    if (initialData?.items && designs.length > 0) {
+      const searchInit: Record<string | number, string> = {};
+      initialData.items.forEach((item: any) => {
+        const design = designs.find(d => d.id === item.designId);
+        if (design) searchInit[item.id] = design.code;
+      });
+      setDesignSearch(searchInit);
+    }
+  }, [initialData, designs]);
 
   useEffect(() => {
     // Only auto-fill if we are NOT in edit mode (no initialData)
@@ -86,6 +113,8 @@ export default function OrderForm({
     // Load products for each selected brand
     const brandsToFetch = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
     
+    if (brandsToFetch.length === 0) return;
+
     brandsToFetch.forEach(async (brandId) => {
       try {
         const res = await fetch(`/api/products?brandId=${brandId}`);
@@ -95,7 +124,7 @@ export default function OrderForm({
         console.error("Failed to fetch products", e);
       }
     });
-  }, [items, availableProducts]);
+  }, [items]); // Removed availableProducts from dependencies to avoid loop
 
   const addItem = () => {
     setItems([...items, { 
@@ -236,9 +265,14 @@ export default function OrderForm({
                     setShowDesignList(prev => ({ ...prev, [item.id]: true }));
                   }}
                   onFocus={() => setShowDesignList(prev => ({ ...prev, [item.id]: true }))}
-                  className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10"
+                  className={`w-full rounded-xl border-2 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10 ${
+                    !item.designId ? 'border-amber-300' : 'border-slate-300 focus:border-emerald-600'
+                  }`}
                 />
                 <Palette className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                {!item.designId && (
+                  <p className="text-[9px] font-black text-amber-600 uppercase mt-1">Please select a design from the list</p>
+                )}
                 
                 {showDesignList[item.id] && (
                   <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto divide-y divide-slate-100">
@@ -274,7 +308,7 @@ export default function OrderForm({
                   </div>
                 )}
               </div>
-              <input type="hidden" name={`designId_${index}`} value={item.designId} required />
+              <input type="hidden" name={`designId_${index}`} value={item.designId} />
               {showDesignList[item.id] && <div className="fixed inset-0 z-40" onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}></div>}
             </div>
 
