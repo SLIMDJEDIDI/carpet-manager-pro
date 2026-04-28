@@ -31,6 +31,8 @@ model Order {
   customerPhone      String
   customerAddress    String
   customerPostalCode String?
+  customerGovernorate String?
+  customerDelegation String?
   status             String      @default("PENDING")
   parcelNumber       String?
   totalAmount        Float       @default(0)

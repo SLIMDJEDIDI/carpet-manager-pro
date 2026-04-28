@@ -49,9 +49,11 @@ export async function createOrder(formData: FormData) {
   const customerPhone = formData.get("customerPhone") as string;
   const customerAddress = formData.get("customerAddress") as string;
   const customerPostalCode = formData.get("customerPostalCode") as string;
+  const customerGovernorate = formData.get("customerGovernorate") as string;
+  const customerDelegation = formData.get("customerDelegation") as string;
   const itemCount = parseInt(formData.get("itemCount") as string || "0");
 
-  console.log("Customer Info:", { customerName, customerPhone, customerAddress, customerPostalCode, itemCount });
+  console.log("Customer Info:", { customerName, customerPhone, customerAddress, customerPostalCode, customerGovernorate, customerDelegation, itemCount });
 
   if (!customerName || !customerPhone || itemCount === 0) {
     console.error("Validation failed: Missing customer info or items");
@@ -79,6 +81,8 @@ export async function createOrder(formData: FormData) {
           customerPhone,
           customerAddress,
           customerPostalCode,
+          customerGovernorate,
+          customerDelegation,
           reference: nextReference,
           totalAmount: 0,
         },
@@ -172,6 +176,8 @@ export async function updateOrder(orderId: string, formData: FormData) {
   const customerPhone = formData.get("customerPhone") as string;
   const customerAddress = formData.get("customerAddress") as string;
   const customerPostalCode = formData.get("customerPostalCode") as string;
+  const customerGovernorate = formData.get("customerGovernorate") as string;
+  const customerDelegation = formData.get("customerDelegation") as string;
   const itemCount = parseInt(formData.get("itemCount") as string || "1");
 
   try {
@@ -185,6 +191,8 @@ export async function updateOrder(orderId: string, formData: FormData) {
           customerPhone,
           customerAddress,
           customerPostalCode,
+          customerGovernorate,
+          customerDelegation,
         },
       });
 

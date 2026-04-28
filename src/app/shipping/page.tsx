@@ -113,7 +113,7 @@ export default async function ShippingPage() {
                 </div>
                  <div className="mt-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Delivery Address: {order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`}
+                    Delivery: {order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}
                  </div>
 
               </div>

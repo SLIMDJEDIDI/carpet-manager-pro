@@ -34,6 +34,8 @@ export default async function EditOrderPage({ params }: { params: Promise<{ id: 
       customerPhone: orderData.customerPhone,
       customerAddress: orderData.customerAddress,
       customerPostalCode: orderData.customerPostalCode,
+      customerGovernorate: orderData.customerGovernorate,
+      customerDelegation: orderData.customerDelegation,
       status: orderData.status,
       items: orderData.items.map((item: any) => ({
         id: item.id,

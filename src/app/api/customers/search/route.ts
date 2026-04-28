@@ -28,6 +28,8 @@ export async function GET(request: Request) {
     name: latestOrder?.customerName,
     address: latestOrder?.customerAddress,
     postalCode: latestOrder?.customerPostalCode,
+    governorate: latestOrder?.customerGovernorate,
+    delegation: latestOrder?.customerDelegation,
     hasPending: !!pendingOrder,
   });
 }

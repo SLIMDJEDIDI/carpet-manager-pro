@@ -172,7 +172,7 @@ export default async function OrdersPage({
               <div className="mt-6 flex items-center justify-between pt-6 border-t border-slate-100">
                 <div className="flex items-center gap-4 text-[10px] font-bold text-black uppercase tracking-widest">
                   <MapPin className="w-3 h-3" />
-                  Delivery: {order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`}
+                  Delivery: {order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}
                 </div>
                 <div className="text-xl font-black text-black">
                   {order.totalAmount} <span className="text-xs text-black uppercase">DT</span>

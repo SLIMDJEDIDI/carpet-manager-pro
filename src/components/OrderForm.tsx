@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2 } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe } from "lucide-react";
+import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
 
 interface Item {
   id: string | number;
@@ -50,6 +51,8 @@ export default function OrderForm({
   const [phone, setPhone] = useState(initialData?.customerPhone || "");
   const [address, setAddress] = useState(initialData?.customerAddress || "");
   const [postalCode, setPostalCode] = useState(initialData?.customerPostalCode || "");
+  const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
+  const [delegation, setDelegation] = useState(initialData?.customerDelegation || "");
   
   // Use a stable initial state to prevent hydration mismatch
   const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
@@ -94,6 +97,8 @@ export default function OrderForm({
             setName(data.name);
             setAddress(data.address);
             setPostalCode(data.postalCode || "");
+            setGovernorate(data.governorate || "");
+            setDelegation(data.delegation || "");
           }
           setHasPending(data.hasPending);
         } catch (e) {
@@ -235,6 +240,50 @@ export default function OrderForm({
               placeholder="e.g. 1001"
               className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-600" />
+              Gouvernorat
+            </label>
+            <select
+              name="customerGovernorate"
+              required
+              value={governorate}
+              onChange={(e) => {
+                setGovernorate(e.target.value);
+                setDelegation(""); // Reset delegation when governorate changes
+              }}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none"
+            >
+              <option value="">Sélectionner Gouvernorat</option>
+              {Object.keys(TUNISIA_LOCATIONS).sort().map(gov => (
+                <option key={gov} value={gov}>{gov}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-emerald-600" />
+              Délégation
+            </label>
+            <select
+              name="customerDelegation"
+              required
+              value={delegation}
+              onChange={(e) => setDelegation(e.target.value)}
+              disabled={!governorate}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none disabled:opacity-50"
+            >
+              <option value="">Sélectionner Délégation</option>
+              {governorate && TUNISIA_LOCATIONS[governorate]?.sort().map(del => (
+                <option key={del} value={del}>{del}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

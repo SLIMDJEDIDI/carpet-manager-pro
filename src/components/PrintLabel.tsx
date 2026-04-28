@@ -9,6 +9,8 @@ interface Order {
   customerPhone: string;
   customerAddress: string;
   customerPostalCode?: string;
+  customerGovernorate?: string;
+  customerDelegation?: string;
   items: {
     size: string;
     brand: { name: string };
@@ -47,10 +49,13 @@ export default function PrintLabel({ order }: { order: Order }) {
     
     doc.setFontSize(12);
     const addressLine = order.customerPostalCode 
-      ? `${order.customerAddress} - ${order.customerPostalCode}` 
+      ? `${order.customerAddress} (${order.customerPostalCode})` 
       : order.customerAddress;
+    const locationLine = `${order.customerGovernorate}, ${order.customerDelegation}`;
+    
     const splitAddress = doc.splitTextToSize(addressLine, 120);
     doc.text(splitAddress, 15, 55);
+    doc.text(locationLine, 15, 65);
     
     doc.setFont("helvetica", "bold");
     doc.text(`PHONE: ${order.customerPhone}`, 15, 80);
