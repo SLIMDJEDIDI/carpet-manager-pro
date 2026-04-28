@@ -438,53 +438,6 @@ export async function updateDesign(id: string, formData: FormData) {
   redirect("/designs");
 }
 
-
-    await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-    revalidatePath("/designs");
-  } catch (error: any) {
-    console.error("Failed to create design:", error);
-    await logActivity("DEBUG_UPLOAD_ERROR", error.message);
-    throw new Error(error.message || "Failed to create design");
-  }
-}
-
-export async function updateDesign(id: string, formData: FormData) {
-  const code = formData.get("code") as string;
-  const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as any;
-  const existingImageUrl = formData.get("existingImageUrl") as string;
-
-  let imageUrl = existingImageUrl;
-
-  try {
-    if (imageFile && typeof imageFile !== 'string' && imageFile.size > 0) {
-      const blob = await put(imageFile.name || 'design-image', imageFile, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-    }
-
-    await prisma.design.update({
-      where: { id },
-      data: {
-        code,
-        name,
-        imageUrl: imageUrl || null,
-      },
-    });
-    revalidatePath("/designs");
-  } catch (error: any) {
-    console.error("Failed to update design:", error);
-    throw new Error(error.message || "Failed to update design");
-  }
-}
-
 export async function updateItemStatuses(itemIds: string[], status: string) {
   try {
     await prisma.orderItem.updateMany({
