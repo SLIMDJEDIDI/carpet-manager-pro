@@ -50,7 +50,7 @@ export default function NewDesignPage() {
         <p className="text-slate-500 font-bold">Upload a new design pattern from your computer.</p>
       </div>
 
-      <form action={handleSubmit} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={handleSubmit} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Code (Unique)</label>

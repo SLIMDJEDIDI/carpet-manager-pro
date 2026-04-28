@@ -377,16 +377,16 @@ export async function deleteDesign(id: string) {
 export async function createDesign(formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image");
+  const imageFile = formData.get("image") as any;
   
   let imageUrl = null;
 
   try {
-    if (imageFile instanceof File && imageFile.size > 0) {
+    if (imageFile && typeof imageFile !== 'string' && imageFile.size > 0) {
       if (!process.env.BLOB_READ_WRITE_TOKEN) {
         console.warn("BLOB_READ_WRITE_TOKEN is missing. Upload will fail on Vercel.");
       }
-      const blob = await put(imageFile.name, imageFile, {
+      const blob = await put(imageFile.name || 'design-image', imageFile, {
         access: 'public',
       });
       imageUrl = blob.url;
@@ -409,14 +409,14 @@ export async function createDesign(formData: FormData) {
 export async function updateDesign(id: string, formData: FormData) {
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image");
+  const imageFile = formData.get("image") as any;
   const existingImageUrl = formData.get("existingImageUrl") as string;
 
   let imageUrl = existingImageUrl;
 
   try {
-    if (imageFile instanceof File && imageFile.size > 0) {
-      const blob = await put(imageFile.name, imageFile, {
+    if (imageFile && typeof imageFile !== 'string' && imageFile.size > 0) {
+      const blob = await put(imageFile.name || 'design-image', imageFile, {
         access: 'public',
       });
       imageUrl = blob.url;
