@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import { createDesignAction } from "@/lib/design-actions";
 
 export default function NewDesignPage() {
   const [preview, setPreview] = useState<string | null>(null);
-  const [state, formAction, isPending] = useActionState(createDesignAction, { error: null });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,14 +33,8 @@ export default function NewDesignPage() {
         <p className="text-slate-500 font-bold">Upload a new design pattern from your computer.</p>
       </div>
 
-      <form action={formAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={createDesignAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
-          {state?.error && (
-            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-black uppercase animate-in slide-in-from-top-2 duration-300">
-              {state.error}
-            </div>
-          )}
-          
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Code (Unique)</label>
             <input 
@@ -105,20 +98,10 @@ export default function NewDesignPage() {
         <div className="pt-4">
           <button 
             type="submit" 
-            disabled={isPending}
-            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl"
           >
-            {isPending ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Save className="w-5 h-5" />
-                Create Design
-              </>
-            )}
+            <Save className="w-5 h-5" />
+            Create Design
           </button>
         </div>
       </form>

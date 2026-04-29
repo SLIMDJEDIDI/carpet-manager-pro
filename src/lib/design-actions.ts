@@ -5,13 +5,42 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 
-export type ActionState = {
-  error?: string | null;
-  success?: boolean;
-  design?: any;
-};
+export async function createDesignAction(formData: FormData) {
+  const code = (formData.get("code") as string)?.trim().toUpperCase();
+  const name = (formData.get("name") as string)?.trim();
+  const imageFile = formData.get("image") as File;
 
-export async function createDesignQuickAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {
+  if (!code || !name || !imageFile || imageFile.size === 0) {
+    throw new Error("Missing required fields or valid image file.");
+  }
+
+  let imageUrl: string;
+  try {
+    const safeFilename = `${code.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.jpg`;
+    const blob = await put(safeFilename, imageFile, {
+      access: "public",
+    });
+    imageUrl = blob.url;
+  } catch (e: any) {
+    console.error("BLOB_UPLOAD_CRITICAL_FAILURE:", e);
+    throw new Error(`IMAGE_UPLOAD_FAILED: ${e.message}`);
+  }
+
+  try {
+    await prisma.design.create({
+      data: { code, name, imageUrl },
+    });
+  } catch (e: any) {
+    console.error("DB_CREATE_CRITICAL_FAILURE:", e);
+    if (e.code === 'P2002') throw new Error("DESIGN_CODE_ALREADY_EXISTS");
+    throw new Error(`DATABASE_SAVE_FAILED: ${e.message}`);
+  }
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}
+
+export async function createDesignQuickAction(prevState: any, formData: FormData) {
   const code = (formData.get("code") as string)?.trim().toUpperCase();
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image") as File;
@@ -25,55 +54,8 @@ export async function createDesignQuickAction(prevState: ActionState | null, for
     revalidatePath("/designs");
     return { success: true, design };
   } catch (e: any) {
-    if (e.code === 'P2002') return { error: "Design code exists." };
     return { error: e.message || "Failed." };
   }
-}
-
-export async function createDesignAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {
-  const code = (formData.get("code") as string)?.trim().toUpperCase();
-  const name = (formData.get("name") as string)?.trim();
-  const imageFile = formData.get("image") as File;
-
-  if (!code || !name) {
-    return { error: "Design code and name are required." };
-  }
-
-  if (!imageFile || imageFile.size === 0) {
-    return { error: "A valid image file is required." };
-  }
-
-  let imageUrl: string;
-  try {
-    // Sanitize filename
-    const safeFilename = `${code.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.jpg`;
-    const blob = await put(safeFilename, imageFile, {
-      access: "public",
-    });
-    imageUrl = blob.url;
-  } catch (e: any) {
-    console.error("Vercel Blob Upload Error:", e);
-    return { error: "Failed to upload image to cloud storage. Please check connection." };
-  }
-
-  try {
-    await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-  } catch (e: any) {
-    console.error("Prisma Database Error:", e);
-    if (e.code === 'P2002') {
-      return { error: `Design code "${code}" already exists. Each design must have a unique code.` };
-    }
-    return { error: "Failed to save design to database. Please try again later." };
-  }
-
-  revalidatePath("/designs");
-  redirect("/designs");
 }
 
 export async function updateDesign(id: string, formData: FormData) {
@@ -88,11 +70,9 @@ export async function updateDesign(id: string, formData: FormData) {
       const blob = await put(`${code}-${Date.now()}.jpg`, imageFile, { access: "public" });
       imageUrl = blob.url;
     }
-
     await prisma.design.update({ where: { id }, data: { code, name, imageUrl } });
     revalidatePath("/designs");
   } catch (e: any) { throw e; }
-
   redirect("/designs");
 }
 
@@ -102,6 +82,6 @@ export async function deleteDesign(id: string) {
     revalidatePath("/designs");
     return { success: true };
   } catch (e: any) {
-    return { success: false, message: "Design is in use and cannot be deleted." };
+    return { success: false, message: "Design is in use." };
   }
 }
