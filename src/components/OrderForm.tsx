@@ -119,13 +119,14 @@ export default function OrderForm({
     };
   }, [phone, initialData]);
 
+  // Performance Optimization: Only trigger product fetching when brand selection changes
+  const brandsToFetch = items.map(item => item.brandId).filter(id => id && !availableProducts[id]).join(',');
+  
   useEffect(() => {
-    // Determine which brands need products fetched
     const neededBrands = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
     
     if (neededBrands.length === 0) return;
 
-    // Fetch in a controlled way
     let active = true;
     const fetchNeeded = async () => {
       for (const brandId of neededBrands) {
@@ -144,7 +145,7 @@ export default function OrderForm({
     
     fetchNeeded();
     return () => { active = false; };
-  }, [items]);
+  }, [brandsToFetch]);
 
   const addItem = () => {
     setItems(prev => [...prev, { 
