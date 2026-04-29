@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2 } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
 import QuickDesignModal from "./QuickDesignModal";
 
@@ -120,20 +120,31 @@ export default function OrderForm({
   }, [phone, initialData]);
 
   useEffect(() => {
-    const brandsToFetch = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
+    // Determine which brands need products fetched
+    const neededBrands = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
     
-    if (brandsToFetch.length === 0) return;
+    if (neededBrands.length === 0) return;
 
-    brandsToFetch.forEach(async (brandId) => {
-      try {
-        const res = await fetch(`/api/products?brandId=${brandId}`);
-        const products = await res.json();
-        setAvailableProducts(prev => ({ ...prev, [brandId]: products }));
-      } catch (e) {
-        console.error("Failed to fetch products", e);
+    // Fetch in a controlled way
+    let active = true;
+    const fetchNeeded = async () => {
+      for (const brandId of neededBrands) {
+        if (!active) break;
+        try {
+          const res = await fetch(`/api/products?brandId=${brandId}`);
+          const products = await res.json();
+          if (active) {
+            setAvailableProducts(prev => ({ ...prev, [brandId]: products }));
+          }
+        } catch (e) {
+          console.error("Failed to fetch products", e);
+        }
       }
-    });
-  }, [items]);
+    };
+    
+    fetchNeeded();
+    return () => { active = false; };
+  }, [items, availableProducts]);
 
   const addItem = () => {
     setItems(prev => [...prev, { 
@@ -169,9 +180,27 @@ export default function OrderForm({
 
   const totalPrice = items.reduce((sum, item) => sum + (item.price || 0), 0);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
+    try {
+      await action(formData);
+    } catch (error) {
+      console.error("Order submission failed:", error);
+      alert("Failed to confirm order. Please check the form and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
-      <form action={action} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
       {/* Customer Info Section */}
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -446,9 +475,17 @@ export default function OrderForm({
         </div>
         <button 
           type="submit" 
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest px-10 py-5 rounded-xl md:rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 w-full md:w-auto"
+          disabled={isSubmitting}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest px-10 py-5 rounded-xl md:rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 w-full md:w-auto flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {initialData ? 'Update Order' : 'Confirm Final Order'}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            initialData ? 'Update Order' : 'Confirm Final Order'
+          )}
         </button>
       </div>
       <input type="hidden" name="itemCount" value={items.length} />
