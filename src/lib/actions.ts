@@ -401,6 +401,38 @@ export async function deleteDesign(id: string) {
   }
 }
 
+export async function createDesignQuick(formData: FormData) {
+  const code = formData.get("code") as string;
+  const name = formData.get("name") as string;
+  const imageFile = formData.get("image");
+  
+  let imageUrl = null;
+
+  try {
+    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
+    if (isFileLike && (imageFile as any).size > 0) {
+      const file = imageFile as unknown as File;
+      const blob = await put(file.name || `${code}.png`, file, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    }
+
+    const design = await prisma.design.create({
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+
+    revalidatePath("/designs");
+    return { success: true, design };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function createDesign(formData: FormData) {
   console.log("--- CREATE DESIGN START ---");
   const code = formData.get("code") as string;

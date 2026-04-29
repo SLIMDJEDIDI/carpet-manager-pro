@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
+import QuickDesignModal from "./QuickDesignModal";
 
 interface Item {
   id: string | number;
@@ -54,6 +55,10 @@ export default function OrderForm({
   const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
   const [delegation, setDelegation] = useState(initialData?.customerDelegation || "");
   
+  const [localDesigns, setLocalDesigns] = useState(designs);
+  const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
+  const [activeItemIdForDesign, setActiveItemIdForDesign] = useState<string | number | null>(null);
+
   const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
     id: 'init-1',
     brandId: "",
@@ -70,15 +75,15 @@ export default function OrderForm({
   const [showDesignList, setShowDesignList] = useState<Record<string | number, boolean>>({});
 
   useEffect(() => {
-    if (initialData?.items && designs.length > 0) {
+    if (initialData?.items && localDesigns.length > 0) {
       const searchInit: Record<string | number, string> = {};
       initialData.items.forEach((item: any) => {
-        const design = designs.find(d => d.id === item.designId);
+        const design = localDesigns.find(d => d.id === item.designId);
         if (design) searchInit[item.id] = design.code;
       });
       setDesignSearch(searchInit);
     }
-  }, [initialData, designs]);
+  }, [initialData, localDesigns]);
 
   useEffect(() => {
     if (initialData) return;
@@ -317,7 +322,7 @@ export default function OrderForm({
                 <input 
                   type="text"
                   placeholder="Search Design Code..."
-                  value={designSearch[item.id] !== undefined ? designSearch[item.id] : (designs.find(d => d.id === item.designId)?.code || "")}
+                  value={designSearch[item.id] !== undefined ? designSearch[item.id] : (localDesigns.find(d => d.id === item.designId)?.code || "")}
                   onChange={(e) => {
                     setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
                     setShowDesignList(prev => ({ ...prev, [item.id]: true }));
@@ -333,13 +338,29 @@ export default function OrderForm({
                 )}
                 
                 {showDesignList[item.id] && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto divide-y divide-slate-100">
-                    {designs
+                  <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto divide-y divide-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveItemIdForDesign(item.id);
+                        setIsDesignModalOpen(true);
+                        setShowDesignList(prev => ({ ...prev, [item.id]: false }));
+                      }}
+                      className="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-3 border-b-2 border-emerald-100 sticky top-0 z-10"
+                    >
+                      <PlusCircle className="w-5 h-5 text-emerald-600" />
+                      <div>
+                        <p className="font-black text-emerald-600 text-xs uppercase">Add New Design</p>
+                        <p className="text-[9px] text-emerald-500 font-bold">Create and select instantly</p>
+                      </div>
+                    </button>
+
+                    {localDesigns
                       .filter(d => 
                         d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase()) ||
                         d.name.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())
                       )
-                      .slice(0, 10)
+                      .slice(0, 15)
                       .map(d => (
                         <button
                           key={d.id}
@@ -360,7 +381,7 @@ export default function OrderForm({
                           </div>
                         </button>
                       ))}
-                    {designs.filter(d => d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())).length === 0 && (
+                    {localDesigns.filter(d => d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())).length === 0 && (
                       <div className="p-4 text-center text-xs text-slate-400 font-bold uppercase">No designs found</div>
                     )}
                   </div>
@@ -430,6 +451,21 @@ export default function OrderForm({
         </button>
       </div>
       <input type="hidden" name="itemCount" value={items.length} />
+
+      <QuickDesignModal 
+        isOpen={isDesignModalOpen} 
+        onClose={() => {
+          setIsDesignModalOpen(false);
+          setActiveItemIdForDesign(null);
+        }}
+        onSuccess={(newDesign) => {
+          setLocalDesigns(prev => [newDesign, ...prev]);
+          if (activeItemIdForDesign) {
+            updateItem(activeItemIdForDesign, "designId", newDesign.id);
+            setDesignSearch(prev => ({ ...prev, [activeItemIdForDesign]: newDesign.code }));
+          }
+        }}
+      />
     </form>
   );
 }
