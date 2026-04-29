@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import { updateDesign } from "@/lib/actions";
+import { updateDesign } from "@/lib/design-actions";
 import { useFormStatus } from "react-dom";
 
 function SubmitButton() {

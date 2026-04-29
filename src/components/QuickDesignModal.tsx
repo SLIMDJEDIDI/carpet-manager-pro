@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { X, Upload, Loader2 } from "lucide-react";
-import { createDesignQuick } from "@/lib/actions";
+import { createDesignQuickAction } from "@/lib/design-actions";
 
 interface QuickDesignModalProps {
   isOpen: boolean;
@@ -11,33 +11,17 @@ interface QuickDesignModalProps {
 }
 
 export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDesignModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [state, formAction, isPending] = useActionState(createDesignQuickAction, { error: null });
+
+  useEffect(() => {
+    if (state?.success && state?.design) {
+      onSuccess(state.design);
+      onClose();
+    }
+  }, [state, onSuccess, onClose]);
 
   if (!isOpen) return null;
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    
-    try {
-      const result = await createDesignQuick(formData);
-      if (result.success) {
-        onSuccess(result.design);
-        onClose();
-      } else {
-        setError(result.error || "Failed to create design");
-      }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -49,10 +33,10 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {error && (
-            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-bold uppercase">
-              {error}
+        <form action={formAction} className="p-6 space-y-6">
+          {state?.error && (
+            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-bold uppercase animate-in slide-in-from-top-1">
+              {state.error}
             </div>
           )}
 
@@ -111,10 +95,10 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
 
           <button 
             type="submit" 
-            disabled={isSubmitting}
+            disabled={isPending}
             className="w-full bg-black text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-lg hover:bg-slate-800 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isSubmitting ? (
+            {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Creating...

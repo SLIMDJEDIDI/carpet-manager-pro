@@ -1,30 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import { createDesign } from "@/lib/actions";
-import { useFormStatus } from "react-dom";
-import { useRouter } from "next/navigation";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button 
-      type="submit" 
-      disabled={pending}
-      className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <Save className="w-5 h-5" />
-      {pending ? "Uploading..." : "Create Design"}
-    </button>
-  );
-}
+import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
+import { createDesignAction } from "@/lib/design-actions";
 
 export default function NewDesignPage() {
   const [preview, setPreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [state, formAction, isPending] = useActionState(createDesignAction, { error: null });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,17 +22,6 @@ export default function NewDesignPage() {
     }
   };
 
-  async function handleSubmit(formData: FormData) {
-    setError(null);
-    try {
-      await createDesign(formData);
-    } catch (err: any) {
-      if (err.message === "NEXT_REDIRECT") throw err; // Let Next.js handle redirect
-      if (err.digest?.includes("NEXT_REDIRECT")) throw err;
-      setError(err.message || "Failed to create design");
-    }
-  }
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Link href="/designs" className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-black uppercase text-xs tracking-widest group">
@@ -62,13 +34,14 @@ export default function NewDesignPage() {
         <p className="text-slate-500 font-bold">Upload a new design pattern from your computer.</p>
       </div>
 
-      <form action={handleSubmit} encType="multipart/form-data" className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={formAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
-          {error && (
-            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-bold uppercase">
-              {error}
+          {state?.error && (
+            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-black uppercase animate-in slide-in-from-top-2 duration-300">
+              {state.error}
             </div>
           )}
+          
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Code (Unique)</label>
             <input 
@@ -130,7 +103,23 @@ export default function NewDesignPage() {
         </div>
 
         <div className="pt-4">
-          <SubmitButton />
+          <button 
+            type="submit" 
+            disabled={isPending}
+            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5" />
+                Create Design
+              </>
+            )}
+          </button>
         </div>
       </form>
     </div>

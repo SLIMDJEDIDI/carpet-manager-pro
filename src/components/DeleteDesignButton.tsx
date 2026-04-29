@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useTransition } from "react";
-import { deleteDesign } from "@/lib/actions";
+import { deleteDesign } from "@/lib/design-actions";
 
 export default function DeleteDesignButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition();
