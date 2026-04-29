@@ -61,6 +61,7 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
             <input 
               name="code" 
               required 
+              autoFocus
               placeholder="e.g. Z-2024-X"
               className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-12 bg-white font-bold text-black px-4"
             />

@@ -406,6 +406,8 @@ export async function createDesignQuick(formData: FormData) {
   const name = formData.get("name") as string;
   const imageFile = formData.get("image");
   
+  console.log("--- CREATE DESIGN QUICK START ---", { code, name });
+  
   let imageUrl = null;
 
   try {
@@ -416,6 +418,7 @@ export async function createDesignQuick(formData: FormData) {
         access: 'public',
       });
       imageUrl = blob.url;
+      console.log("Quick Design Image Uploaded:", imageUrl);
     }
 
     const design = await prisma.design.create({
@@ -426,10 +429,12 @@ export async function createDesignQuick(formData: FormData) {
       },
     });
 
+    console.log("Quick Design Created:", design.id);
     revalidatePath("/designs");
     return { success: true, design };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    console.error("Quick Design Creation Failed:", error);
+    return { success: false, error: error.message || "Database operation failed" };
   }
 }
 

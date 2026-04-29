@@ -75,7 +75,8 @@ export default function OrderForm({
   const [showDesignList, setShowDesignList] = useState<Record<string | number, boolean>>({});
 
   useEffect(() => {
-    if (initialData?.items && localDesigns.length > 0) {
+    // Only initialize search from initialData ONCE on mount
+    if (initialData?.items && localDesigns.length > 0 && Object.keys(designSearch).length === 0) {
       const searchInit: Record<string | number, string> = {};
       initialData.items.forEach((item: any) => {
         const design = localDesigns.find(d => d.id === item.designId);
@@ -135,7 +136,7 @@ export default function OrderForm({
   }, [items]);
 
   const addItem = () => {
-    setItems([...items, { 
+    setItems(prev => [...prev, { 
       id: 'new-' + Date.now(), 
       brandId: "", 
       designId: "", 
@@ -146,13 +147,11 @@ export default function OrderForm({
   };
 
   const removeItem = (id: string | number) => {
-    if (items.length > 1) {
-      setItems(items.filter(item => item.id !== id));
-    }
+    setItems(prev => prev.length > 1 ? prev.filter(item => item.id !== id) : prev);
   };
 
   const updateItem = (id: string | number, field: keyof Item, value: string) => {
-    setItems(items.map(item => {
+    setItems(prev => prev.map(item => {
       if (item.id === id) {
         const newItem = { ...item, [field]: value };
         if (field === 'productId') {
@@ -324,7 +323,8 @@ export default function OrderForm({
                   placeholder="Search Design Code..."
                   value={designSearch[item.id] !== undefined ? designSearch[item.id] : (localDesigns.find(d => d.id === item.designId)?.code || "")}
                   onChange={(e) => {
-                    setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
+                    const val = e.target.value;
+                    setDesignSearch(prev => ({ ...prev, [item.id]: val }));
                     setShowDesignList(prev => ({ ...prev, [item.id]: true }));
                   }}
                   onFocus={() => setShowDesignList(prev => ({ ...prev, [item.id]: true }))}
@@ -459,9 +459,14 @@ export default function OrderForm({
           setActiveItemIdForDesign(null);
         }}
         onSuccess={(newDesign) => {
+          console.log("Quick Design Added to Form:", newDesign);
+          // 1. Add to local catalog so search can find it
           setLocalDesigns(prev => [newDesign, ...prev]);
+          
+          // 2. Select it for the item that triggered the modal
           if (activeItemIdForDesign) {
             updateItem(activeItemIdForDesign, "designId", newDesign.id);
+            // 3. Update the search text display
             setDesignSearch(prev => ({ ...prev, [activeItemIdForDesign]: newDesign.code }));
           }
         }}
