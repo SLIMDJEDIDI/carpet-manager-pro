@@ -406,17 +406,110 @@ export async function createDesignQuick(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   
-  // LOGGING TO DB FOR DEBUGGING
-  await logActivity("DEBUG_CREATE_QUICK", `Starting creation for ${code}`, {
+  // VERBOSE DB LOGGING
+  const debugInfo = {
     imageType: typeof imageFile,
     isBlob: imageFile instanceof Blob,
-    size: (imageFile as any)?.size,
-    name: (imageFile as any)?.name
-  });
+    isString: typeof imageFile === 'string',
+    hasSize: imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any),
+    size: imageFile && typeof imageFile === 'object' ? (imageFile as any).size : 'N/A',
+    keys: Array.from(formData.keys())
+  };
+
+  await logActivity("DEBUG_CREATE_QUICK_START", `Creation for ${code}`, debugInfo);
 
   if (!code || !name) {
     return { success: false, error: "Design Code and Name are required." };
   }
+
+  let imageUrl = null;
+
+  try {
+    // If it's a blob/file and has size, try to upload
+    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
+
+    if (isFile) {
+      const file = imageFile as unknown as File;
+      try {
+        const blob = await put(file.name || `${code}.png`, file, {
+          access: 'public',
+        });
+        imageUrl = blob.url;
+        await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded ${code}: ${imageUrl}`);
+      } catch (blobError: any) {
+        console.error("Vercel Blob Upload Failed:", blobError.message);
+        await logActivity("DEBUG_UPLOAD_FAIL", `Failed ${code}: ${blobError.message}`);
+        // If upload fails, we stop here to avoid "no photo" records
+        return { success: false, error: `Image upload failed: ${blobError.message}` };
+      }
+    } else {
+      // If NO file was detected but we REQUIRE a photo
+      await logActivity("DEBUG_UPLOAD_SKIPPED", `No valid file detected for ${code}`);
+      // return { success: false, error: "Please select a design image." };
+    }
+
+    const design = await prisma.design.create({
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+
+    revalidatePath("/designs");
+    return { success: true, design };
+  } catch (error: any) {
+    console.error("createDesignQuick error:", error);
+    return { success: false, error: error.message || "Failed to create design" };
+  }
+}
+
+export async function createDesign(formData: FormData) {
+  const code = (formData.get("code") as string)?.trim().toUpperCase();
+  const name = (formData.get("name") as string)?.trim();
+  const imageFile = formData.get("image");
+  
+  const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
+
+  await logActivity("DEBUG_CREATE_CLASSIC_START", `Classic creation for ${code}`, {
+    isFile,
+    size: (imageFile as any)?.size
+  });
+
+  if (!code || !name) throw new Error("Code and Name are required");
+
+  let imageUrl = null;
+
+  try {
+    if (isFile) {
+      const file = imageFile as unknown as File;
+      try {
+        const blob = await put(file.name || `${code}.png`, file, {
+          access: 'public',
+        });
+        imageUrl = blob.url;
+      } catch (blobError: any) {
+        console.error("Vercel Blob Upload Failed:", blobError.message);
+        throw new Error(`Image upload failed: ${blobError.message}`);
+      }
+    }
+
+    await prisma.design.create({
+      data: {
+        code,
+        name,
+        imageUrl,
+      },
+    });
+  } catch (error: any) {
+    console.error("createDesign error:", error);
+    throw error;
+  }
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}
+
 
   let imageUrl = null;
 

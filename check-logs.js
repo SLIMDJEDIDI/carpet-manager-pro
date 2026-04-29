@@ -3,15 +3,18 @@ const prisma = new PrismaClient();
 
 async function main() {
   const logs = await prisma.activityLog.findMany({
-    where: { action: { startsWith: 'DEBUG_UPLOAD' } },
+    where: { action: { startsWith: 'DEBUG_' } },
     orderBy: { createdAt: 'desc' },
     take: 10
   });
-  console.log("RECENT UPLOAD DEBUG LOGS:");
-  logs.forEach(l => {
-    console.log(`[${l.createdAt.toISOString()}] ${l.action}: ${l.details}`);
-    if (l.metadata) console.log(`   Meta: ${l.metadata}`);
-  });
+  console.log(JSON.stringify(logs, null, 2));
 }
 
-main().finally(() => prisma.$disconnect());
+main()
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
