@@ -459,16 +459,28 @@ export default function OrderForm({
           setActiveItemIdForDesign(null);
         }}
         onSuccess={(newDesign) => {
-          console.log("Quick Design Added to Form:", newDesign);
-          // 1. Add to local catalog so search can find it
+          // 1. Add to local catalog immediately
           setLocalDesigns(prev => [newDesign, ...prev]);
           
-          // 2. Select it for the item that triggered the modal
+          // 2. Select it for the item
           if (activeItemIdForDesign) {
-            updateItem(activeItemIdForDesign, "designId", newDesign.id);
-            // 3. Update the search text display
-            setDesignSearch(prev => ({ ...prev, [activeItemIdForDesign]: newDesign.code }));
+            setItems(prev => prev.map(item => {
+              if (item.id === activeItemIdForDesign) {
+                return { ...item, designId: newDesign.id };
+              }
+              return item;
+            }));
+            
+            // 3. Update search display text
+            setDesignSearch(prev => ({ 
+              ...prev, 
+              [activeItemIdForDesign]: newDesign.code 
+            }));
           }
+          
+          // 4. Close modal
+          setIsDesignModalOpen(false);
+          setActiveItemIdForDesign(null);
         }}
       />
     </form>

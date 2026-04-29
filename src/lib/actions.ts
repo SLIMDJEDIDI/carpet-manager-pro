@@ -402,23 +402,32 @@ export async function deleteDesign(id: string) {
 }
 
 export async function createDesignQuick(formData: FormData) {
-  const code = formData.get("code") as string;
-  const name = formData.get("name") as string;
+  const code = (formData.get("code") as string)?.trim().toUpperCase();
+  const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   
-  console.log("--- CREATE DESIGN QUICK START ---", { code, name });
-  
+  if (!code || !name) {
+    return { success: false, error: "Design Code and Name are required." };
+  }
+
   let imageUrl = null;
 
   try {
-    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
-    if (isFileLike && (imageFile as any).size > 0) {
+    // Check if it's a valid file with content
+    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
+
+    if (isFile) {
       const file = imageFile as unknown as File;
-      const blob = await put(file.name || `${code}.png`, file, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-      console.log("Quick Design Image Uploaded:", imageUrl);
+      try {
+        const blob = await put(file.name || `${code}.png`, file, {
+          access: 'public',
+        });
+        imageUrl = blob.url;
+      } catch (blobError: any) {
+        console.error("Vercel Blob Upload Failed:", blobError.message);
+        // THROW if a file was provided but upload failed - don't allow "no photo" silent failures
+        return { success: false, error: `Image upload failed: ${blobError.message}. Check Vercel Blob token.` };
+      }
     }
 
     const design = await prisma.design.create({
@@ -429,53 +438,37 @@ export async function createDesignQuick(formData: FormData) {
       },
     });
 
-    console.log("Quick Design Created:", design.id);
     revalidatePath("/designs");
     return { success: true, design };
   } catch (error: any) {
-    console.error("Quick Design Creation Failed:", error);
-    return { success: false, error: error.message || "Database operation failed" };
+    console.error("createDesignQuick error:", error);
+    return { success: false, error: error.message || "Failed to create design" };
   }
 }
 
 export async function createDesign(formData: FormData) {
-  console.log("--- CREATE DESIGN START ---");
-  const code = formData.get("code") as string;
-  const name = formData.get("name") as string;
+  const code = (formData.get("code") as string)?.trim().toUpperCase();
+  const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   
-  console.log("Form Values:", { 
-    code, 
-    name, 
-    imageType: imageFile ? typeof imageFile : "null",
-    isObject: typeof imageFile === 'object',
-  });
+  if (!code || !name) throw new Error("Code and Name are required");
 
   let imageUrl = null;
 
   try {
-    // Check if it's a File-like object (has size and name)
-    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
-    const fileSize = isFileLike ? (imageFile as any).size : 0;
+    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
 
-    if (isFileLike && fileSize > 0) {
+    if (isFile) {
       const file = imageFile as unknown as File;
-      console.log("Uploading to Vercel Blob:", file.name, "Size:", file.size);
-      
       try {
         const blob = await put(file.name || `${code}.png`, file, {
           access: 'public',
         });
         imageUrl = blob.url;
-        console.log("Upload Success URL:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Upload Failed:", blobError.message);
-        if (blobError.message.includes("private store")) {
-          console.warn("BLOB STORE IS PRIVATE. Please set it to Public in Vercel dashboard.");
-        }
+        throw new Error(`Image upload failed: ${blobError.message}. Ensure BLOB_READ_WRITE_TOKEN is set.`);
       }
-    } else {
-      console.log("No valid image file detected in FormData (Size:", fileSize, ")");
     }
 
     await prisma.design.create({
@@ -485,55 +478,38 @@ export async function createDesign(formData: FormData) {
         imageUrl,
       },
     });
-    console.log("Design record created in database with imageUrl:", imageUrl);
   } catch (error: any) {
-    console.error("CRITICAL ERROR in createDesign:", error);
-    throw new Error(error.message || "Failed to create design");
+    console.error("createDesign error:", error);
+    throw error;
   }
 
-  console.log("Revalidating /designs...");
   revalidatePath("/designs");
-  console.log("Redirecting to /designs...");
   redirect("/designs");
 }
 
 export async function updateDesign(id: string, formData: FormData) {
-  console.log("--- UPDATE DESIGN START ---", id);
-  const code = formData.get("code") as string;
-  const name = formData.get("name") as string;
+  const code = (formData.get("code") as string)?.trim().toUpperCase();
+  const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   const existingImageUrl = formData.get("existingImageUrl") as string;
-
-  console.log("Form Values:", { 
-    id,
-    code, 
-    name, 
-    imageType: imageFile ? typeof imageFile : "null",
-    existingImageUrl
-  });
 
   let imageUrl = existingImageUrl || null;
   if (imageUrl === "") imageUrl = null;
 
   try {
-    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
-    const fileSize = isFileLike ? (imageFile as any).size : 0;
+    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
 
-    if (isFileLike && fileSize > 0) {
+    if (isFile) {
       const file = imageFile as unknown as File;
-      console.log("Uploading NEW image to Vercel Blob:", file.name, "Size:", file.size);
-      
       try {
         const blob = await put(file.name || `${code}.png`, file, {
           access: 'public',
         });
         imageUrl = blob.url;
-        console.log("New Upload Success URL:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Update Failed:", blobError.message);
+        throw new Error(`Image upload failed: ${blobError.message}. Check Vercel Blob token.`);
       }
-    } else {
-      console.log("Keeping/Using imageUrl:", imageUrl);
     }
 
     await prisma.design.update({
@@ -544,15 +520,12 @@ export async function updateDesign(id: string, formData: FormData) {
         imageUrl,
       },
     });
-    console.log("Design record updated in database");
   } catch (error: any) {
-    console.error("CRITICAL ERROR in updateDesign:", error);
-    throw new Error(error.message || "Failed to update design");
+    console.error("updateDesign error:", error);
+    throw error;
   }
 
-  console.log("Revalidating /designs...");
   revalidatePath("/designs");
-  console.log("Redirecting to /designs...");
   redirect("/designs");
 }
 
