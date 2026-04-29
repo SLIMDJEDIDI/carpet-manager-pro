@@ -378,22 +378,31 @@ export async function createDesign(formData: FormData) {
   console.log("--- CREATE DESIGN START ---");
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as File;
+  const imageFile = formData.get("image");
   
-  console.log("Design Info:", { code, name, hasFile: !!imageFile, fileSize: imageFile?.size });
+  console.log("Form Values:", { 
+    code, 
+    name, 
+    imageFileType: typeof imageFile,
+    isBlob: imageFile instanceof Blob,
+    isFile: imageFile instanceof File,
+  });
 
   let imageUrl = null;
 
   try {
-    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
-      console.log("Uploading to Vercel Blob:", imageFile.name);
-      const blob = await put(imageFile.name || `${code}.png`, imageFile, {
+    // A bit more permissive check for the file
+    if (imageFile && (imageFile as any).size > 0) {
+      const file = imageFile as File;
+      console.log("Uploading to Vercel Blob:", file.name, "Size:", file.size);
+      
+      const blob = await put(file.name || `${code}.png`, file, {
         access: 'public',
       });
       imageUrl = blob.url;
-      console.log("Upload Success:", imageUrl);
+      console.log("Upload Success URL:", imageUrl);
     } else {
-      console.log("No valid image file provided, saving with imageUrl: null");
+      console.log("No valid image file detected in FormData");
     }
 
     await prisma.design.create({
@@ -403,15 +412,15 @@ export async function createDesign(formData: FormData) {
         imageUrl,
       },
     });
-    console.log("Design created in DB");
+    console.log("Design record created in database");
   } catch (error: any) {
-    console.error("Failed to create design:", error);
-    // Re-throw so Next.js can handle it, but keep the log
+    console.error("CRITICAL ERROR in createDesign:", error);
     throw new Error(error.message || "Failed to create design");
   }
 
-  console.log("Revalidating and redirecting...");
+  console.log("Revalidating /designs...");
   revalidatePath("/designs");
+  console.log("Redirecting to /designs...");
   redirect("/designs");
 }
 
@@ -419,23 +428,35 @@ export async function updateDesign(id: string, formData: FormData) {
   console.log("--- UPDATE DESIGN START ---", id);
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
-  const imageFile = formData.get("image") as File;
+  const imageFile = formData.get("image");
   const existingImageUrl = formData.get("existingImageUrl") as string;
 
-  console.log("Update Info:", { code, name, hasFile: !!imageFile, fileSize: imageFile?.size, existingImageUrl });
+  console.log("Form Values:", { 
+    id,
+    code, 
+    name, 
+    imageFileType: typeof imageFile,
+    isBlob: imageFile instanceof Blob,
+    isFile: imageFile instanceof File,
+    existingImageUrl
+  });
 
   let imageUrl = existingImageUrl || null;
+  // Ensure we don't save empty strings
+  if (imageUrl === "") imageUrl = null;
 
   try {
-    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
-      console.log("Uploading NEW image to Vercel Blob:", imageFile.name);
-      const blob = await put(imageFile.name || `${code}.png`, imageFile, {
+    if (imageFile && (imageFile as any).size > 0) {
+      const file = imageFile as File;
+      console.log("Uploading NEW image to Vercel Blob:", file.name, "Size:", file.size);
+      
+      const blob = await put(file.name || `${code}.png`, file, {
         access: 'public',
       });
       imageUrl = blob.url;
-      console.log("New Upload Success:", imageUrl);
+      console.log("New Upload Success URL:", imageUrl);
     } else {
-      console.log("Keeping existing imageUrl:", imageUrl);
+      console.log("Using imageUrl:", imageUrl);
     }
 
     await prisma.design.update({
@@ -446,14 +467,15 @@ export async function updateDesign(id: string, formData: FormData) {
         imageUrl,
       },
     });
-    console.log("Design updated in DB");
+    console.log("Design record updated in database");
   } catch (error: any) {
-    console.error("Failed to update design:", error);
+    console.error("CRITICAL ERROR in updateDesign:", error);
     throw new Error(error.message || "Failed to update design");
   }
 
-  console.log("Revalidating and redirecting...");
+  console.log("Revalidating /designs...");
   revalidatePath("/designs");
+  console.log("Redirecting to /designs...");
   redirect("/designs");
 }
 
