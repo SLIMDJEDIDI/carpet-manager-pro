@@ -170,7 +170,8 @@ export default function OrderForm({
   const totalPrice = items.reduce((sum, item) => sum + (item.price || 0), 0);
 
   return (
-    <form action={action} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
+    <>
+      <form action={action} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
       {/* Customer Info Section */}
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -451,38 +452,39 @@ export default function OrderForm({
         </button>
       </div>
       <input type="hidden" name="itemCount" value={items.length} />
-
-      <QuickDesignModal 
-        isOpen={isDesignModalOpen} 
-        onClose={() => {
-          setIsDesignModalOpen(false);
-          setActiveItemIdForDesign(null);
-        }}
-        onSuccess={(newDesign) => {
-          // 1. Add to local catalog immediately
-          setLocalDesigns(prev => [newDesign, ...prev]);
-          
-          // 2. Select it for the item
-          if (activeItemIdForDesign) {
-            setItems(prev => prev.map(item => {
-              if (item.id === activeItemIdForDesign) {
-                return { ...item, designId: newDesign.id };
-              }
-              return item;
-            }));
-            
-            // 3. Update search display text
-            setDesignSearch(prev => ({ 
-              ...prev, 
-              [activeItemIdForDesign]: newDesign.code 
-            }));
-          }
-          
-          // 4. Close modal
-          setIsDesignModalOpen(false);
-          setActiveItemIdForDesign(null);
-        }}
-      />
     </form>
-  );
+
+    <QuickDesignModal 
+      isOpen={isDesignModalOpen} 
+      onClose={() => {
+        setIsDesignModalOpen(false);
+        setActiveItemIdForDesign(null);
+      }}
+      onSuccess={(newDesign) => {
+        // 1. Add to local catalog immediately
+        setLocalDesigns(prev => [newDesign, ...prev]);
+        
+        // 2. Select it for the item
+        if (activeItemIdForDesign) {
+          setItems(prev => prev.map(item => {
+            if (item.id === activeItemIdForDesign) {
+              return { ...item, designId: newDesign.id };
+            }
+            return item;
+          }));
+          
+          // 3. Update search display text
+          setDesignSearch(prev => ({ 
+            ...prev, 
+            [activeItemIdForDesign]: newDesign.code 
+          }));
+        }
+        
+        // 4. Close modal
+        setIsDesignModalOpen(false);
+        setActiveItemIdForDesign(null);
+      }}
+    />
+  </>
+);
 }
