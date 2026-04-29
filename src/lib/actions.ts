@@ -605,7 +605,7 @@ export async function updateDesign(id: string, formData: FormData) {
   if (imageUrl === "") imageUrl = null;
 
   try {
-    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
+    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
 
     if (isFile) {
       const file = imageFile as unknown as File;
@@ -616,7 +616,7 @@ export async function updateDesign(id: string, formData: FormData) {
         imageUrl = blob.url;
       } catch (blobError: any) {
         console.error("Vercel Blob Update Failed:", blobError.message);
-        throw new Error(`Image upload failed: ${blobError.message}. Check Vercel Blob token.`);
+        throw new Error(`Image upload failed: ${blobError.message}`);
       }
     }
 
