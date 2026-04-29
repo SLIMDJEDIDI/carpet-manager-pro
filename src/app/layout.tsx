@@ -35,12 +35,14 @@ export default function RootLayout({
           {/* Sidebar */}
           <aside className="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
             <div className="p-8">
-              <h1 className="text-2xl font-black text-emerald-600 flex items-center gap-3 tracking-tighter">
-                <div className="bg-emerald-600 p-2 rounded-xl">
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="bg-emerald-600 p-2 rounded-xl group-hover:rotate-6 transition-transform">
                   <Palette className="w-6 h-6 text-white" />
                 </div>
-                CARPET<span className="text-slate-400">PRO</span>
-              </h1>
+                <h1 className="text-2xl font-black text-emerald-600 tracking-tighter">
+                  CARPET<span className="text-slate-400">PRO</span>
+                </h1>
+              </Link>
             </div>
             <nav className="flex-1 px-4 space-y-1">
               <Link href="/" className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group">

@@ -32,12 +32,14 @@ export default function MobileNav() {
     <>
       {/* Mobile Top Header */}
       <header className="md:hidden sticky top-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
-        <h1 className="text-xl font-black text-emerald-600 flex items-center gap-2 tracking-tighter">
-          <div className="bg-emerald-600 p-1.5 rounded-lg">
+        <Link href="/" className="flex items-center gap-2 tracking-tighter group">
+          <div className="bg-emerald-600 p-1.5 rounded-lg group-hover:rotate-6 transition-transform">
             <Palette className="w-5 h-5 text-white" />
           </div>
-          CARPET<span className="text-slate-400">PRO</span>
-        </h1>
+          <h1 className="text-xl font-black text-emerald-600">
+            CARPET<span className="text-slate-400">PRO</span>
+          </h1>
+        </Link>
         <button 
           onClick={() => setIsOpen(true)}
           className="p-2 text-slate-600 hover:bg-slate-50 rounded-xl transition-all"

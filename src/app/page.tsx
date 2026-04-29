@@ -5,7 +5,8 @@ import {
   ShoppingCart, 
   Clock, 
   CheckCircle2,
-  Package
+  Package,
+  Plus
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -56,9 +57,18 @@ export default async function Dashboard() {
   return (
     <div className="space-y-6 md:space-y-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">Enterprise Overview</h1>
-          <p className="text-slate-500 font-medium text-xs md:text-sm">Real-time stats for ZARBITI, BMT, and TBP.</p>
+        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">Enterprise Overview</h1>
+            <p className="text-slate-500 font-medium text-xs md:text-sm">Real-time stats for ZARBITI, BMT, and TBP.</p>
+          </div>
+          <Link 
+            href="/orders/new" 
+            className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all font-black uppercase text-xs tracking-widest shadow-lg shadow-emerald-100/50 group"
+          >
+            <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+            New Order
+          </Link>
         </div>
         <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-center gap-3 w-fit">
           <div className="w-2 md:w-3 h-2 md:h-3 bg-emerald-500 rounded-full animate-pulse"></div>
