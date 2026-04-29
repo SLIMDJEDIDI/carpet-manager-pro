@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-// Vercel Blob storage enabled
 import { put } from "@vercel/blob";
 
 // UTILS
@@ -26,11 +25,10 @@ export async function deleteOrder(formData: FormData) {
   const id = formData.get("id") as string;
   try {
     const order = await prisma.order.findUnique({ where: { id } });
-    
     if (order) {
       await logActivity(
         "DELETE_ORDER", 
-        `Order REF #${order.reference} for ${order.customerName} was deleted.`,
+        `Order REF #${order.reference} was deleted.`,
         { orderId: id, reference: order.reference }
       );
       await prisma.order.delete({ where: { id } });
@@ -39,12 +37,10 @@ export async function deleteOrder(formData: FormData) {
     await logActivity("ERROR", `Failed to delete order: ${e.message}`);
     throw e;
   }
-  
   revalidatePath("/orders");
 }
 
 export async function createOrder(formData: FormData) {
-  console.log("--- CREATE ORDER START ---");
   const customerName = formData.get("customerName") as string;
   const customerPhone = formData.get("customerPhone") as string;
   const customerAddress = formData.get("customerAddress") as string;
@@ -53,92 +49,58 @@ export async function createOrder(formData: FormData) {
   const customerDelegation = formData.get("customerDelegation") as string;
   const itemCount = parseInt(formData.get("itemCount") as string || "0");
 
-  console.log("Customer Info:", { customerName, customerPhone, customerAddress, customerPostalCode, customerGovernorate, customerDelegation, itemCount });
-
   if (!customerName || !customerPhone || itemCount === 0) {
-    console.error("Validation failed: Missing customer info or items");
     throw new Error("Missing required order information");
   }
 
   let nextReference = 1;
-  try {
-    const lastOrder = await prisma.order.findFirst({
-      orderBy: { reference: 'desc' },
-      select: { reference: true }
-    });
-    nextReference = (lastOrder?.reference || 0) + 1;
-    console.log("Calculated Reference:", nextReference);
-  } catch (e) {
-    console.error("Failed to get reference, defaulting to 1", e);
-  }
+  const lastOrder = await prisma.order.findFirst({
+    orderBy: { reference: 'desc' },
+    select: { reference: true }
+  });
+  nextReference = (lastOrder?.reference || 0) + 1;
 
   try {
     await prisma.$transaction(async (tx) => {
-      console.log("Starting Transaction...");
       const order = await tx.order.create({
         data: {
-          customerName,
-          customerPhone,
-          customerAddress,
-          customerPostalCode,
-          customerGovernorate,
-          customerDelegation,
-          reference: nextReference,
-          totalAmount: 0,
+          customerName, customerPhone, customerAddress, 
+          customerPostalCode, customerGovernorate, customerDelegation,
+          reference: nextReference, totalAmount: 0,
         },
       });
-      console.log("Order Header Created:", order.id);
 
       let orderTotal = 0;
-
       for (let i = 0; i < itemCount; i++) {
         const brandId = formData.get(`brandId_${i}`) as string;
         const designId = formData.get(`designId_${i}`) as string;
         const productId = formData.get(`productId_${i}`) as string;
         
-        console.log(`Processing Item ${i}:`, { brandId, designId, productId });
-
-        if (!brandId || !designId || !productId) {
-          console.warn(`Skipping item ${i} due to missing IDs`);
-          continue;
-        }
+        if (!brandId || !designId || !productId) continue;
 
         const product = await tx.product.findUnique({ where: { id: productId } });
-        if (!product) {
-          console.error(`Product not found: ${productId}`);
-          continue;
-        }
+        if (!product) continue;
 
         orderTotal += product.price;
 
         const mainItem = await tx.orderItem.create({
           data: {
-            orderId: order.id,
-            brandId,
-            designId,
-            size: product.size,
-            price: product.price,
+            orderId: order.id, brandId, designId,
+            size: product.size, price: product.price,
             isPack: product.isPack,
             status: product.isPack ? "PACK_PARENT" : "PENDING",
           }
         });
-        console.log(`Main Item Created: ${mainItem.id} (Price: ${product.price})`);
 
         if (product.isPack && product.components) {
           const components = JSON.parse(product.components);
-          console.log(`Expanding Pack: ${product.name} with ${components.length} components`);
           for (const comp of components) {
             for (let q = 0; q < (comp.qty || 1); q++) {
               await tx.orderItem.create({
                 data: {
-                  orderId: order.id,
-                  brandId,
-                  designId,
-                  size: comp.size,
-                  price: 0,
-                  isPack: false,
-                  parentItemId: mainItem.id,
-                  status: "PENDING",
+                  orderId: order.id, brandId, designId,
+                  size: comp.size, price: 0, isPack: false,
+                  parentItemId: mainItem.id, status: "PENDING",
                 }
               });
             }
@@ -150,20 +112,11 @@ export async function createOrder(formData: FormData) {
         where: { id: order.id },
         data: { totalAmount: orderTotal }
       });
-      console.log("Order Total Updated:", orderTotal);
-    }, {
-      timeout: 20000 // Increased to 20s for cloud DB
-    });
+    }, { timeout: 20000 });
 
-    await logActivity(
-      "CREATE_ORDER", 
-      `New Order REF #${nextReference} created for ${customerName}.`,
-      { reference: nextReference, customerName }
-    );
-    console.log("--- CREATE ORDER SUCCESS ---");
+    await logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference });
   } catch (e: any) {
-    console.error("Transaction failed", e);
-    await logActivity("ERROR", `Failed to create order: ${e.message || "Unknown error"}`);
+    await logActivity("ERROR", `Failed to create order: ${e.message}`);
     throw e;
   }
 
@@ -181,18 +134,12 @@ export async function updateOrder(orderId: string, formData: FormData) {
   const itemCount = parseInt(formData.get("itemCount") as string || "1");
 
   try {
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
-
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
         where: { id: orderId },
         data: {
-          customerName,
-          customerPhone,
-          customerAddress,
-          customerPostalCode,
-          customerGovernorate,
-          customerDelegation,
+          customerName, customerPhone, customerAddress,
+          customerPostalCode, customerGovernorate, customerDelegation,
         },
       });
 
@@ -202,12 +149,8 @@ export async function updateOrder(orderId: string, formData: FormData) {
         if (id) itemIdsFromForm.push(id);
       }
 
-      // Delete items not in form
       await tx.orderItem.deleteMany({
-        where: { 
-          orderId: orderId,
-          id: { notIn: itemIdsFromForm }
-        }
+        where: { orderId, id: { notIn: itemIdsFromForm } }
       });
 
       for (let i = 0; i < itemCount; i++) {
@@ -217,32 +160,19 @@ export async function updateOrder(orderId: string, formData: FormData) {
         const productId = formData.get(`productId_${i}`) as string;
         
         if (!brandId || !designId || !productId) continue;
-
         const product = await tx.product.findUnique({ where: { id: productId } });
         if (!product) continue;
 
         if (id) {
-          // For existing items, we update core fields
           await tx.orderItem.update({
             where: { id },
-            data: { 
-              brandId, 
-              designId, 
-              size: product.size,
-              price: product.price 
-            }
+            data: { brandId, designId, size: product.size, price: product.price }
           });
         } else {
-          // For new items added during edit, use the full expansion logic
           const mainItem = await tx.orderItem.create({
             data: {
-              orderId: orderId,
-              brandId,
-              designId,
-              size: product.size,
-              price: product.price,
-              isPack: product.isPack,
-              status: product.isPack ? "PACK_PARENT" : "PENDING",
+              orderId, brandId, designId, size: product.size, price: product.price,
+              isPack: product.isPack, status: product.isPack ? "PACK_PARENT" : "PENDING",
             }
           });
 
@@ -252,14 +182,8 @@ export async function updateOrder(orderId: string, formData: FormData) {
               for (let q = 0; q < (comp.qty || 1); q++) {
                 await tx.orderItem.create({
                   data: {
-                    orderId: orderId,
-                    brandId,
-                    designId,
-                    size: comp.size,
-                    price: 0,
-                    isPack: false,
-                    parentItemId: mainItem.id,
-                    status: "PENDING",
+                    orderId, brandId, designId, size: comp.size, price: 0,
+                    isPack: false, parentItemId: mainItem.id, status: "PENDING",
                   }
                 });
               }
@@ -268,23 +192,13 @@ export async function updateOrder(orderId: string, formData: FormData) {
         }
       }
 
-      // Recalculate totalAmount
-      const allItems = await tx.orderItem.findMany({ where: { orderId: orderId } });
+      const allItems = await tx.orderItem.findMany({ where: { orderId } });
       const newTotal = allItems.reduce((sum, item) => sum + (item.price || 0), 0);
-      
       await tx.order.update({
         where: { id: orderId },
         data: { totalAmount: newTotal }
       });
     });
-
-    if (order) {
-      await logActivity(
-        "UPDATE_ORDER", 
-        `Order REF #${order.reference} was updated.`,
-        { reference: order.reference, customerName }
-      );
-    }
   } catch (e: any) {
     await logActivity("ERROR", `Failed to update order ${orderId}: ${e.message}`);
     throw e;
@@ -294,110 +208,54 @@ export async function updateOrder(orderId: string, formData: FormData) {
   redirect("/orders");
 }
 
-// PRODUCTION ACTIONS
+// PRODUCTION & SHIPPING
 export async function createBatch(formData: FormData) {
   const brandId = formData.get("brandId") as string;
   const brandName = formData.get("brandName") as string;
-  
   try {
-    const items = await prisma.orderItem.findMany({ 
-      where: { 
-        status: "PENDING",
-        brandId: brandId
-      } 
-    });
-    
+    const items = await prisma.orderItem.findMany({ where: { status: "PENDING", brandId } });
     if (items.length > 0) {
       const batchName = `${brandName} - List ${new Date().toLocaleDateString()}`;
-      
       await prisma.productionList.create({
-        data: {
-          batchName,
-          items: {
-            connect: items.map(o => ({ id: o.id })),
-          },
-        },
+        data: { batchName, items: { connect: items.map(o => ({ id: o.id })) } },
       });
-
       await prisma.orderItem.updateMany({
         where: { id: { in: items.map(o => o.id) } },
         data: { status: "IN_PRODUCTION" },
       });
-
-      await logActivity(
-        "START_PRODUCTION", 
-        `Production batch "${batchName}" created with ${items.length} items.`,
-        { brandName, batchName, itemCount: items.length }
-      );
-
       revalidatePath("/production");
     }
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed to create production batch: ${e.message}`);
-    throw e;
-  }
+  } catch (e: any) { throw e; }
 }
 
-// SHIPPING ACTIONS
 export async function shipOrder(formData: FormData) {
   const orderId = formData.get("orderId") as string;
   const parcelNumber = formData.get("parcelNumber") as string;
-  
   try {
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: { status: "SHIPPED", parcelNumber },
-    });
-
-    await logActivity(
-      "SHIP_ORDER", 
-      `Order REF #${order.reference} shipped. Parcel: ${parcelNumber}`,
-      { reference: order.reference, parcelNumber }
-    );
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed to ship order ${orderId}: ${e.message}`);
-    throw e;
-  }
-  
+    await prisma.order.update({ where: { id: orderId }, data: { status: "SHIPPED", parcelNumber } });
+  } catch (e: any) { throw e; }
   revalidatePath("/shipping");
 }
 
-export async function deleteDesign(id: string) {
+export async function markItemWrapped(itemId: string) {
   try {
-    // Check if the design is used in any orders that are not delivered or cancelled
-    const activeUsage = await prisma.orderItem.findFirst({
-      where: {
-        designId: id,
-        order: {
-          status: {
-            notIn: ["DELIVERED", "CANCELLED"]
-          }
-        }
-      },
-      include: {
-        order: true
-      }
-    });
+    await prisma.orderItem.update({ where: { id: itemId }, data: { status: "WRAPPED" } });
+    revalidatePath("/shipping");
+  } catch (error) { throw error; }
+}
 
-    if (activeUsage) {
-      return { 
-        success: false, 
-        message: `This design is currently used in active order REF #${activeUsage.order.reference} and cannot be deleted until the order is delivered.` 
-      };
-    }
+// DESIGN ACTIONS (THE CORE FIX)
+async function uploadToBlob(file: any, code: string) {
+  // Enhanced check for file/blob
+  const isFile = (file instanceof Blob || (file && typeof file === 'object' && 'size' in file)) && file.size > 0;
+  if (!isFile) return null;
 
-    await prisma.design.delete({
-      where: { id },
-    });
-    
-    revalidatePath("/designs");
-    return { success: true };
-  } catch (error: any) {
-    console.error("Failed to delete design:", error);
-    return { 
-      success: false, 
-      message: "An unexpected error occurred. This design might be linked to historical orders." 
-    };
+  try {
+    const blob = await put(file.name || `${code}.png`, file, { access: 'public' });
+    return blob.url;
+  } catch (e: any) {
+    console.error("Blob Upload Error:", e.message);
+    throw new Error(`Cloud storage failure: ${e.message}`);
   }
 }
 
@@ -405,60 +263,20 @@ export async function createDesignQuick(formData: FormData) {
   const code = (formData.get("code") as string)?.trim().toUpperCase();
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
-  
-  // VERBOSE DB LOGGING
-  const debugInfo = {
-    imageType: typeof imageFile,
-    isBlob: imageFile instanceof Blob,
-    isString: typeof imageFile === 'string',
-    hasSize: imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any),
-    size: imageFile && typeof imageFile === 'object' ? (imageFile as any).size : 'N/A',
-    keys: Array.from(formData.keys())
-  };
 
-  await logActivity("DEBUG_CREATE_QUICK_START", `Creation for ${code}`, debugInfo);
-
-  if (!code || !name) {
-    return { success: false, error: "Design Code and Name are required." };
-  }
-
-  let imageUrl = null;
+  if (!code || !name) return { success: false, error: "Code and Name required" };
 
   try {
-    // If it's a blob/file and has size, try to upload
-    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
+    const imageUrl = await uploadToBlob(imageFile, code);
+    if (!imageUrl) return { success: false, error: "Image file is missing or invalid" };
 
-    if (!isFile) {
-      await logActivity("DEBUG_UPLOAD_MISSING", `No file for ${code}`, debugInfo);
-      return { success: false, error: "A design image is required. Please select a file and try again." };
-    }
-
-    const file = imageFile as unknown as File;
-    try {
-      const blob = await put(file.name || `${code}.png`, file, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-      await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded ${code}: ${imageUrl}`);
-    } catch (blobError: any) {
-      console.error("Vercel Blob Upload Failed:", blobError.message);
-      await logActivity("DEBUG_UPLOAD_FAIL", `Failed ${code}: ${blobError.message}`);
-      return { success: false, error: `Image upload failed: ${blobError.message}` };
-    }
-
-    const design = await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-
+    const design = await prisma.design.create({ data: { code, name, imageUrl } });
+    await logActivity("CREATE_DESIGN", `Quick Add: ${code}`, { imageUrl });
     revalidatePath("/designs");
     return { success: true, design };
-  } catch (error: any) {
-    console.error("createDesignQuick error:", error);
-    return { success: false, error: error.message || "Failed to create design" };
+  } catch (e: any) {
+    if (e.code === 'P2002') return { success: false, error: "Design code already exists" };
+    return { success: false, error: e.message };
   }
 }
 
@@ -466,129 +284,18 @@ export async function createDesign(formData: FormData) {
   const code = (formData.get("code") as string)?.trim().toUpperCase();
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
-  
-  const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
 
-  await logActivity("DEBUG_CREATE_CLASSIC_START", `Classic creation for ${code}`, {
-    isFile,
-    size: (imageFile as any)?.size
-  });
-
-  if (!code || !name) throw new Error("Code and Name are required");
-
-  let imageUrl = null;
+  if (!code || !name) throw new Error("Code and Name required");
 
   try {
-    if (isFile) {
-      const file = imageFile as unknown as File;
-      try {
-        const blob = await put(file.name || `${code}.png`, file, {
-          access: 'public',
-        });
-        imageUrl = blob.url;
-      } catch (blobError: any) {
-        console.error("Vercel Blob Upload Failed:", blobError.message);
-        throw new Error(`Image upload failed: ${blobError.message}`);
-      }
-    }
+    const imageUrl = await uploadToBlob(imageFile, code);
+    if (!imageUrl) throw new Error("A valid image file is required.");
 
-    await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-  } catch (error: any) {
-    console.error("createDesign error:", error);
-    throw error;
-  }
-
-  revalidatePath("/designs");
-  redirect("/designs");
-}
-
-
-  let imageUrl = null;
-
-  try {
-    const isFile = imageFile instanceof Blob && imageFile.size > 0;
-
-    if (isFile) {
-      const file = imageFile as unknown as File;
-      try {
-        const blob = await put(file.name || `${code}.png`, file, {
-          access: 'public',
-        });
-        imageUrl = blob.url;
-      } catch (blobError: any) {
-        console.error("Vercel Blob Upload Failed:", blobError.message);
-        await logActivity("DEBUG_UPLOAD_FAIL", `Blob failed for ${code}: ${blobError.message}`);
-        return { success: false, error: `Image upload failed: ${blobError.message}` };
-      }
-    }
-
-    const design = await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-
-    await logActivity("DEBUG_CREATE_SUCCESS", `Design ${code} created with URL: ${imageUrl}`);
-    revalidatePath("/designs");
-    return { success: true, design };
-  } catch (error: any) {
-    console.error("createDesignQuick error:", error);
-    await logActivity("DEBUG_CREATE_ERROR", `Error for ${code}: ${error.message}`);
-    return { success: false, error: error.message || "Failed to create design" };
-  }
-}
-
-export async function createDesign(formData: FormData) {
-  const code = (formData.get("code") as string)?.trim().toUpperCase();
-  const name = (formData.get("name") as string)?.trim();
-  const imageFile = formData.get("image");
-  
-  await logActivity("DEBUG_CREATE_CLASSIC", `Starting classic creation for ${code}`, {
-    imageType: typeof imageFile,
-    isBlob: imageFile instanceof Blob,
-    size: (imageFile as any)?.size
-  });
-
-  if (!code || !name) throw new Error("Code and Name are required");
-
-  let imageUrl = null;
-
-  try {
-    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
-
-    if (!isFile) {
-      throw new Error("Design image is required. Please select a file.");
-    }
-
-    const file = imageFile as unknown as File;
-    try {
-      const blob = await put(file.name || `${code}.png`, file, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-    } catch (blobError: any) {
-      console.error("Vercel Blob Upload Failed:", blobError.message);
-      throw new Error(`Image upload failed: ${blobError.message}`);
-    }
-
-    await prisma.design.create({
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-  } catch (error: any) {
-    console.error("createDesign error:", error);
-    throw error;
+    await prisma.design.create({ data: { code, name, imageUrl } });
+    await logActivity("CREATE_DESIGN", `Standard Add: ${code}`, { imageUrl });
+  } catch (e: any) {
+    if (e.code === 'P2002') throw new Error("Design code already exists");
+    throw e;
   }
 
   revalidatePath("/designs");
@@ -601,52 +308,23 @@ export async function updateDesign(id: string, formData: FormData) {
   const imageFile = formData.get("image");
   const existingImageUrl = formData.get("existingImageUrl") as string;
 
-  let imageUrl = existingImageUrl || null;
-  if (imageUrl === "") imageUrl = null;
-
   try {
-    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
+    let imageUrl = await uploadToBlob(imageFile, code);
+    if (!imageUrl) imageUrl = existingImageUrl;
 
-    if (isFile) {
-      const file = imageFile as unknown as File;
-      try {
-        const blob = await put(file.name || `${code}.png`, file, {
-          access: 'public',
-        });
-        imageUrl = blob.url;
-      } catch (blobError: any) {
-        console.error("Vercel Blob Update Failed:", blobError.message);
-        throw new Error(`Image upload failed: ${blobError.message}`);
-      }
-    }
+    await prisma.design.update({ where: { id }, data: { code, name, imageUrl } });
+    revalidatePath("/designs");
+  } catch (e: any) { throw e; }
 
-    await prisma.design.update({
-      where: { id },
-      data: {
-        code,
-        name,
-        imageUrl,
-      },
-    });
-  } catch (error: any) {
-    console.error("updateDesign error:", error);
-    throw error;
-  }
-
-  revalidatePath("/designs");
   redirect("/designs");
 }
 
-export async function markItemWrapped(itemId: string) {
+export async function deleteDesign(id: string) {
   try {
-    await prisma.orderItem.update({
-      where: { id: itemId },
-      data: { status: "WRAPPED" },
-    });
-    revalidatePath("/shipping");
-  } catch (error) {
-    console.error("Failed to mark item as wrapped:", error);
-    throw new Error("Failed to update status");
+    await prisma.design.delete({ where: { id } });
+    revalidatePath("/designs");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, message: "Design is in use and cannot be deleted." };
   }
 }
-
