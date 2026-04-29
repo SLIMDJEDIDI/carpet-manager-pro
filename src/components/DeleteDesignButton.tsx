@@ -12,7 +12,10 @@ export default function DeleteDesignButton({ id }: { id: string }) {
       onClick={() => {
         if (confirm("Are you sure you want to delete this design?")) {
           startTransition(async () => {
-            await deleteDesign(id);
+            const result = await deleteDesign(id);
+            if (result && !result.success) {
+              alert(result.message);
+            }
           });
         }
       }}

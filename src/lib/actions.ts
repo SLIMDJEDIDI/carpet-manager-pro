@@ -364,13 +364,40 @@ export async function shipOrder(formData: FormData) {
 
 export async function deleteDesign(id: string) {
   try {
+    // Check if the design is used in any orders that are not delivered or cancelled
+    const activeUsage = await prisma.orderItem.findFirst({
+      where: {
+        designId: id,
+        order: {
+          status: {
+            notIn: ["DELIVERED", "CANCELLED"]
+          }
+        }
+      },
+      include: {
+        order: true
+      }
+    });
+
+    if (activeUsage) {
+      return { 
+        success: false, 
+        message: `This design is currently used in active order REF #${activeUsage.order.reference} and cannot be deleted until the order is delivered.` 
+      };
+    }
+
     await prisma.design.delete({
       where: { id },
     });
+    
     revalidatePath("/designs");
-  } catch (error) {
+    return { success: true };
+  } catch (error: any) {
     console.error("Failed to delete design:", error);
-    throw new Error("Failed to delete design");
+    return { 
+      success: false, 
+      message: "An unexpected error occurred. This design might be linked to historical orders." 
+    };
   }
 }
 
