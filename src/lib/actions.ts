@@ -396,11 +396,20 @@ export async function createDesign(formData: FormData) {
       const file = imageFile as File;
       console.log("Uploading to Vercel Blob:", file.name, "Size:", file.size);
       
-      const blob = await put(file.name || `${code}.png`, file, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-      console.log("Upload Success URL:", imageUrl);
+      try {
+        const blob = await put(file.name || `${code}.png`, file, {
+          access: 'public',
+        });
+        imageUrl = blob.url;
+        console.log("Upload Success URL:", imageUrl);
+      } catch (blobError: any) {
+        console.error("Vercel Blob Upload Failed:", blobError.message);
+        // If upload fails, we still want to create the design record but without the image
+        // and avoid crashing the entire action
+        if (blobError.message.includes("private store")) {
+          console.warn("BLOB STORE IS PRIVATE. Please set it to Public in Vercel dashboard.");
+        }
+      }
     } else {
       console.log("No valid image file detected in FormData");
     }
@@ -450,11 +459,19 @@ export async function updateDesign(id: string, formData: FormData) {
       const file = imageFile as File;
       console.log("Uploading NEW image to Vercel Blob:", file.name, "Size:", file.size);
       
-      const blob = await put(file.name || `${code}.png`, file, {
-        access: 'public',
-      });
-      imageUrl = blob.url;
-      console.log("New Upload Success URL:", imageUrl);
+      try {
+        const blob = await put(file.name || `${code}.png`, file, {
+          access: 'public',
+        });
+        imageUrl = blob.url;
+        console.log("New Upload Success URL:", imageUrl);
+      } catch (blobError: any) {
+        console.error("Vercel Blob Update Failed:", blobError.message);
+        if (blobError.message.includes("private store")) {
+          console.warn("BLOB STORE IS PRIVATE. Please set it to Public in Vercel dashboard.");
+        }
+        // Fallback to existing image if upload fails
+      }
     } else {
       console.log("Using imageUrl:", imageUrl);
     }
