@@ -16,11 +16,12 @@ export default async function NewOrderPage() {
     }
 
     const [brandsData, designsData] = await Promise.all([
-      prisma.brand.findMany().catch(e => {
+      prisma.brand.findMany({ select: { id: true, name: true } }).catch(e => {
         console.error("Brands fetch failed:", e);
         return [];
       }),
       prisma.design.findMany({ 
+        select: { id: true, code: true, name: true, imageUrl: true },
         orderBy: { code: "asc" } 
       }).catch(e => {
         console.error("Designs fetch failed:", e);
@@ -28,18 +29,8 @@ export default async function NewOrderPage() {
       })
     ]);
     
-    // Manual mapping for clean serialization
-    brands = brandsData.map((b: any) => ({ 
-      id: b.id, 
-      name: b.name 
-    }));
-    
-    designs = designsData.map((d: any) => ({ 
-      id: d.id, 
-      code: d.code, 
-      name: d.name, 
-      imageUrl: d.imageUrl || null
-    }));
+    brands = brandsData;
+    designs = designsData;
   } catch (error: any) {
     console.error("Fatal error in NewOrderPage:", error);
     return (
