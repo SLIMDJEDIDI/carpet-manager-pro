@@ -39,7 +39,7 @@ export default function OrderForm({
 }) {
   const router = useRouter();
   const [phone, setPhone] = useState(initialData?.customerPhone || "");
-
+  const [name, setName] = useState(initialData?.customerName || "");
   const [address, setAddress] = useState(initialData?.customerAddress || "");
   const [postalCode, setPostalCode] = useState(initialData?.customerPostalCode || "");
   const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
