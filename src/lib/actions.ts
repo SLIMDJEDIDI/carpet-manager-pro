@@ -428,24 +428,22 @@ export async function createDesignQuick(formData: FormData) {
     // If it's a blob/file and has size, try to upload
     const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
 
-    if (isFile) {
-      const file = imageFile as unknown as File;
-      try {
-        const blob = await put(file.name || `${code}.png`, file, {
-          access: 'public',
-        });
-        imageUrl = blob.url;
-        await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded ${code}: ${imageUrl}`);
-      } catch (blobError: any) {
-        console.error("Vercel Blob Upload Failed:", blobError.message);
-        await logActivity("DEBUG_UPLOAD_FAIL", `Failed ${code}: ${blobError.message}`);
-        // If upload fails, we stop here to avoid "no photo" records
-        return { success: false, error: `Image upload failed: ${blobError.message}` };
-      }
-    } else {
-      // If NO file was detected but we REQUIRE a photo
-      await logActivity("DEBUG_UPLOAD_SKIPPED", `No valid file detected for ${code}`);
-      // return { success: false, error: "Please select a design image." };
+    if (!isFile) {
+      await logActivity("DEBUG_UPLOAD_MISSING", `No file for ${code}`, debugInfo);
+      return { success: false, error: "A design image is required. Please select a file and try again." };
+    }
+
+    const file = imageFile as unknown as File;
+    try {
+      const blob = await put(file.name || `${code}.png`, file, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+      await logActivity("DEBUG_UPLOAD_SUCCESS", `Uploaded ${code}: ${imageUrl}`);
+    } catch (blobError: any) {
+      console.error("Vercel Blob Upload Failed:", blobError.message);
+      await logActivity("DEBUG_UPLOAD_FAIL", `Failed ${code}: ${blobError.message}`);
+      return { success: false, error: `Image upload failed: ${blobError.message}` };
     }
 
     const design = await prisma.design.create({
@@ -564,19 +562,21 @@ export async function createDesign(formData: FormData) {
   let imageUrl = null;
 
   try {
-    const isFile = imageFile instanceof Blob && imageFile.size > 0;
+    const isFile = (imageFile instanceof Blob || (imageFile && typeof imageFile === 'object' && 'size' in (imageFile as any))) && (imageFile as any).size > 0;
 
-    if (isFile) {
-      const file = imageFile as unknown as File;
-      try {
-        const blob = await put(file.name || `${code}.png`, file, {
-          access: 'public',
-        });
-        imageUrl = blob.url;
-      } catch (blobError: any) {
-        console.error("Vercel Blob Upload Failed:", blobError.message);
-        throw new Error(`Image upload failed: ${blobError.message}`);
-      }
+    if (!isFile) {
+      throw new Error("Design image is required. Please select a file.");
+    }
+
+    const file = imageFile as unknown as File;
+    try {
+      const blob = await put(file.name || `${code}.png`, file, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    } catch (blobError: any) {
+      console.error("Vercel Blob Upload Failed:", blobError.message);
+      throw new Error(`Image upload failed: ${blobError.message}`);
     }
 
     await prisma.design.create({

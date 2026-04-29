@@ -1,22 +1,15 @@
 const { put } = require('@vercel/blob');
-require('dotenv').config();
 
-async function testUpload() {
-  console.log("Token present:", !!process.env.BLOB_READ_WRITE_TOKEN);
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.error("ERROR: BLOB_READ_WRITE_TOKEN is missing from .env");
-    return;
-  }
-
+async function test() {
   try {
-    console.log("Attempting test upload...");
-    const blob = await put('test-system.txt', 'Hello Vercel Blob', {
+    const blob = await put('test.txt', 'Hello Vercel Blob', {
       access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN
     });
-    console.log("SUCCESS! Blob URL:", blob.url);
+    console.log('Success:', blob.url);
   } catch (e) {
-    console.error("UPLOAD FAILED:", e);
+    console.error('Failed:', e.message);
   }
 }
 
-testUpload();
+test();
