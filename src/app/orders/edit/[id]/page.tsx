@@ -60,6 +60,8 @@ export default async function EditOrderPage({ params }: { params: Promise<{ id: 
     );
   }
 
+  const updateOrderWithId = updateOrder.bind(null, id);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <Link href="/orders" className="flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-xs tracking-widest group">
@@ -72,7 +74,7 @@ export default async function EditOrderPage({ params }: { params: Promise<{ id: 
         <p className="text-slate-500 font-bold">Update customer information or order articles.</p>
       </div>
 
-      <OrderForm brands={brands} designs={designs} action={updateOrder} initialData={order} />
+      <OrderForm brands={brands} designs={designs} action={updateOrderWithId} initialData={order} />
     </div>
   );
 }

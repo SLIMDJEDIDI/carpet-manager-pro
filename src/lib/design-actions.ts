@@ -26,13 +26,17 @@ export async function createDesignAction(prevState: DesignActionState | null, fo
   let imageUrl: string;
   try {
     // 1. Upload to Vercel Blob
-    const safeFilename = `design_${code}_${Date.now()}.jpg`;
+    const safeFilename = `design_${code.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.jpg`;
     const blob = await put(safeFilename, imageFile, {
       access: "public",
     });
     imageUrl = blob.url;
   } catch (e: any) {
     console.error("BLOB_UPLOAD_ERROR:", e);
+    // Explicitly check for common issues like missing tokens
+    if (e.message?.includes('READ_WRITE_TOKEN')) {
+      return { error: "Storage configuration error (Token missing). Please contact admin." };
+    }
     return { error: `Image upload failed: ${e.message}` };
   }
 

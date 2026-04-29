@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import { updateDesign } from "@/lib/design-actions";
+import { updateDesignAction } from "@/lib/design-actions";
 import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
@@ -41,7 +41,7 @@ export default function EditDesignForm({ design }: { design: Design }) {
     }
   };
 
-  const updateDesignWithId = updateDesign.bind(null, design.id);
+  const updateDesignWithId = updateDesignAction.bind(null, design.id);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">

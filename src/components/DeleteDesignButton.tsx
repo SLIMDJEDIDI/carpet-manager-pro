@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useTransition } from "react";
-import { deleteDesign } from "@/lib/design-actions";
+import { deleteDesignAction } from "@/lib/design-actions";
 
 export default function DeleteDesignButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition();
@@ -12,7 +12,7 @@ export default function DeleteDesignButton({ id }: { id: string }) {
       onClick={() => {
         if (confirm("Are you sure you want to delete this design?")) {
           startTransition(async () => {
-            const result = await deleteDesign(id);
+            const result = await deleteDesignAction(id);
             if (result && !result.success) {
               alert(result.message);
             }
