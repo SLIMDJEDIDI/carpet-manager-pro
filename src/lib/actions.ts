@@ -406,6 +406,15 @@ export async function createDesignQuick(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   
+  console.log("--- CREATE DESIGN QUICK ---");
+  console.log("Code:", code, "Name:", name);
+  console.log("ImageFile type:", typeof imageFile);
+  if (imageFile && typeof imageFile === 'object') {
+    console.log("ImageFile props:", Object.keys(imageFile));
+    console.log("ImageFile size:", (imageFile as any).size);
+    console.log("ImageFile name:", (imageFile as any).name);
+  }
+
   if (!code || !name) {
     return { success: false, error: "Design Code and Name are required." };
   }
@@ -413,21 +422,24 @@ export async function createDesignQuick(formData: FormData) {
   let imageUrl = null;
 
   try {
-    // Check if it's a valid file with content
-    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
+    // Robust file check: Must be an object with size > 0
+    const isFile = !!(imageFile && typeof imageFile === 'object' && 'size' in imageFile && (imageFile as any).size > 0);
 
     if (isFile) {
       const file = imageFile as unknown as File;
+      console.log("Uploading to Vercel Blob...");
       try {
         const blob = await put(file.name || `${code}.png`, file, {
           access: 'public',
         });
         imageUrl = blob.url;
+        console.log("Upload Success:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Upload Failed:", blobError.message);
-        // THROW if a file was provided but upload failed - don't allow "no photo" silent failures
-        return { success: false, error: `Image upload failed: ${blobError.message}. Check Vercel Blob token.` };
+        return { success: false, error: `Image upload failed: ${blobError.message}` };
       }
+    } else {
+      console.log("No valid file detected in formData");
     }
 
     const design = await prisma.design.create({
@@ -451,23 +463,32 @@ export async function createDesign(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image");
   
+  console.log("--- CREATE DESIGN (CLASSIC) ---");
+  console.log("Code:", code, "Name:", name);
+  console.log("ImageFile type:", typeof imageFile);
+  if (imageFile && typeof imageFile === 'object') {
+    console.log("ImageFile size:", (imageFile as any).size);
+  }
+
   if (!code || !name) throw new Error("Code and Name are required");
 
   let imageUrl = null;
 
   try {
-    const isFile = !!(imageFile && typeof imageFile !== 'string' && 'size' in (imageFile as any) && (imageFile as any).size > 0);
+    const isFile = !!(imageFile && typeof imageFile === 'object' && 'size' in imageFile && (imageFile as any).size > 0);
 
     if (isFile) {
       const file = imageFile as unknown as File;
+      console.log("Uploading to Vercel Blob...");
       try {
         const blob = await put(file.name || `${code}.png`, file, {
           access: 'public',
         });
         imageUrl = blob.url;
+        console.log("Upload Success:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Upload Failed:", blobError.message);
-        throw new Error(`Image upload failed: ${blobError.message}. Ensure BLOB_READ_WRITE_TOKEN is set.`);
+        throw new Error(`Image upload failed: ${blobError.message}`);
       }
     }
 
