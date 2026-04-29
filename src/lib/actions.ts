@@ -532,16 +532,3 @@ export async function markItemWrapped(itemId: string) {
   }
 }
 
-export async function logActivity(type: string, description: string, details?: any) {
-  try {
-    await prisma.activityLog.create({
-      data: {
-        type,
-        description,
-        details: details ? JSON.stringify(details) : null,
-      },
-    });
-  } catch (e) {
-    console.error("Logging failed:", e);
-  }
-}
