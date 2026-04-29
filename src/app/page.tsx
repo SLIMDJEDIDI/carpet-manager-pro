@@ -54,56 +54,56 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 md:space-y-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Enterprise Overview</h1>
-          <p className="text-slate-500 font-medium">Real-time stats for ZARBITI, BMT, and TBP.</p>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">Enterprise Overview</h1>
+          <p className="text-slate-500 font-medium text-xs md:text-sm">Real-time stats for ZARBITI, BMT, and TBP.</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-          <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">System Live</span>
+        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-center gap-3 w-fit">
+          <div className="w-2 md:w-3 h-2 md:h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+          <span className="text-[10px] md:text-sm font-bold text-slate-600 uppercase tracking-wider">System Live</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {stats.map((stat, i) => (
           <Link 
             key={i} 
             href={stat.href}
-            className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 group"
+            className="bg-white p-4 md:p-7 rounded-2xl md:rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-5 group text-center md:text-left"
           >
-            <div className={`p-4 rounded-2xl ${stat.bg} group-hover:scale-110 transition-transform`}>
-              <stat.icon className={`w-7 h-7 ${stat.color}`} />
+            <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl ${stat.bg} group-hover:scale-110 transition-transform`}>
+              <stat.icon className={`w-5 h-5 md:w-7 md:h-7 ${stat.color}`} />
             </div>
             <div>
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-              <p className="text-3xl font-black text-slate-900">{stat.value}</p>
+              <p className="text-[8px] md:text-xs font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-xl md:text-3xl font-black text-slate-900 leading-tight">{stat.value}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Recent Orders */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Recent Activity</h3>
-            <Link href="/orders" className="text-xs font-black text-emerald-600 hover:text-emerald-700 uppercase tracking-widest">View All</Link>
+        <div className="lg:col-span-2 bg-white p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <div className="flex items-center justify-between mb-6 md:mb-8">
+            <h3 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tight">Recent Activity</h3>
+            <Link href="/orders" className="text-[10px] font-black text-emerald-600 hover:text-emerald-700 uppercase tracking-widest">View All</Link>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {recentOrders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                    <Package className="w-5 h-5" />
+              <div key={order.id} className="flex items-center justify-between p-3 md:p-4 hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-100">
+                <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-100 rounded-lg md:rounded-xl flex-shrink-0 flex items-center justify-center text-slate-400">
+                    <Package className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
-                  <div>
-                    <p className="font-bold text-black">{order.customerName}</p>
-                    <p className="text-[10px] font-black text-black uppercase tracking-widest">REF #{order.reference} • {order._count.items} Articles</p>
+                  <div className="min-w-0">
+                    <p className="font-bold text-black text-sm md:text-base truncate">{order.customerName}</p>
+                    <p className="text-[8px] md:text-[10px] font-black text-black uppercase tracking-widest truncate">REF #{order.reference} • {order._count.items} Art.</p>
                   </div>
                 </div>
-                <div className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${
+                <div className={`text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 rounded-full uppercase tracking-widest flex-shrink-0 ${
                   order.status === "SHIPPED" ? "bg-blue-100 text-blue-600" : "bg-amber-100 text-amber-600"
                 }`}>
                   {order.status}
@@ -111,8 +111,8 @@ export default async function Dashboard() {
               </div>
             ))}
             {recentOrders.length === 0 && (
-              <div className="space-y-4 text-sm text-slate-400 text-center py-16 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-100">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-4 opacity-10" />
+              <div className="space-y-4 text-sm text-slate-400 text-center py-10 md:py-16 bg-slate-50 rounded-2xl md:rounded-3xl border-2 border-dashed border-slate-100">
+                <ShoppingCart className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-4 opacity-10" />
                 No orders yet.
               </div>
             )}
@@ -120,20 +120,20 @@ export default async function Dashboard() {
         </div>
 
         {/* Brand Performance */}
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-black text-slate-900 mb-8 uppercase tracking-tight">Brand Reach</h3>
-          <div className="space-y-8">
+        <div className="bg-white p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-6 md:mb-8 uppercase tracking-tight">Brand Reach</h3>
+          <div className="space-y-6 md:space-y-8">
             {brandsData.map((brand) => {
               const percentage = totalItemsCount > 0 
                 ? Math.round((brand._count.items / totalItemsCount) * 100) 
                 : 0;
               return (
-                <div key={brand.id} className="space-y-3">
+                <div key={brand.id} className="space-y-2 md:space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-black text-slate-700 uppercase">{brand.name}</span>
-                    <span className="text-xs font-bold text-slate-400">{percentage}%</span>
+                    <span className="text-xs md:text-sm font-black text-slate-700 uppercase">{brand.name}</span>
+                    <span className="text-[10px] md:text-xs font-bold text-slate-400">{percentage}%</span>
                   </div>
-                  <div className="w-full h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                  <div className="w-full h-2 md:h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                     <div 
                       className="bg-emerald-500 h-full transition-all duration-1000" 
                       style={{ width: `${percentage}%` }}

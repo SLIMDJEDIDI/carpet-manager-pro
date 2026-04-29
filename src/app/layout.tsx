@@ -12,6 +12,8 @@ import {
   Settings 
 } from "lucide-react";
 
+import MobileNav from "@/components/MobileNav";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -27,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#f8fafc] text-slate-900`}>
-        <div className="flex min-h-screen">
+        <div className="flex flex-col md:flex-row min-h-screen">
+          <MobileNav />
+          
           {/* Sidebar */}
           <aside className="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
             <div className="p-8">
@@ -73,7 +77,7 @@ export default function RootLayout({
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 p-10 overflow-auto">
+          <main className="flex-1 p-4 md:p-10 overflow-auto">
             <div className="max-w-7xl mx-auto">
               {children}
             </div>

@@ -1,0 +1,106 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { 
+  LayoutDashboard, 
+  ShoppingCart, 
+  Palette, 
+  Factory, 
+  Truck, 
+  History,
+  Settings,
+  Menu,
+  X
+} from "lucide-react";
+
+const navItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/designs", label: "Design Catalog", icon: Palette },
+  { href: "/production", label: "Production", icon: Factory },
+  { href: "/shipping", label: "Shipping", icon: Truck },
+  { href: "/history", label: "History", icon: History },
+];
+
+export default function MobileNav() {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <>
+      {/* Mobile Top Header */}
+      <header className="md:hidden sticky top-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+        <h1 className="text-xl font-black text-emerald-600 flex items-center gap-2 tracking-tighter">
+          <div className="bg-emerald-600 p-1.5 rounded-lg">
+            <Palette className="w-5 h-5 text-white" />
+          </div>
+          CARPET<span className="text-slate-400">PRO</span>
+        </h1>
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="p-2 text-slate-600 hover:bg-slate-50 rounded-xl transition-all"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      </header>
+
+      {/* Mobile Drawer Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <div className={`fixed inset-y-0 right-0 z-[70] w-72 bg-white shadow-2xl transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col h-full">
+          <div className="p-6 flex items-center justify-between border-b border-slate-50">
+            <span className="font-black text-slate-900 uppercase tracking-widest text-sm">Navigation</span>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          
+          <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-4 rounded-2xl transition-all font-bold ${
+                    isActive 
+                      ? 'bg-emerald-50 text-emerald-600' 
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-emerald-600'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''}`} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="p-6 border-t border-slate-50">
+            <Link 
+              href="/settings" 
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all text-sm font-semibold"
+            >
+              <Settings className="w-4 h-4" />
+              System Settings
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

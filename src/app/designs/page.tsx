@@ -25,14 +25,14 @@ export default async function DesignCatalog({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">Design Catalog</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage your carpet patterns and codes.</p>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">Design Catalog</h1>
+          <p className="text-slate-500 text-xs md:text-sm mt-1">Manage your carpet patterns and codes.</p>
         </div>
         <Link 
           href="/designs/new"
-          className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-emerald-700 transition-all font-semibold shadow-md shadow-emerald-100"
+          className="bg-emerald-600 text-white px-5 py-3 md:py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all font-semibold shadow-md shadow-emerald-100"
         >
           <Plus className="w-4 h-4" />
           Add New Design
@@ -47,17 +47,17 @@ export default async function DesignCatalog({
           <input 
             type="text" 
             name="q"
-            placeholder="Search by name or code..." 
+            placeholder="Search patterns..." 
             defaultValue={query}
-            className="w-full bg-transparent border-none focus:ring-0 text-black py-3 font-black placeholder:text-slate-400"
+            className="w-full bg-transparent border-none focus:ring-0 text-black py-3 font-black placeholder:text-slate-400 text-sm md:text-base"
           />
         </form>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
         {designs.map((design) => (
-          <div key={design.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div className="aspect-[4/5] bg-white relative overflow-hidden">
+          <div key={design.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+            <div className="aspect-[4/5] bg-white relative overflow-hidden flex-shrink-0">
               {design.imageUrl ? (
                 <img 
                   src={design.imageUrl} 
@@ -67,29 +67,31 @@ export default async function DesignCatalog({
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-300 flex-col gap-2">
                   <Palette className="w-8 h-8 opacity-20" />
-                  <span className="text-xs">No Photo</span>
+                  <span className="text-[10px]">No Photo</span>
                 </div>
               )}
-              <div className="absolute top-3 left-3">
-                <span className="text-[10px] font-black bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm text-slate-800 uppercase tracking-wider">
+              <div className="absolute top-2 left-2 max-w-[80%]">
+                <span className="text-[8px] md:text-[10px] font-black bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm text-slate-800 uppercase tracking-wider block truncate">
                   {design.code}
                 </span>
               </div>
             </div>
-            <div className="p-4 bg-white flex items-center justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-slate-900 text-sm truncate">{design.name}</h4>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase">Ref: {design.code}</p>
+            <div className="p-3 md:p-4 bg-white flex flex-col flex-1">
+              <div className="flex-1 min-w-0 mb-2">
+                <h4 className="font-bold text-slate-900 text-xs md:text-sm line-clamp-2 md:truncate" title={design.name}>{design.name}</h4>
+                <p className="text-[8px] md:text-[10px] text-slate-400 mt-0.5 uppercase">Ref: {design.code}</p>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-50">
                 <Link 
                   href={`/designs/edit/${design.id}`}
-                  className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
+                  className="p-2.5 text-slate-400 hover:text-emerald-600 transition-colors bg-slate-50 md:bg-transparent rounded-lg"
                   title="Edit Design"
                 >
                   <Edit2 className="w-4 h-4" />
                 </Link>
-                <DeleteDesignButton id={design.id} />
+                <div className="bg-slate-50 md:bg-transparent rounded-lg">
+                  <DeleteDesignButton id={design.id} />
+                </div>
               </div>
             </div>
           </div>

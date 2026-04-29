@@ -170,26 +170,82 @@ export default function OrderForm({
   const totalPrice = items.reduce((sum, item) => sum + (item.price || 0), 0);
 
   return (
-    <form action={action} className="space-y-8 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+    <form action={action} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
       {/* Customer Info Section */}
       <div className="space-y-6">
-        <div className="space-y-3">
-          <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-            <Phone className="w-4 h-4 text-emerald-600" />
-            Phone Number
-          </label>
-          <div className="relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <Phone className="w-4 h-4 text-emerald-600" />
+              Phone Number
+            </label>
+            <div className="relative">
+              <input 
+                type="text" 
+                name="customerPhone" 
+                required 
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold pl-12 text-black" 
+              />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                {isSearching ? <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div> : <Search className="w-5 h-5 text-black" />}
+              </div>
+            </div>
+            {hasPending && !initialData && (
+              <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">
+                ⚠️ Warning: This customer already has a pending order!
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <User className="w-4 h-4 text-emerald-600" />
+              Full Name
+            </label>
             <input 
               type="text" 
-              name="customerPhone" 
+              name="customerName" 
               required 
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold pl-12 text-black" 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
             />
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              {isSearching ? <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div> : <Search className="w-5 h-5 text-black" />}
-            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-emerald-600" />
+              Address
+            </label>
+            <input 
+              type="text" 
+              name="customerAddress" 
+              required 
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-600" />
+              Postal Code (Optional)
+            </label>
+            <input 
+              type="text" 
+              name="customerPostalCode" 
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              placeholder="e.g. 1001"
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+            />
+          </div>
+        </div>
           </div>
           {hasPending && !initialData && (
             <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">
@@ -424,14 +480,14 @@ export default function OrderForm({
         </button>
       </div>
 
-      <div className="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
+      <div className="bg-slate-900 p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="text-center md:text-left">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Order Total</p>
-          <p className="text-4xl font-black text-white">{totalPrice} <span className="text-xl text-emerald-500">DT</span></p>
+          <p className="text-3xl md:text-4xl font-black text-white">{totalPrice} <span className="text-lg md:text-xl text-emerald-500">DT</span></p>
         </div>
         <button 
           type="submit" 
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest px-10 py-5 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 w-full md:w-auto"
+          className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest px-10 py-5 rounded-xl md:rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 w-full md:w-auto"
         >
           {initialData ? 'Update Order' : 'Confirm Final Order'}
         </button>

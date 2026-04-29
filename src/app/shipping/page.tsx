@@ -26,11 +26,11 @@ export default async function ShippingPage() {
   const getWrappedCount = (items: any[]) => items.filter(i => i.status === "WRAPPED").length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div className="flex items-center justify-between">
-        <div className="border-l-8 border-blue-500 pl-6">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">Shipping Desk</h1>
-          <p className="text-slate-500 font-bold text-sm mt-1">One parcel for multiple articles per customer.</p>
+        <div className="border-l-8 border-blue-500 pl-4 md:pl-6">
+          <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight uppercase leading-tight">Shipping Desk</h1>
+          <p className="text-slate-500 font-bold text-xs md:text-sm mt-1">One parcel for multiple articles per customer.</p>
         </div>
       </div>
 
@@ -40,65 +40,67 @@ export default async function ShippingPage() {
           const allWrapped = wrappedCount === order.items.length;
 
           return (
-            <div key={order.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300">
-              <div className="p-6 bg-slate-50/50 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100">
-                <div className="flex items-center gap-4">
-                  <div className="bg-white p-3 rounded-2xl shadow-sm">
-                    <Package className="w-6 h-6 text-blue-600" />
+            <div key={order.id} className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300">
+              <div className="p-4 md:p-6 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="bg-white p-2.5 md:p-3 rounded-xl md:rounded-2xl shadow-sm">
+                    <Package className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black text-slate-900 leading-none capitalize">{order.customerName}</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase mt-1 tracking-widest">REF #{order.reference} • {order.customerPhone}</p>
+                  <div className="min-w-0">
+                    <h3 className="text-lg md:text-xl font-black text-slate-900 leading-none capitalize truncate max-w-[150px] md:max-w-none">{order.customerName}</h3>
+                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase mt-1.5 tracking-widest truncate">REF #{order.reference} • {order.customerPhone}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
                   {allWrapped ? (
-                    <form action={shipOrder} className="flex items-center gap-2">
+                    <form action={shipOrder} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                       <input type="hidden" name="orderId" value={order.id} />
                       <input 
                         type="text" 
                         name="parcelNumber"
-                        placeholder="Parcel Number" 
+                        placeholder="Parcel #" 
                         required
-                        className="text-sm font-black border-2 border-slate-300 rounded-xl px-4 py-2.5 focus:ring-0 focus:border-blue-600 w-48 bg-white text-black placeholder:text-slate-400"
+                        className="text-sm font-black border-2 border-slate-300 rounded-xl px-4 py-2.5 focus:ring-0 focus:border-blue-600 w-full sm:w-40 bg-white text-black placeholder:text-slate-400"
                       />
-                      <button type="submit" className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-2">
+                      <button type="submit" className="bg-blue-600 text-white px-5 py-3 sm:py-2.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                         <Truck className="w-4 h-4" />
-                        Ship Parcel
+                        Ship
                       </button>
                     </form>
                   ) : (
-                    <div className="bg-amber-50 text-amber-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-amber-100">
-                      Waiting for {order.items.length - wrappedCount} articles
+                    <div className="bg-amber-50 text-amber-600 px-4 py-2.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-amber-100 text-center">
+                      Waiting for {order.items.length - wrappedCount} items
                     </div>
                   )}
-                  <PrintLabel order={order as any} />
+                  <div className="flex justify-center">
+                    <PrintLabel order={order as any} />
+                  </div>
                 </div>
               </div>
 
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 md:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                   {order.items.map((item) => (
-                    <div key={item.id} className={`p-4 rounded-3xl border flex items-center justify-between gap-4 transition-all ${
+                    <div key={item.id} className={`p-3 md:p-4 rounded-2xl md:rounded-3xl border flex items-center justify-between gap-3 md:gap-4 transition-all ${
                       item.status === "WRAPPED" ? "bg-emerald-50 border-emerald-100" : "bg-slate-50 border-slate-100"
                     }`}>
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex-shrink-0 overflow-hidden">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg md:rounded-xl border border-slate-200 flex-shrink-0 overflow-hidden">
                           {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
                         </div>
-                        <div>
-                          <p className="text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1">{item.design.code}</p>
-                          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{item.brand.name}</p>
+                        <div className="min-w-0">
+                          <p className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1 truncate">{item.design.code}</p>
+                          <p className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest truncate">{item.brand.name}</p>
                           <div className="inline-block bg-white px-2 py-0.5 rounded border border-slate-100 mt-1">
-                            <p className="text-xs font-black text-slate-900 tracking-tight">{item.size}</p>
+                            <p className="text-[10px] md:text-xs font-black text-slate-900 tracking-tight">{item.size}</p>
                           </div>
                         </div>
                       </div>
                       
                       {item.status === "IN_PRODUCTION" && (
                         <form action={markItemWrapped.bind(null, item.id)}>
-                          <button type="submit" className="text-emerald-600 font-black text-[9px] uppercase border border-emerald-100 px-2 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">
+                          <button type="submit" className="text-emerald-600 font-black text-[9px] uppercase border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors bg-white">
                             Wrap
                           </button>
                         </form>
@@ -111,10 +113,14 @@ export default async function ShippingPage() {
                     </div>
                   ))}
                 </div>
-                 <div className="mt-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    Delivery: {order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}
-                 </div>
+                <div className="mt-4 md:mt-6 text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 pt-4 border-t border-slate-50">
+                  <MapPin className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">{order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
 
               </div>
             </div>
