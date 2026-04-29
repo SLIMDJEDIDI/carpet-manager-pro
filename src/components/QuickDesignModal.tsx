@@ -78,11 +78,13 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest">Design Image (Optional)</label>
+            <label className="text-[10px] font-black text-black uppercase tracking-widest">Design Image</label>
             <div className="relative">
               <input 
+                id="quick-design-image"
                 type="file" 
                 name="image" 
+                required
                 accept="image/*"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -92,7 +94,7 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
                     reader.readAsDataURL(file);
                   }
                 }}
-                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                className="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full"
               />
               <div className="w-full h-32 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-emerald-500 hover:bg-emerald-50 transition-all overflow-hidden bg-slate-50">
                 {preview ? (
