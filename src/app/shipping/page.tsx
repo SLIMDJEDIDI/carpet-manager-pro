@@ -122,11 +122,6 @@ export default async function ShippingPage() {
           );
         })}
 
-              </div>
-            </div>
-          );
-        })}
-
         {orders.length === 0 && (
           <div className="p-20 text-center text-slate-400 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
             <Package className="w-16 h-16 mx-auto mb-4 opacity-5" />
