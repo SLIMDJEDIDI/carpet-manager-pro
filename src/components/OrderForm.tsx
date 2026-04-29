@@ -54,7 +54,6 @@ export default function OrderForm({
   const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
   const [delegation, setDelegation] = useState(initialData?.customerDelegation || "");
   
-  // Use a stable initial state to prevent hydration mismatch
   const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
     id: 'init-1',
     brandId: "",
@@ -71,7 +70,6 @@ export default function OrderForm({
   const [showDesignList, setShowDesignList] = useState<Record<string | number, boolean>>({});
 
   useEffect(() => {
-    // Populate design search text when editing
     if (initialData?.items && designs.length > 0) {
       const searchInit: Record<string | number, string> = {};
       initialData.items.forEach((item: any) => {
@@ -83,7 +81,6 @@ export default function OrderForm({
   }, [initialData, designs]);
 
   useEffect(() => {
-    // Only auto-fill if we are NOT in edit mode (no initialData)
     if (initialData) return;
 
     const controller = new AbortController();
@@ -117,7 +114,6 @@ export default function OrderForm({
   }, [phone, initialData]);
 
   useEffect(() => {
-    // Load products for each selected brand
     const brandsToFetch = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
     
     if (brandsToFetch.length === 0) return;
@@ -131,7 +127,7 @@ export default function OrderForm({
         console.error("Failed to fetch products", e);
       }
     });
-  }, [items]); // Removed availableProducts from dependencies to avoid loop
+  }, [items]);
 
   const addItem = () => {
     setItems([...items, { 
@@ -278,204 +274,6 @@ export default function OrderForm({
             >
               <option value="">Sélectionner</option>
               {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.sort().map(del => (
-                <option key={del} value={del}>{del}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-            </div>
-            {hasPending && !initialData && (
-              <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">
-                ⚠️ Warning: This customer already has a pending order!
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <User className="w-4 h-4 text-emerald-600" />
-              Full Name
-            </label>
-            <input 
-              type="text" 
-              name="customerName" 
-              required 
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              Address
-            </label>
-            <input 
-              type="text" 
-              name="customerAddress" 
-              required 
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-emerald-600" />
-              Postal Code (Optional)
-            </label>
-            <input 
-              type="text" 
-              name="customerPostalCode" 
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="e.g. 1001"
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-emerald-600" />
-              Gouvernorat
-            </label>
-            <select
-              name="customerGovernorate"
-              required
-              value={governorate}
-              onChange={(e) => {
-                setGovernorate(e.target.value);
-                setDelegation(""); // Reset delegation when governorate changes
-              }}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none"
-            >
-              <option value="">Sélectionner Gouvernorat</option>
-              {Object.keys(TUNISIA_LOCATIONS).sort().map(gov => (
-                <option key={gov} value={gov}>{gov}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              Délégation
-            </label>
-            <select
-              name="customerDelegation"
-              required
-              value={delegation}
-              onChange={(e) => setDelegation(e.target.value)}
-              disabled={!governorate}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none disabled:opacity-50"
-            >
-              <option value="">Sélectionner Délégation</option>
-              {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.sort().map(del => (
-                <option key={del} value={del}>{del}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-        </div>
-          </div>
-          {hasPending && !initialData && (
-            <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">
-              ⚠️ Warning: This customer already has a pending order!
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-4 space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <User className="w-4 h-4 text-emerald-600" />
-              Full Name
-            </label>
-            <input 
-              type="text" 
-              name="customerName" 
-              required 
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-          <div className="md:col-span-5 space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              Delivery Address
-            </label>
-            <input 
-              type="text" 
-              name="customerAddress" 
-              required 
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-          <div className="md:col-span-3 space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Search className="w-4 h-4 text-emerald-600" />
-              Postal Code
-            </label>
-            <input 
-              type="text" 
-              name="customerPostalCode" 
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="e.g. 1001"
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-emerald-600" />
-              Gouvernorat
-            </label>
-            <select
-              name="customerGovernorate"
-              required
-              value={governorate}
-              onChange={(e) => {
-                setGovernorate(e.target.value);
-                setDelegation(""); // Reset delegation when governorate changes
-              }}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none"
-            >
-              <option value="">Sélectionner Gouvernorat</option>
-              {Object.keys(TUNISIA_LOCATIONS).sort().map(gov => (
-                <option key={gov} value={gov}>{gov}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              Délégation
-            </label>
-            <select
-              name="customerDelegation"
-              required
-              value={delegation}
-              onChange={(e) => setDelegation(e.target.value)}
-              disabled={!governorate}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none disabled:opacity-50"
-            >
-              <option value="">Sélectionner Délégation</option>
-              {governorate && TUNISIA_LOCATIONS[governorate]?.sort().map(del => (
                 <option key={del} value={del}>{del}</option>
               ))}
             </select>

@@ -78,7 +78,7 @@ export default async function DesignCatalog({
             </div>
             <div className="p-3 md:p-4 bg-white flex flex-col flex-1">
               <div className="flex-1 min-w-0 mb-2">
-                <h4 className="font-bold text-slate-900 text-xs md:text-sm line-clamp-2 md:truncate" title={design.name}>{design.name}</h4>
+                <h4 className="font-bold text-slate-900 text-xs md:text-sm line-clamp-2" title={design.name}>{design.name}</h4>
                 <p className="text-[8px] md:text-[10px] text-slate-400 mt-0.5 uppercase">Ref: {design.code}</p>
               </div>
               <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-50">
