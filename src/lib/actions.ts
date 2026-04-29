@@ -120,7 +120,7 @@ export async function createOrder(formData: FormData) {
   }
 
   revalidatePath("/orders");
-  redirect("/orders");
+  return { success: true, reference: nextReference };
 }
 
 export async function updateOrder(orderId: string, formData: FormData) {
@@ -204,7 +204,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
   }
 
   revalidatePath("/orders");
-  redirect("/orders");
+  return { success: true };
 }
 
 // PRODUCTION & SHIPPING

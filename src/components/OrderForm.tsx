@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2 } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
 import QuickDesignModal from "./QuickDesignModal";
@@ -31,25 +32,14 @@ export default function OrderForm({
   action, 
   initialData 
 }: { 
-  brands?: any[], 
-  designs?: any[], 
-  action: any, 
+  brands: any[], 
+  designs: any[], 
+  action: (formData: FormData) => Promise<any>, 
   initialData?: any 
 }) {
-  if (!brands || !Array.isArray(brands) || !designs || !Array.isArray(designs)) {
-    return (
-      <div className="p-10 bg-white rounded-[2.5rem] border-2 border-red-100 text-center space-y-4">
-        <h2 className="text-xl font-black text-red-600 uppercase">Configuration Error</h2>
-        <p className="text-slate-500 font-bold">The order form could not initialize correctly due to missing catalog data.</p>
-        <div className="text-xs text-slate-400 font-mono p-4 bg-slate-50 rounded-xl overflow-auto text-left">
-          Brands: {brands ? "Loaded" : "Missing"}<br/>
-          Designs: {designs ? "Loaded" : "Missing"}
-        </div>
-      </div>
-    );
-  }
-  const [name, setName] = useState(initialData?.customerName || "");
+  const router = useRouter();
   const [phone, setPhone] = useState(initialData?.customerPhone || "");
+
   const [address, setAddress] = useState(initialData?.customerAddress || "");
   const [postalCode, setPostalCode] = useState(initialData?.customerPostalCode || "");
   const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
@@ -190,7 +180,11 @@ export default function OrderForm({
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     try {
-      await action(formData);
+      const result = await action(formData);
+      if (result?.success) {
+        router.push("/orders");
+        router.refresh();
+      }
     } catch (error) {
       console.error("Order submission failed:", error);
       alert("Failed to confirm order. Please check the form and try again.");
