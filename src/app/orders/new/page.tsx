@@ -16,16 +16,10 @@ export default async function NewOrderPage() {
     }
 
     const [brandsData, designsData] = await Promise.all([
-      prisma.brand.findMany({ select: { id: true, name: true } }).catch(e => {
-        console.error("Brands fetch failed:", e);
-        return [];
-      }),
+      prisma.brand.findMany({ select: { id: true, name: true } }),
       prisma.design.findMany({ 
         select: { id: true, code: true, name: true, imageUrl: true },
         orderBy: { code: "asc" } 
-      }).catch(e => {
-        console.error("Designs fetch failed:", e);
-        return [];
       })
     ]);
     
