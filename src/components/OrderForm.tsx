@@ -182,13 +182,21 @@ export default function OrderForm({
     try {
       const result = await action(formData);
       if (result?.success) {
-        router.push("/orders");
-        router.refresh();
+        // Use a short delay before push to ensure state settles
+        setTimeout(() => {
+          router.push("/orders");
+          router.refresh();
+        }, 100);
+      } else if (result?.error) {
+        alert(`Error: ${result.error}`);
+        setIsSubmitting(false);
+      } else {
+        // Fallback for unexpected response format
+        setIsSubmitting(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Order submission failed:", error);
-      alert("Failed to confirm order. Please check the form and try again.");
-    } finally {
+      alert(`Order submission failed: ${error.message || "Unknown error"}. Please try again.`);
       setIsSubmitting(false);
     }
   };

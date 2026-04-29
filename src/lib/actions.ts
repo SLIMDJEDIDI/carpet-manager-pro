@@ -52,6 +52,18 @@ export async function createOrder(formData: FormData) {
     throw new Error("Missing required order information");
   }
 
+  // 1. Pre-fetch all needed products to minimize transaction time
+  const productIds = [];
+  for (let i = 0; i < itemCount; i++) {
+    const pid = formData.get(`productId_${i}`) as string;
+    if (pid) productIds.push(pid);
+  }
+  
+  const products = await prisma.product.findMany({
+    where: { id: { in: productIds } }
+  });
+  const productMap = new Map(products.map(p => [p.id, p]));
+
   let nextReference = 1;
   const lastOrder = await prisma.order.findFirst({
     orderBy: { reference: 'desc' },
@@ -60,7 +72,7 @@ export async function createOrder(formData: FormData) {
   nextReference = (lastOrder?.reference || 0) + 1;
 
   try {
-    await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {
           customerName, customerPhone, customerAddress, 
@@ -70,6 +82,8 @@ export async function createOrder(formData: FormData) {
       });
 
       let orderTotal = 0;
+      const orderItemsData = [];
+
       for (let i = 0; i < itemCount; i++) {
         const brandId = formData.get(`brandId_${i}`) as string;
         const designId = formData.get(`designId_${i}`) as string;
@@ -77,7 +91,7 @@ export async function createOrder(formData: FormData) {
         
         if (!brandId || !designId || !productId) continue;
 
-        const product = await tx.product.findUnique({ where: { id: productId } });
+        const product = productMap.get(productId);
         if (!product) continue;
 
         orderTotal += product.price;
@@ -107,20 +121,23 @@ export async function createOrder(formData: FormData) {
         }
       }
 
-      await tx.order.update({
+      const finalOrder = await tx.order.update({
         where: { id: order.id },
         data: { totalAmount: orderTotal }
       });
-    }, { timeout: 20000 });
 
-    await logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference });
+      return finalOrder;
+    }, { timeout: 30000 }); // Increase timeout to 30s just in case
+
+    await logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: result.id });
+    
+    revalidatePath("/orders");
+    return { success: true, reference: nextReference };
   } catch (e: any) {
+    console.error("CREATE_ORDER_ERROR:", e);
     await logActivity("ERROR", `Failed to create order: ${e.message}`);
-    throw e;
+    return { success: false, error: e.message };
   }
-
-  revalidatePath("/orders");
-  return { success: true, reference: nextReference };
 }
 
 export async function updateOrder(orderId: string, formData: FormData) {
