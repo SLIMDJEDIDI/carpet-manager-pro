@@ -248,7 +248,15 @@ export async function markItemWrapped(itemId: string) {
 async function uploadToBlob(file: any, code: string) {
   // Enhanced check for file/blob
   const isFile = (file instanceof Blob || (file && typeof file === 'object' && 'size' in file)) && file.size > 0;
-  if (!isFile) return null;
+  
+  if (!isFile) {
+    console.warn(`Upload check failed for ${code}:`, {
+      type: typeof file,
+      isBlob: file instanceof Blob,
+      size: file?.size
+    });
+    return null;
+  }
 
   try {
     const blob = await put(file.name || `${code}.png`, file, { access: 'public' });
