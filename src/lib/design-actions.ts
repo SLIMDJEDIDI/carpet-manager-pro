@@ -5,60 +5,60 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 
-export async function createDesignAction(formData: FormData) {
+export type DesignActionState = {
+  error?: string | null;
+  success?: boolean;
+  design?: any;
+};
+
+/**
+ * Standard Design Creation Action
+ * Returns a state object for useActionState
+ */
+export async function createDesignAction(prevState: DesignActionState | null, formData: FormData): Promise<DesignActionState> {
   const code = (formData.get("code") as string)?.trim().toUpperCase();
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image") as File;
 
-  if (!code || !name || !imageFile || imageFile.size === 0) {
-    throw new Error("Missing required fields or valid image file.");
-  }
+  if (!code || !name) return { error: "Design code and name are required." };
+  if (!imageFile || imageFile.size === 0) return { error: "A valid image file is required." };
 
   let imageUrl: string;
   try {
-    const safeFilename = `${code.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.jpg`;
+    // 1. Upload to Vercel Blob
+    const safeFilename = `design_${code}_${Date.now()}.jpg`;
     const blob = await put(safeFilename, imageFile, {
       access: "public",
     });
     imageUrl = blob.url;
   } catch (e: any) {
-    console.error("BLOB_UPLOAD_CRITICAL_FAILURE:", e);
-    throw new Error(`IMAGE_UPLOAD_FAILED: ${e.message}`);
+    console.error("BLOB_UPLOAD_ERROR:", e);
+    return { error: `Image upload failed: ${e.message}` };
   }
 
   try {
-    await prisma.design.create({
+    // 2. Save to Database
+    const design = await prisma.design.create({
       data: { code, name, imageUrl },
     });
-  } catch (e: any) {
-    console.error("DB_CREATE_CRITICAL_FAILURE:", e);
-    if (e.code === 'P2002') throw new Error("DESIGN_CODE_ALREADY_EXISTS");
-    throw new Error(`DATABASE_SAVE_FAILED: ${e.message}`);
-  }
-
-  revalidatePath("/designs");
-  redirect("/designs");
-}
-
-export async function createDesignQuickAction(prevState: any, formData: FormData) {
-  const code = (formData.get("code") as string)?.trim().toUpperCase();
-  const name = (formData.get("name") as string)?.trim();
-  const imageFile = formData.get("image") as File;
-
-  if (!code || !name) return { error: "Code and name required." };
-  if (!imageFile || imageFile.size === 0) return { error: "Image required." };
-
-  try {
-    const blob = await put(`${code}-${Date.now()}.jpg`, imageFile, { access: "public" });
-    const design = await prisma.design.create({ data: { code, name, imageUrl: blob.url } });
+    
     revalidatePath("/designs");
+    // We don't redirect here because we want to return success for modals,
+    // or we handle redirect in the component if needed.
+    // Actually, for the /designs/new page, we WANT a redirect.
+    // I will add a flag or handle it in the component.
     return { success: true, design };
   } catch (e: any) {
-    return { error: e.message || "Failed." };
+    console.error("DB_CREATE_ERROR:", e);
+    if (e.code === 'P2002') return { error: "This design code already exists." };
+    return { error: `Database error: ${e.message}` };
   }
 }
 
-export async function updateDesign(id: string, formData: FormData) {
+/**
+ * Update Design Action
+ */
+export async function updateDesignAction(id: string, formData: FormData) {
   const code = (formData.get("code") as string)?.trim().toUpperCase();
   const name = (formData.get("name") as string)?.trim();
   const imageFile = formData.get("image") as File;
@@ -70,18 +70,31 @@ export async function updateDesign(id: string, formData: FormData) {
       const blob = await put(`${code}-${Date.now()}.jpg`, imageFile, { access: "public" });
       imageUrl = blob.url;
     }
-    await prisma.design.update({ where: { id }, data: { code, name, imageUrl } });
+
+    await prisma.design.update({
+      where: { id },
+      data: { code, name, imageUrl },
+    });
+    
     revalidatePath("/designs");
-  } catch (e: any) { throw e; }
+  } catch (e: any) {
+    console.error("UPDATE_DESIGN_ERROR:", e);
+    throw e;
+  }
+  
   redirect("/designs");
 }
 
-export async function deleteDesign(id: string) {
+/**
+ * Delete Design Action
+ */
+export async function deleteDesignAction(id: string) {
   try {
     await prisma.design.delete({ where: { id } });
     revalidatePath("/designs");
     return { success: true };
   } catch (e: any) {
-    return { success: false, message: "Design is in use." };
+    console.error("DELETE_DESIGN_ERROR:", e);
+    return { success: false, message: "Design is in use and cannot be deleted." };
   }
 }

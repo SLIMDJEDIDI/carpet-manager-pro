@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import { createDesignAction } from "@/lib/design-actions";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
+import { createDesignAction, DesignActionState } from "@/lib/design-actions";
 
 export default function NewDesignPage() {
+  const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
+  const [state, formAction, isPending] = useActionState(createDesignAction, null);
+
+  // Handle successful creation and redirect
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/designs");
+    }
+  }, [state, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,8 +43,14 @@ export default function NewDesignPage() {
         <p className="text-slate-500 font-bold">Upload a new design pattern from your computer.</p>
       </div>
 
-      <form action={createDesignAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+      <form action={formAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
+          {state?.error && (
+            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-black uppercase">
+              {state.error}
+            </div>
+          )}
+          
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Code (Unique)</label>
             <input 
@@ -65,7 +81,11 @@ export default function NewDesignPage() {
                   <img src={preview} alt="Preview" className="w-full h-full object-contain bg-slate-50" />
                   <button 
                     type="button"
-                    onClick={() => setPreview(null)}
+                    onClick={() => {
+                      setPreview(null);
+                      const input = document.getElementById('design-image-input') as HTMLInputElement;
+                      if (input) input.value = '';
+                    }}
                     className="absolute top-4 right-4 bg-white/90 backdrop-blur p-2 rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 transition-all"
                   >
                     <X className="w-5 h-5" />
@@ -78,7 +98,7 @@ export default function NewDesignPage() {
                       <Upload className="w-8 h-8 text-emerald-600" />
                     </div>
                     <p className="mb-2 text-sm text-slate-900 font-black uppercase tracking-widest">Click to upload file</p>
-                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 4MB)</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 10MB)</p>
                   </div>
                   <input 
                     id="design-image-input"
@@ -98,10 +118,20 @@ export default function NewDesignPage() {
         <div className="pt-4">
           <button 
             type="submit" 
-            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl"
+            disabled={isPending}
+            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50"
           >
-            <Save className="w-5 h-5" />
-            Create Design
+            {isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5" />
+                Create Design
+              </>
+            )}
           </button>
         </div>
       </form>

@@ -144,7 +144,7 @@ export default function OrderForm({
     
     fetchNeeded();
     return () => { active = false; };
-  }, [items, availableProducts]);
+  }, [items]);
 
   const addItem = () => {
     setItems(prev => [...prev, { 

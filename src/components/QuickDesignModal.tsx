@@ -2,7 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import { X, Upload, Loader2 } from "lucide-react";
-import { createDesignQuickAction } from "@/lib/design-actions";
+import { createDesignAction } from "@/lib/design-actions";
 
 interface QuickDesignModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface QuickDesignModalProps {
 
 export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDesignModalProps) {
   const [preview, setPreview] = useState<string | null>(null);
-  const [state, formAction, isPending] = useActionState(createDesignQuickAction, { error: null });
+  const [state, formAction, isPending] = useActionState(createDesignAction, null);
 
   useEffect(() => {
     if (state?.success && state?.design) {
@@ -82,7 +82,7 @@ export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDe
               />
               <div className="w-full h-32 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-emerald-500 hover:bg-emerald-50 transition-all overflow-hidden bg-slate-50">
                 {preview ? (
-                  <img src={preview} className="w-full h-full object-contain p-2" />
+                  <img src={preview} alt="Preview" className="w-full h-full object-contain p-2" />
                 ) : (
                   <>
                     <Upload className="w-6 h-6 text-slate-400" />
