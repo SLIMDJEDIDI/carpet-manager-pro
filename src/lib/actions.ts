@@ -375,18 +375,25 @@ export async function deleteDesign(id: string) {
 }
 
 export async function createDesign(formData: FormData) {
+  console.log("--- CREATE DESIGN START ---");
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
   const imageFile = formData.get("image") as File;
   
+  console.log("Design Info:", { code, name, hasFile: !!imageFile, fileSize: imageFile?.size });
+
   let imageUrl = null;
 
   try {
-    if (imageFile && imageFile.size > 0) {
+    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+      console.log("Uploading to Vercel Blob:", imageFile.name);
       const blob = await put(imageFile.name || `${code}.png`, imageFile, {
         access: 'public',
       });
       imageUrl = blob.url;
+      console.log("Upload Success:", imageUrl);
+    } else {
+      console.log("No valid image file provided, saving with imageUrl: null");
     }
 
     await prisma.design.create({
@@ -396,29 +403,39 @@ export async function createDesign(formData: FormData) {
         imageUrl,
       },
     });
+    console.log("Design created in DB");
   } catch (error: any) {
     console.error("Failed to create design:", error);
+    // Re-throw so Next.js can handle it, but keep the log
     throw new Error(error.message || "Failed to create design");
   }
 
+  console.log("Revalidating and redirecting...");
   revalidatePath("/designs");
   redirect("/designs");
 }
 
 export async function updateDesign(id: string, formData: FormData) {
+  console.log("--- UPDATE DESIGN START ---", id);
   const code = formData.get("code") as string;
   const name = formData.get("name") as string;
   const imageFile = formData.get("image") as File;
   const existingImageUrl = formData.get("existingImageUrl") as string;
 
-  let imageUrl = existingImageUrl;
+  console.log("Update Info:", { code, name, hasFile: !!imageFile, fileSize: imageFile?.size, existingImageUrl });
+
+  let imageUrl = existingImageUrl || null;
 
   try {
-    if (imageFile && imageFile.size > 0) {
+    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+      console.log("Uploading NEW image to Vercel Blob:", imageFile.name);
       const blob = await put(imageFile.name || `${code}.png`, imageFile, {
         access: 'public',
       });
       imageUrl = blob.url;
+      console.log("New Upload Success:", imageUrl);
+    } else {
+      console.log("Keeping existing imageUrl:", imageUrl);
     }
 
     await prisma.design.update({
@@ -429,11 +446,13 @@ export async function updateDesign(id: string, formData: FormData) {
         imageUrl,
       },
     });
+    console.log("Design updated in DB");
   } catch (error: any) {
     console.error("Failed to update design:", error);
     throw new Error(error.message || "Failed to update design");
   }
 
+  console.log("Revalidating and redirecting...");
   revalidatePath("/designs");
   redirect("/designs");
 }
