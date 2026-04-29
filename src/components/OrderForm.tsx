@@ -246,6 +246,52 @@ export default function OrderForm({
             />
           </div>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-600" />
+              Gouvernorat
+            </label>
+            <select
+              name="customerGovernorate"
+              required
+              value={governorate}
+              onChange={(e) => {
+                setGovernorate(e.target.value);
+                setDelegation(""); // Reset delegation when governorate changes
+              }}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none"
+            >
+              <option value="">Sélectionner Gouvernorat</option>
+              {Object.keys(TUNISIA_LOCATIONS).sort().map(gov => (
+                <option key={gov} value={gov}>{gov}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-emerald-600" />
+              Délégation
+            </label>
+            <select
+              name="customerDelegation"
+              required
+              value={delegation}
+              onChange={(e) => setDelegation(e.target.value)}
+              disabled={!governorate}
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none disabled:opacity-50"
+            >
+              <option value="">Sélectionner Délégation</option>
+              {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.sort().map(del => (
+                <option key={del} value={del}>{del}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+        </div>
           </div>
           {hasPending && !initialData && (
             <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">

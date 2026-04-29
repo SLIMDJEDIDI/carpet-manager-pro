@@ -519,23 +519,29 @@ export async function updateDesign(id: string, formData: FormData) {
   redirect("/designs");
 }
 
-export async function updateItemStatuses(itemIds: string[], status: string) {
+export async function markItemWrapped(itemId: string) {
   try {
-    await prisma.orderItem.updateMany({
-      where: { id: { in: itemIds } },
-      data: { status },
+    await prisma.orderItem.update({
+      where: { id: itemId },
+      data: { status: "WRAPPED" },
     });
-
-    await logActivity(
-      "BULK_STATUS_UPDATE",
-      `Bulk updated ${itemIds.length} items to status: ${status}`,
-      { count: itemIds.length, status }
-    );
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed bulk update: ${e.message}`);
-    throw e;
+    revalidatePath("/shipping");
+  } catch (error) {
+    console.error("Failed to mark item as wrapped:", error);
+    throw new Error("Failed to update status");
   }
+}
 
-  revalidatePath("/production");
-  revalidatePath("/shipping");
+export async function logActivity(type: string, description: string, details?: any) {
+  try {
+    await prisma.activityLog.create({
+      data: {
+        type,
+        description,
+        details: details ? JSON.stringify(details) : null,
+      },
+    });
+  } catch (e) {
+    console.error("Logging failed:", e);
+  }
 }
