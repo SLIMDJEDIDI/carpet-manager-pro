@@ -383,17 +383,19 @@ export async function createDesign(formData: FormData) {
   console.log("Form Values:", { 
     code, 
     name, 
-    imageFileType: typeof imageFile,
-    isBlob: imageFile instanceof Blob,
-    isFile: imageFile instanceof File,
+    imageType: imageFile ? typeof imageFile : "null",
+    isObject: typeof imageFile === 'object',
   });
 
   let imageUrl = null;
 
   try {
-    // A bit more permissive check for the file
-    if (imageFile && (imageFile as any).size > 0) {
-      const file = imageFile as File;
+    // Check if it's a File-like object (has size and name)
+    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
+    const fileSize = isFileLike ? (imageFile as any).size : 0;
+
+    if (isFileLike && fileSize > 0) {
+      const file = imageFile as unknown as File;
       console.log("Uploading to Vercel Blob:", file.name, "Size:", file.size);
       
       try {
@@ -404,14 +406,12 @@ export async function createDesign(formData: FormData) {
         console.log("Upload Success URL:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Upload Failed:", blobError.message);
-        // If upload fails, we still want to create the design record but without the image
-        // and avoid crashing the entire action
         if (blobError.message.includes("private store")) {
           console.warn("BLOB STORE IS PRIVATE. Please set it to Public in Vercel dashboard.");
         }
       }
     } else {
-      console.log("No valid image file detected in FormData");
+      console.log("No valid image file detected in FormData (Size:", fileSize, ")");
     }
 
     await prisma.design.create({
@@ -421,7 +421,7 @@ export async function createDesign(formData: FormData) {
         imageUrl,
       },
     });
-    console.log("Design record created in database");
+    console.log("Design record created in database with imageUrl:", imageUrl);
   } catch (error: any) {
     console.error("CRITICAL ERROR in createDesign:", error);
     throw new Error(error.message || "Failed to create design");
@@ -444,19 +444,19 @@ export async function updateDesign(id: string, formData: FormData) {
     id,
     code, 
     name, 
-    imageFileType: typeof imageFile,
-    isBlob: imageFile instanceof Blob,
-    isFile: imageFile instanceof File,
+    imageType: imageFile ? typeof imageFile : "null",
     existingImageUrl
   });
 
   let imageUrl = existingImageUrl || null;
-  // Ensure we don't save empty strings
   if (imageUrl === "") imageUrl = null;
 
   try {
-    if (imageFile && (imageFile as any).size > 0) {
-      const file = imageFile as File;
+    const isFileLike = imageFile && typeof imageFile === 'object' && 'size' in imageFile && 'name' in imageFile;
+    const fileSize = isFileLike ? (imageFile as any).size : 0;
+
+    if (isFileLike && fileSize > 0) {
+      const file = imageFile as unknown as File;
       console.log("Uploading NEW image to Vercel Blob:", file.name, "Size:", file.size);
       
       try {
@@ -467,13 +467,9 @@ export async function updateDesign(id: string, formData: FormData) {
         console.log("New Upload Success URL:", imageUrl);
       } catch (blobError: any) {
         console.error("Vercel Blob Update Failed:", blobError.message);
-        if (blobError.message.includes("private store")) {
-          console.warn("BLOB STORE IS PRIVATE. Please set it to Public in Vercel dashboard.");
-        }
-        // Fallback to existing image if upload fails
       }
     } else {
-      console.log("Using imageUrl:", imageUrl);
+      console.log("Keeping/Using imageUrl:", imageUrl);
     }
 
     await prisma.design.update({
