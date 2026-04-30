@@ -291,13 +291,54 @@ export async function confirmOrder(formData: FormData) {
   }
 }
 
+import { createJaxReceipt } from "./jax-api";
+
+// ... existing code ...
+
 export async function shipOrder(formData: FormData) {
   const orderId = formData.get("orderId") as string;
-  const parcelNumber = formData.get("parcelNumber") as string;
   try {
-    await prisma.order.update({ where: { id: orderId }, data: { status: "SHIPPED", parcelNumber } });
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true }
+    });
+
+    if (!order) throw new Error("Order not found");
+
+    // Automated JAX Integration
+    const jaxResponse = await createJaxReceipt({
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      customerAddress: order.customerAddress,
+      customerGovernorate: order.customerGovernorate || "",
+      customerDelegation: order.customerDelegation || "",
+      totalAmount: order.totalAmount
+    });
+
+    if (jaxResponse.success) {
+      await prisma.order.update({ 
+        where: { id: orderId }, 
+        data: { 
+          status: "SHIPPED", 
+          jaxTrackingId: jaxResponse.trackingId,
+          jaxReceiptUrl: jaxResponse.receiptUrl,
+          parcelNumber: jaxResponse.trackingId // Sync for legacy compat
+        } 
+      });
+
+      // Also update all items to SHIPPED
+      await prisma.orderItem.updateMany({
+        where: { orderId },
+        data: { status: "SHIPPED" }
+      });
+    }
+
     revalidatePath("/shipping");
-  } catch (e) { throw e; }
+    return { success: jaxResponse.success, trackingId: jaxResponse.trackingId };
+  } catch (e: any) { 
+    console.error("SHIP_ORDER_ERROR:", e);
+    return { success: false, error: e.message };
+  }
 }
 
 export async function markItemWrapped(formData: FormData) {

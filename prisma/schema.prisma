@@ -34,11 +34,13 @@ model Order {
   customerGovernorate String?
   customerDelegation String?
   status             String      @default("PENDING")
-  parcelNumber       String?
   totalAmount        Float       @default(0)
-  items              OrderItem[]
+  parcelNumber       String?     // Keeping this for reference
+  jaxTrackingId      String?     // New field for JAX integration
+  jaxReceiptUrl      String?     // URL to the receipt image/PDF from JAX
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
+  items              OrderItem[]
 }
 
 model OrderItem {

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
-import { Truck, Package, CheckCircle2, MapPin } from "lucide-react";
+import { Truck, Package, CheckCircle2, MapPin, Loader2 } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
+import BulkJaxShipping from "@/components/BulkJaxShipping";
 import { shipOrder, markItemWrapped } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function ShippingPage() {
   const orders = await prisma.order.findMany({
     where: {
+      status: "CONFIRMED", // Only confirmed orders can be shipped
       items: {
         some: {
           status: { in: ["IN_PRODUCTION", "WRAPPED"] }
@@ -19,11 +21,14 @@ export default async function ShippingPage() {
         include: { brand: true, design: true }
       }
     },
-    take: 20,
     orderBy: { updatedAt: "desc" },
   });
 
   const getWrappedCount = (items: any[]) => items.filter(i => i.status === "WRAPPED").length;
+  
+  const readyOrders = orders.filter(order => 
+    getWrappedCount(order.items) === order.items.length
+  );
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -33,6 +38,8 @@ export default async function ShippingPage() {
           <p className="text-slate-500 font-bold text-xs md:text-sm mt-1">One parcel for multiple articles per customer.</p>
         </div>
       </div>
+
+      <BulkJaxShipping readyOrders={readyOrders} onShip={shipOrder} />
 
       <div className="space-y-6">
         {orders.map((order) => {
@@ -54,18 +61,11 @@ export default async function ShippingPage() {
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
                   {allWrapped ? (
-                    <form action={shipOrder} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <form action={shipOrder} className="flex items-center">
                       <input type="hidden" name="orderId" value={order.id} />
-                      <input 
-                        type="text" 
-                        name="parcelNumber"
-                        placeholder="Parcel #" 
-                        required
-                        className="text-sm font-black border-2 border-slate-300 rounded-xl px-4 py-2.5 focus:ring-0 focus:border-blue-600 w-full sm:w-40 bg-white text-black placeholder:text-slate-400"
-                      />
-                      <button type="submit" className="bg-blue-600 text-white px-5 py-3 sm:py-2.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                      <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
                         <Truck className="w-4 h-4" />
-                        Ship
+                        Ship with JAX
                       </button>
                     </form>
                   ) : (
@@ -99,7 +99,8 @@ export default async function ShippingPage() {
                       </div>
                       
                       {item.status === "IN_PRODUCTION" && (
-                        <form action={markItemWrapped.bind(null, item.id)}>
+                        <form action={markItemWrapped}>
+                          <input type="hidden" name="itemId" value={item.id} />
                           <button type="submit" className="text-emerald-600 font-black text-[9px] uppercase border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors bg-white">
                             Wrap
                           </button>
