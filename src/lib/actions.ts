@@ -309,9 +309,10 @@ export async function shipOrder(formData: FormData) {
     }
 
     // IDEMPOTENCY CHECK: Prevent double shipping
-    if (order.status === "SHIPPED") {
+    if (order.status === "SHIPPED" || order.jaxTrackingId) {
       return { 
         success: true, 
+        trackingId: order.jaxTrackingId, 
         message: "Order was already shipped." 
       };
     }
@@ -338,8 +339,8 @@ export async function shipOrder(formData: FormData) {
         where: { id: orderId }, 
         data: { 
           status: "SHIPPED", 
-          // jaxTrackingId: jaxResponse.trackingId,
-          // jaxReceiptUrl: jaxResponse.receiptUrl,
+          jaxTrackingId: jaxResponse.trackingId,
+          jaxReceiptUrl: jaxResponse.receiptUrl,
           parcelNumber: jaxResponse.trackingId // Keep for backward compat
         } 
       }),

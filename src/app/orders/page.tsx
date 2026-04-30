@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import DeleteOrderButton from "@/components/DeleteOrderButton";
@@ -18,45 +18,36 @@ export default async function OrdersPage({
   const page = parseInt(pageParam || "1");
   const pageSize = 20;
 
-  let orders: any[] = [];
-  let totalOrders = 0;
-  let error: string | null = null;
+  const orders = await prisma.order.findMany({
+    where: {
+      OR: [
+        { customerName: { contains: query } },
+        { customerPhone: { contains: query } },
+      ],
+    },
+    include: {
+      items: {
+        where: { parentItemId: null },
+        include: {
+          brand: true,
+          design: true,
+          subItems: true
+        }
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
 
-  try {
-    orders = await prisma.order.findMany({
-      where: {
-        OR: [
-          { customerName: { contains: query } },
-          { customerPhone: { contains: query } },
-        ],
-      },
-      include: {
-        items: {
-          where: { parentItemId: null },
-          include: {
-            brand: true,
-            design: true,
-            subItems: true
-          }
-        },
-      },
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    totalOrders = await prisma.order.count({
-      where: {
-        OR: [
-          { customerName: { contains: query } },
-          { customerPhone: { contains: query } },
-        ],
-      },
-    });
-  } catch (e: any) {
-    console.error("Orders Fetch Error:", e);
-    error = "The database schema is currently out of sync. Please run 'npx prisma db push' to fix this.";
-  }
+  const totalOrders = await prisma.order.count({
+    where: {
+      OR: [
+        { customerName: { contains: query } },
+        { customerPhone: { contains: query } },
+      ],
+    },
+  });
 
   const totalPages = Math.ceil(totalOrders / pageSize);
 
@@ -107,13 +98,6 @@ export default async function OrdersPage({
       </div>
 
       <div className="space-y-6">
-        {error && (
-          <div className="p-6 bg-rose-50 border-2 border-rose-100 rounded-3xl text-rose-600 font-black uppercase text-xs flex items-center gap-3">
-            <AlertCircle className="w-6 h-6" />
-            {error}
-          </div>
-        )}
-        
         {orders.map((order) => (
           <div key={order.id} className="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300">
             {/* Order Header */}

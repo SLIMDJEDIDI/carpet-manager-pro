@@ -47,7 +47,7 @@ export default async function Dashboard() {
     const producedToday = await prisma.orderItem.count({ 
       where: { 
         status: { in: ["WRAPPED", "SHIPPED"] },
-        createdAt: { gte: new Date(new Date().setHours(0,0,0,0)) }
+        updatedAt: { gte: new Date(new Date().setHours(0,0,0,0)) }
       } 
     });
     
