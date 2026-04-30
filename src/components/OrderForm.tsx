@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2 } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2, RefreshCw, ExternalLink } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
-import QuickDesignModal from "./QuickDesignModal";
 
 interface Item {
   id: string | number;
@@ -46,8 +45,23 @@ export default function OrderForm({
   const [delegation, setDelegation] = useState(initialData?.customerDelegation || "");
   
   const [localDesigns, setLocalDesigns] = useState(designs);
-  const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
+  const [isRefreshingDesigns, setIsRefreshingDesigns] = useState(false);
   const [activeItemIdForDesign, setActiveItemIdForDesign] = useState<string | number | null>(null);
+
+  const refreshDesigns = async () => {
+    setIsRefreshingDesigns(true);
+    try {
+      const res = await fetch('/api/designs');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setLocalDesigns(data);
+      }
+    } catch (e) {
+      console.error("Failed to refresh designs", e);
+    } finally {
+      setIsRefreshingDesigns(false);
+    }
+  };
 
   const [items, setItems] = useState<Item[]>(initialData?.items || (initialData ? [] : [{ 
     id: 'init-1',
@@ -348,8 +362,27 @@ export default function OrderForm({
               </select>
             </div>
             
-            <div className="space-y-2 relative">
-              <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={refreshDesigns}
+                    className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isRefreshingDesigns ? 'animate-spin' : ''}`} />
+                    Refresh Catalog
+                  </button>
+                  <a 
+                    href="/designs/new" 
+                    target="_blank" 
+                    className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    New Design
+                  </a>
+                </div>
+              </div>
               <div className="relative">
                 <input 
                   type="text"
@@ -372,21 +405,20 @@ export default function OrderForm({
                 
                 {showDesignList[item.id] && (
                   <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto divide-y divide-slate-100">
-                    <button
-                      type="button"
+                    <a
+                      href="/designs/new"
+                      target="_blank"
                       onClick={() => {
-                        setActiveItemIdForDesign(item.id);
-                        setIsDesignModalOpen(true);
                         setShowDesignList(prev => ({ ...prev, [item.id]: false }));
                       }}
                       className="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-3 border-b-2 border-emerald-100 sticky top-0 z-10"
                     >
-                      <PlusCircle className="w-5 h-5 text-emerald-600" />
+                      <ExternalLink className="w-5 h-5 text-emerald-600" />
                       <div>
                         <p className="font-black text-emerald-600 text-xs uppercase">Add New Design</p>
-                        <p className="text-[9px] text-emerald-500 font-bold">Create and select instantly</p>
+                        <p className="text-[9px] text-emerald-500 font-bold">Opens in new tab</p>
                       </div>
-                    </button>
+                    </a>
 
                     {localDesigns
                       .filter(d => 
@@ -493,38 +525,6 @@ export default function OrderForm({
       </div>
       <input type="hidden" name="itemCount" value={items.length} />
     </form>
-
-    <QuickDesignModal 
-      isOpen={isDesignModalOpen} 
-      onClose={() => {
-        setIsDesignModalOpen(false);
-        setActiveItemIdForDesign(null);
-      }}
-      onSuccess={(newDesign) => {
-        // 1. Add to local catalog immediately
-        setLocalDesigns(prev => [newDesign, ...prev]);
-        
-        // 2. Select it for the item
-        if (activeItemIdForDesign) {
-          setItems(prev => prev.map(item => {
-            if (item.id === activeItemIdForDesign) {
-              return { ...item, designId: newDesign.id };
-            }
-            return item;
-          }));
-          
-          // 3. Update search display text
-          setDesignSearch(prev => ({ 
-            ...prev, 
-            [activeItemIdForDesign]: newDesign.code 
-          }));
-        }
-        
-        // 4. Close modal
-        setIsDesignModalOpen(false);
-        setActiveItemIdForDesign(null);
-      }}
-    />
   </>
 );
 }
