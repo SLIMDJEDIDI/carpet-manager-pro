@@ -187,7 +187,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
             orderId, brandId, designId,
             size: product.size, price: product.price,
             isPack: product.isPack,
-            status: "PENDING"
+            status: product.isPack ? "PACK_PARENT" : "PENDING"
           }
         });
 
@@ -243,6 +243,7 @@ export async function createBatch(formData: FormData) {
       where: { 
         status: "PENDING", 
         brandId,
+        isPack: false, // Ensure pack parents are never added to production lists
         order: { status: "CONFIRMED" }
       } 
     });

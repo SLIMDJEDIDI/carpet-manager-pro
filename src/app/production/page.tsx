@@ -155,7 +155,7 @@ export default async function ProductionPage() {
                 </div>
                 <h4 className="font-black text-slate-900 leading-tight text-base md:text-lg truncate">{list.batchName}</h4>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                  <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest">{list._count.items} CARPETS</span>
+                  <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest">{list.items.filter(i => !i.isPack).length} CARPETS</span>
                   <div className="flex flex-wrap gap-2">
                     <Link 
                       href={`/production/${list.id}`}

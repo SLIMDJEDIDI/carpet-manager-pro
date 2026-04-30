@@ -25,11 +25,13 @@ export default async function ShippingPage() {
     orderBy: { updatedAt: "desc" },
   });
 
-  const getWrappedCount = (items: any[]) => items ? items.filter(i => ["PRODUCED", "WRAPPED"].includes(i.status)).length : 0;
+  const getWrappedCount = (items: any[]) => items ? items.filter(i => !i.isPack && ["PRODUCED", "WRAPPED"].includes(i.status)).length : 0;
+  const getTotalItems = (items: any[]) => items ? items.filter(i => !i.isPack).length : 0;
   
-  const readyOrders = orders.filter(order => 
-    getWrappedCount(order.items) === order.items.length
-  );
+  const readyOrders = orders.filter(order => {
+    const total = getTotalItems(order.items);
+    return total > 0 && getWrappedCount(order.items) === total;
+  });
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -45,7 +47,8 @@ export default async function ShippingPage() {
       <div className="space-y-6">
         {orders.map((order) => {
           const wrappedCount = getWrappedCount(order.items);
-          const allWrapped = wrappedCount === order.items.length;
+          const totalItems = getTotalItems(order.items);
+          const allWrapped = totalItems > 0 && wrappedCount === totalItems;
 
           return (
             <div key={order.id} className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300">
@@ -65,7 +68,7 @@ export default async function ShippingPage() {
                     <SingleShipButton orderId={order.id} onShip={shipOrder} />
                   ) : (
                     <div className="bg-amber-50 text-amber-600 px-4 py-2.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-amber-100 text-center">
-                      Waiting for {order.items.length - wrappedCount} items
+                      Waiting for {totalItems - wrappedCount} items
                     </div>
                   )}
                   <PrintLabel order={order} />
@@ -74,7 +77,7 @@ export default async function ShippingPage() {
 
               <div className="p-4 md:p-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                  {order.items.map((item) => (
+                  {order.items.filter(i => !i.isPack).map((item) => (
                     <div key={item.id} className={`p-3 md:p-4 rounded-2xl md:rounded-3xl border flex items-center justify-between gap-3 md:gap-4 transition-all ${
                       item.status === "WRAPPED" ? "bg-emerald-50 border-emerald-100" : "bg-slate-50 border-slate-100"
                     }`}>

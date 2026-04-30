@@ -41,11 +41,11 @@ export default async function BatchDetailsPage({
         </div>
         <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border-2 border-slate-900 shadow-lg">
           <Factory className="w-5 h-5 text-amber-500" />
-          <span className="text-sm font-black text-black uppercase tracking-widest">{batch.items.length} Articles in List</span>
+          <span className="text-sm font-black text-black uppercase tracking-widest">{batch.items.filter(i => !i.isPack).length} Articles in List</span>
         </div>
       </div>
 
-      <BatchItemSelector items={batch.items} batchName={batch.batchName} />
+      <BatchItemSelector items={batch.items.filter(i => !i.isPack)} batchName={batch.batchName} />
     </div>
   );
 }
