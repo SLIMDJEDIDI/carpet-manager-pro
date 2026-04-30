@@ -1,34 +1,38 @@
 // JAX API Integration for Carpet Manager PRO
-// Using Token and ID provided via Environment Variables
+// Hardcoded Credentials as provided by the user for reliability
 
-const JAX_TOKEN = process.env.JAX_TOKEN;
-const EXPEDITEUR_NAME = process.env.JAX_EXPEDITEUR_NAME || "ZARBITI V4";
+const JAX_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuamF4LWRlbGl2ZXJ5LmNvbS9hcGkvdXRpbGlzYXRldXJzL0xvbmdUb2tlbiIsImlhdCI6MTc3NzU0ODI4MSwiZXhwIjoxODQwNjIwMjgxLCJuYmYiOjE3Nzc1NDgyODEsImp0aSI6InlZZ00yTnNtdG5BOGVhVlQiLCJzdWIiOiIzNjYxIiwicHJ2IjoiZDA5MDViY2Y2NWE2ZDk5MmQ5MGNiZmU0NjIyNmJkMzEzYWU1MTkzZiJ9.C--tinUREhL30dgNh-RqhcM6Olr0PuzzfUg03G5r4UA";
+const EXPEDITEUR_NAME = "ZARBITI V4";
+const EXPEDITEUR_PHONE = 55123456; // Using number as per Postman collection
 
 const GOVERNORATE_MAP: Record<string, string> = {
-  "Nabeul": "1",
-  "Gafsa": "2",
-  "Sfax": "3",
-  "Tunis": "4",
-  "Bizerte": "5",
-  "Jendouba": "6",
-  "Tozeur": "7",
-  "Tataouine": "8",
-  "Kef": "9",
-  "Sidi Bouzid": "10",
-  "Manouba": "11",
-  "Beja": "12",
-  "Gabès": "13",
-  "Zaghouan": "14",
-  "Ariana": "15",
-  "Kairouan": "16",
-  "Monastir": "17",
-  "Mahdia": "18",
-  "Siliana": "19",
-  "Ben Arous": "20",
-  "Medenine": "21",
-  "Kasserine": "22",
-  "Sousse": "23",
-  "Kebili": "24"
+  "nabeul": "1",
+  "gafsa": "2",
+  "sfax": "3",
+  "tunis": "4",
+  "bizerte": "5",
+  "jendouba": "6",
+  "tozeur": "7",
+  "tataouine": "8",
+  "kef": "9",
+  "sidi bouzid": "10",
+  "manouba": "11",
+  "beja": "12",
+  "béja": "12",
+  "gabes": "13",
+  "gabès": "13",
+  "zaghouan": "14",
+  "ariana": "15",
+  "kairouan": "16",
+  "monastir": "17",
+  "mahdia": "18",
+  "siliana": "19",
+  "ben arous": "20",
+  "medenine": "21",
+  "kasserine": "22",
+  "sousse": "23",
+  "kebili": "24",
+  "kébili": "24"
 };
 
 export interface JaxReceiptResponse {
@@ -47,12 +51,9 @@ export async function createJaxReceipt(order: {
   totalAmount: number;
   reference?: string | number;
 }): Promise<JaxReceiptResponse> {
-  if (!JAX_TOKEN) {
-    return { success: false, error: "JAX API Token is not configured." };
-  }
-
   try {
-    const govId = GOVERNORATE_MAP[order.customerGovernorate] || "4"; // Default to Tunis if not found
+    const govKey = order.customerGovernorate.toLowerCase().trim();
+    const govId = GOVERNORATE_MAP[govKey] || "4"; // Default to Tunis if not found
     
     // Sanitize phone: Remove everything except digits
     const cleanPhone = order.customerPhone.replace(/[^0-9]/g, "");
@@ -73,9 +74,11 @@ export async function createJaxReceipt(order: {
       echange: 0,
       gouvernorat_pickup: 23, // Sousse
       adresse_pickup: "Sousse",
-      expediteur_phone: "55123456",
+      expediteur_phone: EXPEDITEUR_PHONE,
       expediteur_name: EXPEDITEUR_NAME
     };
+
+    console.log("JAX API Payload:", JSON.stringify(payload, null, 2));
 
     const response = await fetch(`https://core.jax-delivery.com/api/user/colis/add?token=${JAX_TOKEN}`, {
       method: "POST",
@@ -85,12 +88,8 @@ export async function createJaxReceipt(order: {
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`JAX API Network Error: ${response.status} - ${errorText}`);
-    }
-
     const data = await response.json();
+    console.log("JAX API Response:", JSON.stringify(data, null, 2));
 
     if (data.status === "success" || data.ean) {
       return {
@@ -101,7 +100,7 @@ export async function createJaxReceipt(order: {
     } else {
       return {
         success: false,
-        error: data.message || JSON.stringify(data) || "JAX API returned an unknown error"
+        error: data.message || data.error || JSON.stringify(data) || "JAX API returned an unknown error"
       };
     }
   } catch (error: any) {

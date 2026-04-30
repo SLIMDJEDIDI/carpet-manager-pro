@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { Truck, Package, CheckCircle2, MapPin, Loader2 } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
 import BulkJaxShipping from "@/components/BulkJaxShipping";
+import SingleShipButton from "@/components/SingleShipButton";
 import { shipOrder, markItemWrapped } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
@@ -61,21 +62,13 @@ export default async function ShippingPage() {
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
                   {allWrapped ? (
-                    <form action={shipOrder} className="flex items-center">
-                      <input type="hidden" name="orderId" value={order.id} />
-                      <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
-                        <Truck className="w-4 h-4" />
-                        Ship with JAX
-                      </button>
-                    </form>
+                    <SingleShipButton orderId={order.id} onShip={shipOrder} />
                   ) : (
                     <div className="bg-amber-50 text-amber-600 px-4 py-2.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-amber-100 text-center">
                       Waiting for {order.items.length - wrappedCount} items
                     </div>
                   )}
-                  <div className="flex justify-center">
-                    <PrintLabel order={order as any} />
-                  </div>
+                  <PrintLabel order={order} />
                 </div>
               </div>
 
@@ -106,17 +99,14 @@ export default async function ShippingPage() {
                           </button>
                         </form>
                       )}
+
                       {item.status === "WRAPPED" && (
-                        <div className="text-emerald-500 bg-white p-1.5 rounded-lg border border-emerald-100">
-                          <CheckCircle2 className="w-4 h-4" />
+                        <div className="bg-emerald-500 p-1.5 rounded-full">
+                          <CheckCircle2 className="w-4 h-4 text-white" />
                         </div>
                       )}
                     </div>
                   ))}
-                </div>
-                <div className="mt-4 md:mt-6 text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 pt-4 border-t border-slate-50">
-                  <MapPin className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}</span>
                 </div>
               </div>
             </div>
@@ -124,9 +114,11 @@ export default async function ShippingPage() {
         })}
 
         {orders.length === 0 && (
-          <div className="p-20 text-center text-slate-400 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-            <Package className="w-16 h-16 mx-auto mb-4 opacity-5" />
-            <p className="font-black uppercase tracking-widest text-xs">No orders in the shipping pipeline.</p>
+          <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100">
+            <div className="bg-white w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-slate-200/50">
+              <Package className="w-10 h-10 text-slate-200" />
+            </div>
+            <p className="text-slate-400 font-black uppercase tracking-widest">No orders in shipping stage</p>
           </div>
         )}
       </div>

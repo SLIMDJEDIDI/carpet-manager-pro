@@ -35,6 +35,7 @@ export default function BulkJaxShipping({
           results.push({ ...order, trackingId: res.trackingId });
         } else {
           console.error(`JAX Error for ${order.customerName}:`, res.error);
+          alert(`Error processing ${order.customerName}: ${res.error || "Unknown error"}`);
         }
       } catch (e) {
         console.error("Failed to ship order:", order.id, e);
