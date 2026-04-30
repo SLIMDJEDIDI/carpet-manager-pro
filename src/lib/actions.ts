@@ -159,13 +159,11 @@ export async function updateOrder(orderId: string, formData: FormData) {
       },
     });
 
-    // 2. Sync Items (Only if order is not SHIPPED)
-    if (order.status !== "SHIPPED" && itemCount > 0) {
-      // For simplicity in this workflow: 
+    // 2. Sync Items (Only if order is still RECEIVED and not in production)
+    const hasItemsInProduction = order.items.some(i => i.status !== "PENDING" && i.status !== "PACK_PARENT");
+
+    if (!hasItemsInProduction && order.status === "RECEIVED" && itemCount > 0) {
       // Delete existing items and recreate them to match the form
-      // This is safe if they are PENDING. If they are IN_PRODUCTION, we should alert or handle.
-      // But during confirmation call, they are usually PENDING.
-      
       await prisma.orderItem.deleteMany({ where: { orderId } });
 
       let orderTotal = 0;

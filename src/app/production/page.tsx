@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Factory, Printer, PlusCircle, CheckCircle2 } from "lucide-react";
+import { Factory, Printer, PlusCircle, CheckCircle2, Package, Truck } from "lucide-react";
 import Link from "next/link";
 import { createBatch } from "@/lib/actions";
 import ExportProductionList from "@/components/ExportProductionList";
@@ -34,6 +34,13 @@ export default async function ProductionPage() {
       _count: { select: { items: true } } 
     },
     orderBy: { createdAt: "desc" },
+  });
+
+  const wrappedItems = await prisma.orderItem.findMany({
+    where: { status: "WRAPPED" },
+    include: { brand: true, design: true, order: true },
+    orderBy: { updatedAt: "desc" },
+    take: 10
   });
 
   return (
@@ -108,6 +115,31 @@ export default async function ProductionPage() {
         </div>
 
         <div className="space-y-6">
+          {wrappedItems.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-emerald-600 uppercase tracking-tight">
+                <Package className="w-5 h-5" />
+                Recently Wrapped ({wrappedItems.length})
+              </h3>
+              <div className="bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 overflow-hidden">
+                {wrappedItems.map(item => (
+                  <div key={item.id} className="p-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white p-1 shrink-0 border border-emerald-200">
+                      {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
+                      <p className="text-[9px] font-bold text-slate-500 truncate">REF #{item.order.reference}</p>
+                    </div>
+                    <Link href="/shipping" className="bg-emerald-600 text-white p-2 rounded-lg hover:bg-emerald-700 transition-all">
+                      <Truck className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
             <Factory className="w-5 h-5 text-slate-400" />
             Active Batches
