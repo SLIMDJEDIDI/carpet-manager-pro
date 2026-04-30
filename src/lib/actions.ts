@@ -381,3 +381,21 @@ export async function markItemWrapped(formData: FormData) {
     return { success: false, error: e.message };
   }
 }
+
+export async function archiveDispatch(formData: FormData) {
+  const orderId = formData.get("orderId") as string;
+  try {
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "DISPATCHED" }
+    });
+    
+    logActivity("ORDER_DISPATCHED", `Order REF #${order.reference} labeled and ready for JAX pickup`, { orderId });
+    
+    revalidatePath("/jax");
+    revalidatePath("/history");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}

@@ -9,6 +9,7 @@ import {
   Palette, 
   Factory, 
   Truck, 
+  Printer,
   History,
   Settings,
   Menu,
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/designs", label: "Design Catalog", icon: Palette },
   { href: "/production", label: "Production", icon: Factory },
   { href: "/shipping", label: "Shipping", icon: Truck },
+  { href: "/jax", label: "JAX Dispatch", icon: Printer },
   { href: "/history", label: "History", icon: History },
 ];
 

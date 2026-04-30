@@ -8,6 +8,7 @@ import {
   Palette, 
   Factory, 
   Truck, 
+  Printer,
   History,
   Settings 
 } from "lucide-react";
@@ -61,11 +62,16 @@ export default function RootLayout({
                 <Factory className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Production
               </Link>
-              <Link href="/shipping" className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group">
+               <Link href="/shipping" className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group">
                 <Truck className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Shipping
               </Link>
+              <Link href="/jax" className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-indigo-600 transition-all font-bold group">
+                <Printer className="w-5 h-5 group-hover:scale-110 transition-transform text-indigo-500" />
+                JAX Dispatch
+              </Link>
               <Link href="/history" className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group">
+
                 <History className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 History
               </Link>
