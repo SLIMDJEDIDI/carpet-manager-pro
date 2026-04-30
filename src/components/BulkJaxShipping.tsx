@@ -12,19 +12,29 @@ export default function BulkJaxShipping({
   onShip: (orderId: string) => Promise<any> 
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [currentOrderName, setCurrentOrderName] = useState("");
+  const [progress, setProgress] = useState({ current: 0, total: readyOrders.length });
   const [shippedOrders, setShippedOrders] = useState<any[]>([]);
 
   const handleBulkShip = async () => {
+    if (readyOrders.length === 0) return;
     if (!confirm(`Generate JAX receipts for ${readyOrders.length} orders?`)) return;
     
     setIsProcessing(true);
     const results = [];
+    const total = readyOrders.length;
     
-    for (const order of readyOrders) {
+    for (let i = 0; i < total; i++) {
+      const order = readyOrders[i];
+      setCurrentOrderName(order.customerName);
+      setProgress({ current: i + 1, total });
+      
       try {
         const res = await onShip(order.id);
         if (res.success) {
           results.push({ ...order, trackingId: res.trackingId });
+        } else {
+          console.error(`JAX Error for ${order.customerName}:`, res.error);
         }
       } catch (e) {
         console.error("Failed to ship order:", order.id, e);
@@ -33,9 +43,13 @@ export default function BulkJaxShipping({
     
     setShippedOrders(results);
     setIsProcessing(false);
+    setCurrentOrderName("");
 
     if (results.length > 0) {
       generateReceiptsPDF(results);
+      alert(`Successfully processed ${results.length} JAX receipts! PDF download starting...`);
+    } else {
+      alert("No receipts were generated. Please check console for errors.");
     }
   };
 
@@ -84,15 +98,20 @@ export default function BulkJaxShipping({
         className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-black uppercase text-sm tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl disabled:bg-slate-800 disabled:text-slate-600 relative z-10"
       >
         {isProcessing ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Generating Receipts...
-          </>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Processing: {currentOrderName}</span>
+            </div>
+            <div className="text-[10px] font-bold text-blue-300">
+              {progress.current} of {progress.total} orders
+            </div>
+          </div>
         ) : (
-          <>
+          <div className="flex items-center gap-3">
             <Truck className="w-5 h-5" />
             Ship All with JAX
-          </>
+          </div>
         )}
       </button>
     </div>

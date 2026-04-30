@@ -297,47 +297,68 @@ import { createJaxReceipt } from "./jax-api";
 
 export async function shipOrder(formData: FormData) {
   const orderId = formData.get("orderId") as string;
+  
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { items: true }
     });
 
-    if (!order) throw new Error("Order not found");
+    if (!order) {
+      return { success: false, error: "Order not found" };
+    }
 
-    // Automated JAX Integration
+    // IDEMPOTENCY CHECK: Prevent double shipping
+    if (order.status === "SHIPPED" || order.jaxTrackingId) {
+      return { 
+        success: true, 
+        trackingId: order.jaxTrackingId, 
+        message: "Order was already shipped." 
+      };
+    }
+
+    // 1. Trigger JAX API
     const jaxResponse = await createJaxReceipt({
       customerName: order.customerName,
       customerPhone: order.customerPhone,
       customerAddress: order.customerAddress,
       customerGovernorate: order.customerGovernorate || "",
       customerDelegation: order.customerDelegation || "",
-      totalAmount: order.totalAmount
+      totalAmount: order.totalAmount,
+      reference: order.reference
     });
 
-    if (jaxResponse.success) {
-      await prisma.order.update({ 
+    if (!jaxResponse.success) {
+      logActivity("JAX_SHIPPING_FAILURE", `Failed to ship Order REF #${order.reference}`, { orderId, error: jaxResponse.error });
+      return { success: false, error: jaxResponse.error || "JAX API failed to create receipt." };
+    }
+
+    // 2. Persist to DB using Transaction for Atomicity
+    await prisma.$transaction([
+      prisma.order.update({ 
         where: { id: orderId }, 
         data: { 
           status: "SHIPPED", 
           jaxTrackingId: jaxResponse.trackingId,
           jaxReceiptUrl: jaxResponse.receiptUrl,
-          parcelNumber: jaxResponse.trackingId // Sync for legacy compat
+          parcelNumber: jaxResponse.trackingId // Keep for backward compat
         } 
-      });
-
-      // Also update all items to SHIPPED
-      await prisma.orderItem.updateMany({
+      }),
+      prisma.orderItem.updateMany({
         where: { orderId },
         data: { status: "SHIPPED" }
-      });
-    }
+      })
+    ]);
+
+    logActivity("JAX_SHIPPING_SUCCESS", `Order REF #${order.reference} shipped via JAX`, { orderId, trackingId: jaxResponse.trackingId });
 
     revalidatePath("/shipping");
-    return { success: jaxResponse.success, trackingId: jaxResponse.trackingId };
+    revalidatePath("/orders");
+    return { success: true, trackingId: jaxResponse.trackingId };
   } catch (e: any) { 
-    console.error("SHIP_ORDER_ERROR:", e);
-    return { success: false, error: e.message };
+    console.error("SHIP_ORDER_CRITICAL_ERROR:", e);
+    logActivity("SHIP_ORDER_CRITICAL_ERROR", `Unexpected error shipping Order ID: ${orderId}`, { error: e.message });
+    return { success: false, error: "A critical error occurred during shipping. Please check logs." };
   }
 }
 

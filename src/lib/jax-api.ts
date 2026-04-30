@@ -1,9 +1,8 @@
 // JAX API Integration for Carpet Manager PRO
-// Using Token and ID provided by user
+// Using Token and ID provided via Environment Variables
 
-const JAX_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuamF4LWRlbGl2ZXJ5LmNvbS9hcGkvdXRpbGlzYXRldXJzL0xvbmdUb2tlbiIsImlhdCI6MTc3NzU0ODI4MSwiZXhwIjoxODQwNjIwMjgxLCJuYmYiOjE3Nzc1NDgyODEsImp0aSI6InlZZ00yTnNtdG5BOGVhVlQiLCJzdWIiOiIzNjYxIiwicHJ2IjoiZDA5MDViY2Y2NWE2ZDk5MmQ5MGNiZmU0NjIyNmJkMzEzYWU1MTkzZiJ9.C--tinUREhL30dgNh-RqhcM6Olr0PuzzfUg03G5r4UA";
-const EXPEDITEUR_ID = "3264";
-const EXPEDITEUR_NAME = "ZARBITI V4";
+const JAX_TOKEN = process.env.JAX_TOKEN;
+const EXPEDITEUR_NAME = process.env.JAX_EXPEDITEUR_NAME || "ZARBITI V4";
 
 const GOVERNORATE_MAP: Record<string, string> = {
   "Nabeul": "1",
@@ -46,25 +45,35 @@ export async function createJaxReceipt(order: {
   customerGovernorate: string;
   customerDelegation: string;
   totalAmount: number;
-  reference?: string;
+  reference?: string | number;
 }): Promise<JaxReceiptResponse> {
+  if (!JAX_TOKEN) {
+    return { success: false, error: "JAX API Token is not configured." };
+  }
+
   try {
     const govId = GOVERNORATE_MAP[order.customerGovernorate] || "4"; // Default to Tunis if not found
     
+    // Sanitize phone: Remove everything except digits
+    const cleanPhone = order.customerPhone.replace(/[^0-9]/g, "");
+    if (cleanPhone.length < 8) {
+      return { success: false, error: "Invalid customer phone number (Too short)." };
+    }
+
     const payload = {
-      referenceExterne: order.reference || "",
+      referenceExterne: order.reference?.toString() || "",
       nomContact: order.customerName,
-      tel: order.customerPhone.replace(/[^0-9]/g, ""),
+      tel: cleanPhone,
       tel2: "",
       adresseLivraison: order.customerAddress,
       governorat: govId,
       delegation: order.customerDelegation,
-      description: `Carpet Order Ref: ${order.reference}`,
+      description: `Order REF: ${order.reference}`,
       cod: order.totalAmount.toString(),
       echange: 0,
-      gouvernorat_pickup: 23, // Sousse (Default pickup for ZARBITI)
-      adresse_pickup: "Sousse", // Placeholder
-      expediteur_phone: "55123456", // Placeholder shop phone
+      gouvernorat_pickup: 23, // Sousse
+      adresse_pickup: "Sousse",
+      expediteur_phone: "55123456",
       expediteur_name: EXPEDITEUR_NAME
     };
 
@@ -76,10 +85,13 @@ export async function createJaxReceipt(order: {
       body: JSON.stringify(payload)
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`JAX API Network Error: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
 
-    // The JAX API usually returns the EAN/Tracking ID on success
-    // Based on standard JAX response: { "status": "success", "ean": "...", "id": ... }
     if (data.status === "success" || data.ean) {
       return {
         success: true,
@@ -89,7 +101,7 @@ export async function createJaxReceipt(order: {
     } else {
       return {
         success: false,
-        error: data.message || "JAX API returned an error"
+        error: data.message || JSON.stringify(data) || "JAX API returned an unknown error"
       };
     }
   } catch (error: any) {
