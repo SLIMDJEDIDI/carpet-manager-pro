@@ -13,7 +13,7 @@ export default async function ShippingPage() {
       status: "CONFIRMED", 
       items: {
         some: {
-          status: { in: ["IN_PRODUCTION", "WRAPPED"] }
+          status: { in: ["IN_PRODUCTION", "PRODUCED", "WRAPPED"] }
         }
       }
     },
@@ -25,7 +25,7 @@ export default async function ShippingPage() {
     orderBy: { updatedAt: "desc" },
   });
 
-  const getWrappedCount = (items: any[]) => items ? items.filter(i => i.status === "WRAPPED").length : 0;
+  const getWrappedCount = (items: any[]) => items ? items.filter(i => ["PRODUCED", "WRAPPED"].includes(i.status)).length : 0;
   
   const readyOrders = orders.filter(order => 
     getWrappedCount(order.items) === order.items.length
