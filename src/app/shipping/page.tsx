@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Truck, Package, CheckCircle2, MapPin, Loader2 } from "lucide-react";
+import { Truck, Package, CheckCircle2, MapPin, Loader2, AlertCircle } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
 import BulkJaxShipping from "@/components/BulkJaxShipping";
 import { shipOrder, markItemWrapped } from "@/lib/actions";
@@ -7,24 +7,32 @@ import { shipOrder, markItemWrapped } from "@/lib/actions";
 export const dynamic = "force-dynamic";
 
 export default async function ShippingPage() {
-  const orders = await prisma.order.findMany({
-    where: {
-      status: "CONFIRMED", // Only confirmed orders can be shipped
-      items: {
-        some: {
-          status: { in: ["IN_PRODUCTION", "WRAPPED"] }
-        }
-      }
-    },
-    include: { 
-      items: {
-        include: { brand: true, design: true }
-      }
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  let orders: any[] = [];
+  let error: string | null = null;
 
-  const getWrappedCount = (items: any[]) => items.filter(i => i.status === "WRAPPED").length;
+  try {
+    orders = await prisma.order.findMany({
+      where: {
+        status: "CONFIRMED", 
+        items: {
+          some: {
+            status: { in: ["IN_PRODUCTION", "WRAPPED"] }
+          }
+        }
+      },
+      include: { 
+        items: {
+          include: { brand: true, design: true }
+        }
+      },
+      orderBy: { createdAt: "desc" }, // Use createdAt instead of updatedAt if schema is out of sync
+    });
+  } catch (e: any) {
+    console.error("Shipping Fetch Error:", e);
+    error = "Database sync required. Please run 'npx prisma db push'.";
+  }
+
+  const getWrappedCount = (items: any[]) => items ? items.filter(i => i.status === "WRAPPED").length : 0;
   
   const readyOrders = orders.filter(order => 
     getWrappedCount(order.items) === order.items.length
@@ -40,6 +48,13 @@ export default async function ShippingPage() {
       </div>
 
       <BulkJaxShipping readyOrders={readyOrders} onShip={shipOrder} />
+
+      {error && (
+        <div className="p-6 bg-rose-50 border-2 border-rose-100 rounded-3xl text-rose-600 font-black uppercase text-xs flex items-center gap-3 mb-6">
+          <AlertCircle className="w-6 h-6" />
+          {error}
+        </div>
+      )}
 
       <div className="space-y-6">
         {orders.map((order) => {
