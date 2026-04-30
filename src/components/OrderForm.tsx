@@ -123,29 +123,39 @@ export default function OrderForm({
     };
   }, [phone, initialData]);
 
-  // Performance Optimization: Only trigger product fetching when brand selection changes
-  const brandsToFetch = items.map(item => item.brandId).filter(id => id && !availableProducts[id]).join(',');
-  
-  useEffect(() => {
-    const neededBrands = [...new Set(items.map(item => item.brandId).filter(id => id && !availableProducts[id]))];
-    
-    if (neededBrands.length === 0) return;
-
-    let active = true;
-    const fetchNeeded = async () => {
-      for (const brandId of neededBrands) {
-        if (!active) break;
-        try {
-          const res = await fetch(`/api/products?brandId=${brandId}`);
-          const products = await res.json();
-          if (active) {
-            setAvailableProducts(prev => ({ ...prev, [brandId]: products }));
-          }
-        } catch (e) {
-          console.error("Failed to fetch products", e);
+  const updateItem = async (id: string | number, field: string, value: any) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const newItem = { ...item, [field]: value };
+        // If brand changes, clear product and design
+        if (field === "brandId") {
+          newItem.productId = "";
+          newItem.price = 0;
+          fetchProductsForBrand(value);
         }
+        // If product changes, update price
+        if (field === "productId") {
+          const brandId = item.brandId;
+          const product = availableProducts[brandId]?.find((p: any) => p.id === value);
+          newItem.price = product?.price || 0;
+        }
+        return newItem;
       }
-    };
+      return item;
+    }));
+  };
+
+  const fetchProductsForBrand = async (brandId: string) => {
+    if (!brandId || availableProducts[brandId]) return;
+    try {
+      const res = await fetch(`/api/products?brandId=${brandId}`);
+      const products = await res.json();
+      setAvailableProducts(prev => ({ ...prev, [brandId]: products }));
+    } catch (e) {
+      console.error("Failed to fetch products", e);
+    }
+  };
+
     
     fetchNeeded();
     return () => { active = false; };
