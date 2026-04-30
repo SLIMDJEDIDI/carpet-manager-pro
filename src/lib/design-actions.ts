@@ -21,23 +21,25 @@ export async function createDesignAction(prevState: DesignActionState | null, fo
   const imageFile = formData.get("image") as File;
 
   if (!code || !name) return { error: "Design code and name are required." };
-  if (!imageFile || imageFile.size === 0) return { error: "A valid image file is required." };
 
-  let imageUrl: string;
-  try {
-    // 1. Upload to Vercel Blob
-    const safeFilename = `design_${code.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.jpg`;
-    const blob = await put(safeFilename, imageFile, {
-      access: "public",
-    });
-    imageUrl = blob.url;
-  } catch (e: any) {
-    console.error("BLOB_UPLOAD_ERROR:", e);
-    // Explicitly check for common issues like missing tokens
-    if (e.message?.includes('READ_WRITE_TOKEN')) {
-      return { error: "Storage configuration error (Token missing). Please contact admin." };
+  let imageUrl: string | null = null;
+  
+  // Only upload if a file was actually selected
+  if (imageFile && imageFile.size > 0) {
+    try {
+      // 1. Upload to Vercel Blob
+      const safeFilename = `design_${code.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.jpg`;
+      const blob = await put(safeFilename, imageFile, {
+        access: "public",
+      });
+      imageUrl = blob.url;
+    } catch (e: any) {
+      console.error("BLOB_UPLOAD_ERROR:", e);
+      if (e.message?.includes('READ_WRITE_TOKEN')) {
+        return { error: "Storage configuration error (Token missing). Please contact admin." };
+      }
+      return { error: `Image upload failed: ${e.message}` };
     }
-    return { error: `Image upload failed: ${e.message}` };
   }
 
   try {
