@@ -381,9 +381,9 @@ export default function OrderForm({
                         href="/designs/new" 
                         target="_blank" 
                         className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-                        title="New Design"
+                        title="Add New Design"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <Plus className="w-3.5 h-3.5" />
                       </a>
                     </div>
                   </div>
@@ -403,6 +403,22 @@ export default function OrderForm({
                     
                     {showDesignList[item.id] && (
                       <div className="absolute top-full left-0 right-0 mt-3 bg-white border-2 border-slate-100 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto p-2">
+                        {/* Sticky Add New Design Option */}
+                        <a
+                          href="/designs/new"
+                          target="_blank"
+                          onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}
+                          className="w-full flex items-center gap-4 p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all mb-2 sticky top-0 z-10 border border-emerald-100"
+                        >
+                          <div className="w-12 h-12 bg-white rounded-lg border border-emerald-200 flex items-center justify-center">
+                            <Plus className="w-6 h-6 text-emerald-600" />
+                          </div>
+                          <div>
+                            <p className="font-black text-emerald-600 text-xs uppercase tracking-tight leading-none mb-1">Add New Design</p>
+                            <p className="text-[10px] text-emerald-500 font-bold uppercase">Opens in new tab</p>
+                          </div>
+                        </a>
+
                         {localDesigns
                           .filter(d => 
                             d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase()) ||
