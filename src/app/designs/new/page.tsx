@@ -76,6 +76,15 @@ export default function NewDesignPage() {
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Image</label>
             <div className="relative group">
+              <input 
+                id="design-image-input"
+                type="file" 
+                name="image" 
+                required
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" 
+                accept="image/*" 
+                onChange={handleFileChange} 
+              />
               {preview ? (
                 <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-100">
                   <img src={preview} alt="Preview" className="w-full h-full object-contain bg-slate-50" />
@@ -86,11 +95,25 @@ export default function NewDesignPage() {
                       const input = document.getElementById('design-image-input') as HTMLInputElement;
                       if (input) input.value = '';
                     }}
-                    className="absolute top-4 right-4 bg-white/90 backdrop-blur p-2 rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 transition-all"
+                    className="absolute top-4 right-4 bg-white/90 backdrop-blur p-2 rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 transition-all z-20"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center w-full aspect-video rounded-2xl border-4 border-dashed border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all group">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <div className="p-4 bg-emerald-100 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                      <Upload className="w-8 h-8 text-emerald-600" />
+                    </div>
+                    <p className="mb-2 text-sm text-slate-900 font-black uppercase tracking-widest">Click to upload file</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 10MB)</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
               ) : (
                 <label className="flex flex-col items-center justify-center w-full aspect-video rounded-2xl border-4 border-dashed border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all cursor-pointer group">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
