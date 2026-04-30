@@ -196,16 +196,12 @@ export default function OrderForm({
     try {
       const result = await action(formData);
       if (result?.success) {
-        // Use a short delay before push to ensure state settles
-        setTimeout(() => {
-          router.push("/orders");
-          router.refresh();
-        }, 100);
-      } else if (result?.error) {
-        alert(`Error: ${result.error}`);
-        setIsSubmitting(false);
+        // If successful, we trigger the push. 
+        // We don't set isSubmitting to false here because we're leaving the page.
+        router.push("/orders");
+        router.refresh();
       } else {
-        // Fallback for unexpected response format
+        alert(`Error: ${result?.error || "Unknown error occurred"}`);
         setIsSubmitting(false);
       }
     } catch (error: any) {

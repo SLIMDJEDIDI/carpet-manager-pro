@@ -67,23 +67,17 @@ export async function createOrder(formData: FormData) {
     const productMap = new Map(products.map(p => [p.id, p]));
 
     const result = await prisma.$transaction(async (tx) => {
-      // 2. Calculate Reference INSIDE transaction for better consistency
+      // 2. Calculate Reference
       const lastOrder = await tx.order.findFirst({
         orderBy: { reference: 'desc' },
         select: { reference: true }
       });
       const nextReference = (lastOrder?.reference || 0) + 1;
 
-      // 3. Create Order
-      const order = await tx.order.create({
-        data: {
-          customerName, customerPhone, customerAddress, 
-          customerPostalCode, customerGovernorate, customerDelegation,
-          reference: nextReference, totalAmount: 0,
-        },
-      });
-
+      // 3. Prepare all items for a single nested create
+      const itemsToCreate = [];
       let orderTotal = 0;
+
       for (let i = 0; i < itemCount; i++) {
         const brandId = formData.get(`brandId_${i}`) as string;
         const designId = formData.get(`designId_${i}`) as string;
@@ -96,27 +90,18 @@ export async function createOrder(formData: FormData) {
 
         orderTotal += product.price;
 
-        const mainItem = await tx.orderItem.create({
-          data: {
-            orderId: order.id, brandId, designId,
-            size: product.size, price: product.price,
-            isPack: product.isPack,
-            status: product.isPack ? "PACK_PARENT" : "PENDING",
-          }
-        });
-
+        // Construct main item with sub-items (Packs) nested
+        const subItems = [];
         if (product.isPack && product.components) {
           try {
             const components = JSON.parse(product.components);
             for (const comp of components) {
               const qty = comp.qty || 1;
               for (let q = 0; q < qty; q++) {
-                await tx.orderItem.create({
-                  data: {
-                    orderId: order.id, brandId, designId,
-                    size: comp.size, price: 0, isPack: false,
-                    parentItemId: mainItem.id, status: "PENDING",
-                  }
+                subItems.push({
+                  brandId, designId,
+                  size: comp.size, price: 0, isPack: false,
+                  status: "PENDING",
                 });
               }
             }
@@ -124,17 +109,30 @@ export async function createOrder(formData: FormData) {
             console.error("Failed to parse pack components:", jsonError);
           }
         }
+
+        itemsToCreate.push({
+          brandId, designId,
+          size: product.size, price: product.price,
+          isPack: product.isPack,
+          status: product.isPack ? "PACK_PARENT" : "PENDING",
+          subItems: subItems.length > 0 ? { create: subItems } : undefined
+        });
       }
 
-      const finalOrder = await tx.order.update({
-        where: { id: order.id },
-        data: { totalAmount: orderTotal }
+      // 4. Single multi-level creation (extremely fast)
+      return await tx.order.create({
+        data: {
+          customerName, customerPhone, customerAddress, 
+          customerPostalCode, customerGovernorate, customerDelegation,
+          reference: nextReference,
+          totalAmount: orderTotal,
+          items: {
+            create: itemsToCreate
+          }
+        },
       });
-
-      return finalOrder;
     }, { 
-      timeout: 30000,
-      isolationLevel: 'ReadCommitted' 
+      timeout: 15000 // Shorter timeout for faster feedback
     });
 
     await logActivity("CREATE_ORDER", `New Order REF #${result.reference} created`, { reference: result.reference, orderId: result.id });
