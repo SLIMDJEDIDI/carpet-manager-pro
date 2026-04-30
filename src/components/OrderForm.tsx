@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2, RefreshCw, ExternalLink } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2, RefreshCw, ExternalLink, Hash, Info, CheckCircle2 } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
 
 interface Item {
@@ -47,7 +47,6 @@ export default function OrderForm({
   const [localDesigns, setLocalDesigns] = useState(designs);
   const [isRefreshingDesigns, setIsRefreshingDesigns] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(Date.now());
-  const [activeItemIdForDesign, setActiveItemIdForDesign] = useState<string | number | null>(null);
 
   const refreshDesigns = async (silent = false) => {
     if (!silent) setIsRefreshingDesigns(true);
@@ -67,7 +66,6 @@ export default function OrderForm({
 
   const handleDesignFocus = (itemId: string | number) => {
     setShowDesignList(prev => ({ ...prev, [itemId]: true }));
-    // Auto-refresh if more than 30 seconds old
     if (Date.now() - lastRefreshed > 30000) {
       refreshDesigns(true);
     }
@@ -83,13 +81,11 @@ export default function OrderForm({
   }]));
 
   const [isSearching, setIsSearching] = useState(false);
-  const [hasPending, setHasPending] = useState(false);
   const [availableProducts, setAvailableProducts] = useState<Record<string, Product[]>>({});
   const [designSearch, setDesignSearch] = useState<Record<string | number, string>>({});
   const [showDesignList, setShowDesignList] = useState<Record<string | number, boolean>>({});
 
   useEffect(() => {
-    // Only initialize search from initialData ONCE on mount
     if (initialData?.items && localDesigns.length > 0 && Object.keys(designSearch).length === 0) {
       const searchInit: Record<string | number, string> = {};
       initialData.items.forEach((item: any) => {
@@ -102,7 +98,6 @@ export default function OrderForm({
 
   useEffect(() => {
     if (initialData) return;
-
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       if (phone.length >= 8) {
@@ -143,14 +138,12 @@ export default function OrderForm({
     setItems(prev => prev.map(item => {
       if (item.id === id) {
         const newItem = { ...item, [field]: value };
-        // If brand changes, clear product and design
         if (field === "brandId") {
           newItem.productId = "";
           newItem.size = "";
           newItem.price = 0;
           fetchProductsForBrand(value);
         }
-        // If product changes, update price and size
         if (field === "productId") {
           const product = availableProducts[item.brandId]?.find((p: any) => p.id === value);
           if (product) {
@@ -189,20 +182,16 @@ export default function OrderForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isSubmitting) return;
-    
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
-    
-    // Safety Timeout: Force-unlock UI after 12 seconds
     const timeoutId = setTimeout(() => {
       setIsSubmitting(false);
-      alert("Order processing is taking longer than expected. Please check your Orders List to see if the order was created.");
+      alert("Order processing is taking longer than expected. Please check your Orders List.");
     }, 12000);
 
     try {
       const result = await action(formData);
       clearTimeout(timeoutId);
-      
       if (result?.success) {
         window.location.href = "/orders";
       } else {
@@ -212,213 +201,214 @@ export default function OrderForm({
     } catch (error: any) {
       clearTimeout(timeoutId);
       console.error("Order submission failed:", error);
-      alert("Order submission failed. Please check your connection and try again.");
+      alert("Order submission failed.");
       setIsSubmitting(false);
     }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-              <Phone className="w-3 h-3" /> Customer Phone
-            </label>
-            <div className="relative">
-              <input 
-                name="customerPhone"
-                type="text" 
-                required 
-                placeholder="e.g. 55 123 456"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
-              />
-              {isSearching && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-5 h-5 text-emerald-600 animate-spin" />
-                </div>
-              )}
+    <form onSubmit={handleSubmit} className="space-y-8 bg-white p-6 md:p-12 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100">
+      {/* Customer Header */}
+      <div className="flex items-center gap-4 mb-2">
+        <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200">
+          <User className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Customer Details</h2>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Shipping & Contact Information</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Phone Number</label>
+          <div className="relative group">
+            <input 
+              name="customerPhone"
+              type="text" 
+              required 
+              placeholder="e.g. 55 123 456"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {isSearching ? <Loader2 className="w-5 h-5 text-slate-400 animate-spin" /> : <Phone className="w-5 h-5 text-slate-300" />}
             </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-              <User className="w-3 h-3" /> Full Name
-            </label>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Full Name</label>
+          <div className="relative group">
             <input 
               name="customerName"
               type="text" 
               required 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
             />
+            <User className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
           </div>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-            <MapPin className="w-3 h-3" /> Delivery Address
-          </label>
+      <div className="space-y-2">
+        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Delivery Address</label>
+        <div className="relative group">
           <input 
             name="customerAddress"
             type="text" 
             required 
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
+            className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
           />
+          <MapPin className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Gouvernorat</label>
+          <select 
+            name="customerGovernorate"
+            required 
+            value={governorate}
+            onChange={(e) => {
+              setGovernorate(e.target.value);
+              setDelegation("");
+            }}
+            className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all cursor-pointer"
+          >
+            <option value="">Sélectionner</option>
+            {Object.keys(TUNISIA_LOCATIONS).map(gov => (
+              <option key={gov} value={gov}>{gov}</option>
+            ))}
+          </select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-              <Search className="w-3 h-3" /> Postal Code
-            </label>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Délégation</label>
+          <select 
+            name="customerDelegation"
+            required 
+            value={delegation}
+            onChange={(e) => setDelegation(e.target.value)}
+            className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all cursor-pointer"
+          >
+            <option value="">Sélectionner</option>
+            {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.map(del => (
+              <option key={del} value={del}>{del}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Postal Code</label>
+          <div className="relative group">
             <input 
               name="customerPostalCode"
               type="text" 
-              placeholder="e.g. 1001"
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
             />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-              <Globe className="w-3 h-3" /> Gouvernorat
-            </label>
-            <select 
-              name="customerGovernorate"
-              required 
-              value={governorate}
-              onChange={(e) => {
-                setGovernorate(e.target.value);
-                setDelegation("");
-              }}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
-            >
-              <option value="">Sélectionner</option>
-              {Object.keys(TUNISIA_LOCATIONS).map(gov => (
-                <option key={gov} value={gov}>{gov}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
-              <MapPin className="w-3 h-3" /> Délégation
-            </label>
-            <select 
-              name="customerDelegation"
-              required 
-              value={delegation}
-              onChange={(e) => setDelegation(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
-            >
-              <option value="">Sélectionner</option>
-              {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.map(del => (
-                <option key={del} value={del}>{del}</option>
-              ))}
-            </select>
+            <Hash className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
           </div>
         </div>
+      </div>
 
-        <div className="pt-8 border-t border-slate-100">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-slate-100"></div>
-            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Carpet Articles in this Order</h2>
-            <div className="h-px flex-1 bg-slate-100"></div>
+      {/* Articles Section */}
+      <div className="pt-12">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200">
+              <ShoppingBag className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Order Articles</h2>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Select products & designs</p>
+            </div>
           </div>
+          <button 
+            type="button" 
+            onClick={addItem}
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
+          >
+            <Plus className="w-4 h-4" /> Add Item
+          </button>
+        </div>
 
-          <div className="space-y-4 md:space-y-6">
-            {items.map((item, index) => (
-              <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 relative group animate-in fade-in slide-in-from-top-2">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-black uppercase tracking-widest">Brand</label>
+        <div className="space-y-6">
+          {items.map((item, index) => (
+            <div key={item.id} className="group relative bg-slate-50/50 rounded-[2rem] border-2 border-slate-100 p-8 transition-all hover:bg-white hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 animate-in fade-in slide-in-from-top-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                {/* Brand Selection */}
+                <div className="lg:col-span-3 space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Brand</label>
                   <select 
                     name={`brandId_${index}`} 
                     required 
                     value={item.brandId}
                     onChange={(e) => updateItem(item.id, "brandId", e.target.value)}
-                    className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black px-4"
+                    className="w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 px-4 transition-all"
                   >
-                    <option value="">Brand</option>
+                    <option value="">Select Brand</option>
                     {brands.map(b => (
                       <option key={b.id} value={b.id}>{b.name}</option>
                     ))}
                   </select>
                 </div>
 
-                <div className="space-y-2 relative">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
-                    <div className="flex gap-2">
+                {/* Design Selection */}
+                <div className="lg:col-span-4 space-y-2">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Design</label>
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => refreshDesigns(false)}
-                        className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-1 px-2 py-0.5 rounded-md transition-all border ${
-                          isRefreshingDesigns 
-                            ? 'bg-slate-100 text-slate-400 border-slate-200' 
-                            : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+                        className={`p-1.5 rounded-lg transition-all border ${
+                          isRefreshingDesigns ? 'bg-slate-100 text-slate-400 animate-spin' : 'text-emerald-600 hover:bg-emerald-50'
                         }`}
+                        title="Refresh Catalog"
                       >
-                        <RefreshCw className={`w-3 h-3 ${isRefreshingDesigns ? 'animate-spin' : ''}`} />
-                        {isRefreshingDesigns ? 'Updating...' : 'Refresh Catalog'}
+                        <RefreshCw className="w-3.5 h-3.5" />
                       </button>
                       <a 
                         href="/designs/new" 
                         target="_blank" 
-                        className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                        className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                        title="New Design"
                       >
-                        <ExternalLink className="w-3 h-3" />
-                        New Design
+                        <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
                   </div>
                   <div className="relative">
                     <input 
                       type="text" 
-                      placeholder="Search Design Code"
+                      placeholder="Search Design Code..."
                       value={designSearch[item.id] || ""}
                       onChange={(e) => {
                         setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
                         setShowDesignList(prev => ({ ...prev, [item.id]: true }));
                       }}
                       onFocus={() => handleDesignFocus(item.id)}
-                      className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10 pr-4"
+                      className="w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 pl-12 pr-4 transition-all"
                     />
-                    <Palette className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    {!item.designId && (
-                      <p className="absolute -bottom-5 left-0 text-[8px] font-black text-rose-500 uppercase tracking-widest animate-pulse">Please select a design from the list</p>
-                    )}
+                    <Palette className="w-5 h-5 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2" />
                     
                     {showDesignList[item.id] && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
-                        <a
-                          href="/designs/new"
-                          target="_blank"
-                          onClick={() => {
-                            setShowDesignList(prev => ({ ...prev, [item.id]: false }));
-                          }}
-                          className="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-3 border-b-2 border-emerald-100 sticky top-0 z-10"
-                        >
-                          <ExternalLink className="w-5 h-5 text-emerald-600" />
-                          <div>
-                            <p className="font-black text-emerald-600 text-xs uppercase">Add New Design</p>
-                            <p className="text-[9px] text-emerald-500 font-bold">Opens in new tab</p>
-                          </div>
-                        </a>
-                        
+                      <div className="absolute top-full left-0 right-0 mt-3 bg-white border-2 border-slate-100 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto p-2">
                         {localDesigns
                           .filter(d => 
                             d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase()) ||
                             d.name.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())
                           )
-                          .slice(0, 15)
+                          .slice(0, 10)
                           .map(d => (
                             <button
                               key={d.id}
@@ -428,20 +418,18 @@ export default function OrderForm({
                                 setDesignSearch(prev => ({ ...prev, [item.id]: d.code }));
                                 setShowDesignList(prev => ({ ...prev, [item.id]: false }));
                               }}
-                              className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                              className="w-full text-left p-3 hover:bg-emerald-50 rounded-xl transition-all flex items-center gap-4 group/opt"
                             >
-                              <div className="w-8 h-8 bg-slate-100 rounded border border-slate-200 overflow-hidden flex-shrink-0">
-                                {d.imageUrl && <img src={d.imageUrl} className="w-full h-full object-contain" alt={d.code} />}
+                              <div className="w-12 h-12 bg-slate-100 rounded-lg border border-slate-200 overflow-hidden flex-shrink-0">
+                                {d.imageUrl && <img src={d.imageUrl} className="w-full h-full object-cover transition-transform group-hover/opt:scale-110" alt={d.code} />}
                               </div>
-                              <div>
-                                <p className="font-black text-black text-xs uppercase">{d.code}</p>
-                                <p className="text-[10px] text-slate-500 font-bold">{d.name}</p>
+                              <div className="min-w-0">
+                                <p className="font-black text-slate-900 text-xs uppercase tracking-tight leading-none mb-1">{d.code}</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase truncate">{d.name}</p>
                               </div>
                             </button>
                           ))}
-                        {localDesigns.filter(d => d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())).length === 0 && (
-                          <div className="p-4 text-center text-xs text-slate-400 font-bold uppercase">No designs found</div>
-                        )}
+                        {localDesigns.length === 0 && <div className="p-8 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-slate-200" /></div>}
                       </div>
                     )}
                   </div>
@@ -449,79 +437,82 @@ export default function OrderForm({
                   {showDesignList[item.id] && <div className="fixed inset-0 z-40" onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}></div>}
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-black uppercase tracking-widest">Article / Size</label>
+                {/* Article Selection */}
+                <div className="lg:col-span-3 space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Article & Size</label>
                   <select 
                     name={`productId_${index}`} 
                     required 
                     value={item.productId}
                     onChange={(e) => updateItem(item.id, "productId", e.target.value)}
-                    className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black px-4"
+                    className="w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 px-4 transition-all"
                   >
                     <option value="">Select Article</option>
                     {availableProducts[item.brandId]?.map(p => (
-                      <option key={p.id} value={p.id}>{p.category}: {p.name} ({p.price} DT)</option>
+                      <option key={p.id} value={p.id}>{p.category}: {p.name}</option>
                     ))}
                   </select>
                   <input type="hidden" name={`size_${index}`} value={item.size} />
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <label className="text-[10px] font-black text-black uppercase tracking-widest">Price</label>
-                    <div className="h-11 flex items-center px-4 bg-white border-2 border-slate-300 rounded-xl font-black text-emerald-600">
-                      {item.price || 0} <span className="ml-1 text-[10px] text-black uppercase">DT</span>
+                {/* Price Display */}
+                <div className="lg:col-span-2 flex items-center gap-4">
+                  <div className="flex-1 space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Price</label>
+                    <div className="h-14 flex items-center justify-center bg-emerald-50 rounded-xl font-black text-emerald-600 border-2 border-emerald-100 text-lg">
+                      {item.price || 0} <span className="ml-1 text-[10px] text-slate-900 uppercase">DT</span>
                     </div>
                   </div>
                   {items.length > 1 && (
                     <button 
                       type="button" 
                       onClick={() => removeItem(item.id)}
-                      className="mt-6 p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                      className="mt-6 p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   )}
                 </div>
               </div>
-            ))}
-
-            <button 
-              type="button" 
-              onClick={addItem}
-              className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 font-bold hover:border-emerald-500 hover:text-emerald-500 transition-all flex items-center justify-center gap-2 group"
-            >
-              <PlusCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-              ADD ANOTHER ARTICLE
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-12 bg-slate-900 rounded-[2rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-slate-200">
-          <div className="text-center md:text-left">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Order Total</p>
-            <div className="text-5xl font-black text-white tracking-tighter">
-              {totalPrice} <span className="text-emerald-500 text-2xl ml-2 uppercase">DT</span>
             </div>
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="w-full md:w-auto bg-emerald-500 text-white px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-[0.2em] shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 disabled:bg-slate-700 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 min-w-[280px]"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                PROCESSING...
-              </>
-            ) : (
-              'CONFIRM FINAL ORDER'
-            )}
-          </button>
+          ))}
         </div>
-        <input type="hidden" name="itemCount" value={items.length} />
-      </form>
-    </>
+      </div>
+
+      {/* Footer / Total Area */}
+      <div className="mt-16 bg-slate-900 rounded-[2.5rem] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl shadow-slate-900/30 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -translate-y-32 translate-x-32 blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full translate-y-32 -translate-x-32 blur-3xl pointer-events-none"></div>
+        
+        <div className="text-center md:text-left relative z-10">
+          <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em]">Ready to process</p>
+          </div>
+          <div className="text-6xl md:text-7xl font-black text-white tracking-tighter flex items-baseline gap-3 justify-center md:justify-start">
+            {totalPrice} <span className="text-2xl text-slate-500 font-bold uppercase tracking-widest">DT</span>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          className="w-full md:w-auto bg-white text-slate-900 px-16 py-7 rounded-[1.5rem] font-black uppercase text-sm tracking-[0.2em] shadow-2xl hover:bg-emerald-500 hover:text-white transition-all transform active:scale-95 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed group relative z-10 overflow-hidden"
+        >
+          {isSubmitting ? (
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span>Creating Order...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <span>Confirm Final Order</span>
+              <PlusCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+            </div>
+          )}
+        </button>
+      </div>
+      <input type="hidden" name="itemCount" value={items.length} />
+    </form>
   );
 }
