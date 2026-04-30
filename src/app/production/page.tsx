@@ -153,35 +153,34 @@ export default async function ProductionPage() {
         <div className="space-y-6">
           {displayWrapped.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-sm font-black flex items-center gap-2 text-emerald-600 uppercase tracking-widest">
-                <Package className="w-4 h-4" />
+              <h3 className="text-[10px] font-black flex items-center gap-2 text-emerald-600 uppercase tracking-widest">
+                <Package className="w-3.5 h-3.5" />
                 Recently Wrapped
               </h3>
-              <div className="max-h-[280px] overflow-y-auto bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 shadow-inner custom-scrollbar">
-                {displayWrapped.slice(0, 15).map(item => (
-                  <div key={item.id} className="p-2.5 flex items-center gap-3 hover:bg-emerald-100/50 transition-colors">
-                    <div className="w-8 h-8 rounded-lg bg-white p-1 shrink-0 border border-emerald-200">
+              <div className="max-h-[200px] overflow-y-auto bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 shadow-inner custom-scrollbar">
+                {displayWrapped.slice(0, 20).map(item => (
+                  <div key={item.id} className="p-2 flex items-center gap-3 hover:bg-emerald-100/50 transition-colors">
+                    <div className="w-7 h-7 rounded bg-white p-0.5 shrink-0 border border-emerald-200">
                       {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[10px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-[9px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
                         {item.isPack && (
-                          <span className="bg-emerald-600 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
+                          <span className="bg-emerald-600 text-white text-[6px] font-black px-1 rounded-full uppercase tracking-tighter">
                             PACK x{item.count}
                           </span>
                         )}
                       </div>
-                      <p className="text-[9px] font-bold text-slate-500 mt-1 truncate">
-                        REF #{item.order.reference} • {item.isPack ? "Multiple sizes" : item.size}
+                      <p className="text-[8px] font-bold text-slate-500 mt-0.5 truncate uppercase">
+                        REF #{item.order.reference}
                       </p>
                     </div>
                     <Link 
                       href="/shipping" 
-                      className="bg-emerald-600 text-white p-2 rounded-lg hover:bg-emerald-700 transition-all shadow-sm"
-                      title="View in Shipping"
+                      className="bg-emerald-600 text-white p-1.5 rounded-lg hover:bg-emerald-700 transition-all shadow-sm shrink-0"
                     >
-                      <Truck className="w-3 h-3" />
+                      <Truck className="w-2.5 h-2.5" />
                     </Link>
                   </div>
                 ))}
@@ -189,7 +188,7 @@ export default async function ProductionPage() {
             </div>
           )}
 
-          <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
+          <h3 className="text-sm font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
             <Factory className="w-5 h-5 text-slate-400" />
             PRODUCTION LISTS
           </h3>
