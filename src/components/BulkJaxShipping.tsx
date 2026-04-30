@@ -9,7 +9,7 @@ export default function BulkJaxShipping({
   onShip 
 }: { 
   readyOrders: any[], 
-  onShip: (orderId: string) => Promise<any> 
+  onShip: (formData: FormData) => Promise<any> 
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentOrderName, setCurrentOrderName] = useState("");
@@ -29,7 +29,9 @@ export default function BulkJaxShipping({
       setProgress({ current: i + 1, total });
       
       try {
-        const res = await onShip(order.id);
+        const formData = new FormData();
+        formData.append("orderId", order.id);
+        const res = await onShip(formData);
         if (res.success) {
           results.push({ ...order, trackingId: res.trackingId });
         } else {
