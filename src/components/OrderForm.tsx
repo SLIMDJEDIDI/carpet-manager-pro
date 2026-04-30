@@ -194,13 +194,11 @@ export default function OrderForm({
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     
-    // Safety Timeout: Force-unlock UI after 20 seconds
+    // Safety Timeout: Force-unlock UI after 12 seconds
     const timeoutId = setTimeout(() => {
-      if (setIsSubmitting) {
-        setIsSubmitting(false);
-        alert("Server is taking too long to respond. The order might have been created, but the interface timed out. Please check the order list.");
-      }
-    }, 20000);
+      setIsSubmitting(false);
+      alert("Order processing is taking longer than expected. Please check your Orders List to see if the order was created.");
+    }, 12000);
 
     try {
       const result = await action(formData);

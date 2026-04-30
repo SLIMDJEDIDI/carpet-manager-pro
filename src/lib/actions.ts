@@ -54,7 +54,7 @@ export async function createOrder(formData: FormData) {
   }
 
   try {
-    // 1. Pre-fetch products and DESIGNS to ensure they exist
+    // 1. Pre-fetch data
     const productIds = [];
     const designIds = [];
     for (let i = 0; i < itemCount; i++) {
@@ -72,94 +72,79 @@ export async function createOrder(formData: FormData) {
     const productMap = new Map(products.map(p => [p.id, p]));
     const designMap = new Map(designs.map(d => [d.id, d]));
 
-    // Validation: Ensure all designs from form actually exist in DB
-    for (const did of designIds) {
-      if (!designMap.has(did)) {
-        return { success: false, error: `Design with ID ${did} not found. Please refresh and try again.` };
-      }
-    }
+    // 2. Calculate Reference (Fast)
+    const lastOrder = await prisma.order.findFirst({
+      orderBy: { reference: 'desc' },
+      select: { reference: true }
+    });
+    const nextReference = (lastOrder?.reference || 0) + 1;
 
-    const result = await prisma.$transaction(async (tx) => {
-      // 2. Calculate Reference
-      const lastOrder = await tx.order.findFirst({
-        orderBy: { reference: 'desc' },
-        select: { reference: true }
-      });
-      const nextReference = (lastOrder?.reference || 0) + 1;
+    // 3. Create Base Order (No Transaction to avoid locks)
+    const order = await prisma.order.create({
+      data: {
+        customerName, customerPhone, customerAddress, 
+        customerPostalCode, customerGovernorate, customerDelegation,
+        reference: nextReference, totalAmount: 0,
+      },
+    });
 
-      // 3. Prepare all items for a single nested create
-      const itemsToCreate = [];
-      let orderTotal = 0;
+    let orderTotal = 0;
 
-      for (let i = 0; i < itemCount; i++) {
-        const brandId = formData.get(`brandId_${i}`) as string;
-        const designId = formData.get(`designId_${i}`) as string;
-        const productId = formData.get(`productId_${i}`) as string;
-        
-        if (!brandId || !designId || !productId) continue;
+    // 4. Create Items Sequentially (Faster than locked transaction for low item counts)
+    for (let i = 0; i < itemCount; i++) {
+      const brandId = formData.get(`brandId_${i}`) as string;
+      const designId = formData.get(`designId_${i}`) as string;
+      const productId = formData.get(`productId_${i}`) as string;
+      
+      if (!brandId || !designId || !productId) continue;
+      const product = productMap.get(productId);
+      const design = designMap.get(designId);
+      
+      if (!product || !design) continue;
 
-        const product = productMap.get(productId);
-        if (!product) continue;
+      orderTotal += product.price;
 
-        orderTotal += product.price;
-
-        // Construct main item with sub-items (Packs) nested
-        const subItems = [];
-        if (product.isPack && product.components) {
-          try {
-            const components = JSON.parse(product.components);
-            for (const comp of components) {
-              const qty = comp.qty || 1;
-              for (let q = 0; q < qty; q++) {
-                subItems.push({
-                  brandId, designId,
-                  size: comp.size, price: 0, isPack: false,
-                  status: "PENDING",
-                });
-              }
-            }
-          } catch (jsonError) {
-            console.error("Failed to parse pack components:", jsonError);
-          }
-        }
-
-        itemsToCreate.push({
-          brandId, designId,
+      const mainItem = await prisma.orderItem.create({
+        data: {
+          orderId: order.id, brandId, designId,
           size: product.size, price: product.price,
           isPack: product.isPack,
           status: product.isPack ? "PACK_PARENT" : "PENDING",
-          subItems: subItems.length > 0 ? { create: subItems } : undefined
-        });
-      }
-
-      // 4. Single multi-level creation (extremely fast)
-      return await tx.order.create({
-        data: {
-          customerName, customerPhone, customerAddress, 
-          customerPostalCode, customerGovernorate, customerDelegation,
-          reference: nextReference,
-          totalAmount: orderTotal,
-          items: {
-            create: itemsToCreate
-          }
-        },
+        }
       });
-    }, { 
-      timeout: 15000 // Shorter timeout for faster feedback
+
+      if (product.isPack && product.components) {
+        try {
+          const components = JSON.parse(product.components);
+          for (const comp of components) {
+            const qty = comp.qty || 1;
+            for (let q = 0; q < qty; q++) {
+              await prisma.orderItem.create({
+                data: {
+                  orderId: order.id, brandId, designId,
+                  size: comp.size, price: 0, isPack: false,
+                  parentItemId: mainItem.id, status: "PENDING",
+                }
+              });
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 5. Update Final Total
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { totalAmount: orderTotal }
     });
 
-    await logActivity("CREATE_ORDER", `New Order REF #${result.reference} created`, { reference: result.reference, orderId: result.id });
+    // Fire and forget logging (Non-blocking)
+    logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: order.id });
     
-    revalidatePath("/orders");
-    return { success: true, reference: result.reference };
+    return { success: true, reference: nextReference };
   } catch (e: any) {
-    console.error("CREATE_ORDER_CRITICAL_FAILURE:", e);
-    // Attempt to log the error to the database (outside the failed transaction)
-    try {
-      await logActivity("ERROR", `Order creation failed: ${e.message}`);
-    } catch {}
-    
-    return { success: false, error: e.message || "A database error occurred during order creation." };
+    console.error("CREATE_ORDER_FAILED:", e);
+    return { success: false, error: e.message || "Database Error. Please try again." };
   }
 }
 
