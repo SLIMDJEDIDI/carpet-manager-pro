@@ -125,7 +125,7 @@ export default async function OrdersPage({
                     <span className={`text-[8px] md:text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
                       {order.status === "PENDING" && <Clock className="w-3 h-3" />}
                       {order.status === "CONFIRMED" && <CheckCircle2 className="w-3 h-3" />}
-                      {order.status === "PENDING" ? "RECEIVED (WAITING CALL)" : order.status}
+                      {order.status === "PENDING" ? "RECEIVED (WAITING CONFIRMATION)" : order.status}
                     </span>
                     {order.status === "PENDING" && (
                       <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
