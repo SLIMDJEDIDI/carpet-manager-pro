@@ -62,6 +62,13 @@ export async function createDesignAction(prevState: DesignActionState | null, fo
 }
 
 /**
+ * Quick Design Creation Action (Alias for compatibility)
+ */
+export async function createDesignQuickAction(prevState: DesignActionState | null, formData: FormData) {
+  return createDesignAction(prevState, formData);
+}
+
+/**
  * Update Design Action
  */
 export async function updateDesignAction(id: string, formData: FormData) {
