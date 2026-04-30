@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import DeleteOrderButton from "@/components/DeleteOrderButton";
@@ -130,11 +130,13 @@ export default async function OrdersPage({
                     {order.status === "PENDING" && (
                       <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
                         <a
-                          href={`tel:${order.customerPhone}`}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-100 transition-all shadow-sm"
+                          href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, "").startsWith("216") ? order.customerPhone.replace(/[^0-9]/g, "") : "216" + order.customerPhone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-100 transition-all shadow-sm"
                         >
-                          <Phone className="w-3.5 h-3.5" />
-                          Call Now
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          WhatsApp
                         </a>
                         <Link
                           href={`/orders/edit/${order.id}`}
