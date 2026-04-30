@@ -205,8 +205,7 @@ export default function OrderForm({
       clearTimeout(timeoutId);
       
       if (result?.success) {
-        router.push("/orders");
-        router.refresh();
+        window.location.href = "/orders";
       } else {
         alert(`Error: ${result?.error || "Unknown error occurred"}`);
         setIsSubmitting(false);
@@ -214,7 +213,7 @@ export default function OrderForm({
     } catch (error: any) {
       clearTimeout(timeoutId);
       console.error("Order submission failed:", error);
-      alert(`Order submission failed: ${error.message || "Unknown error"}. Please try again.`);
+      alert("Order submission failed. Please check your connection and try again.");
       setIsSubmitting(false);
     }
   };

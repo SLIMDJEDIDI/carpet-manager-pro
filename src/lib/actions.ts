@@ -79,7 +79,7 @@ export async function createOrder(formData: FormData) {
     });
     const nextReference = (lastOrder?.reference || 0) + 1;
 
-    // 3. Create Base Order (No Transaction to avoid locks)
+    // 3. Create Base Order (Direct Write - No Transaction Lock)
     const order = await prisma.order.create({
       data: {
         customerName, customerPhone, customerAddress, 
@@ -90,7 +90,7 @@ export async function createOrder(formData: FormData) {
 
     let orderTotal = 0;
 
-    // 4. Create Items Sequentially (Faster than locked transaction for low item counts)
+    // 4. Create Items
     for (let i = 0; i < itemCount; i++) {
       const brandId = formData.get(`brandId_${i}`) as string;
       const designId = formData.get(`designId_${i}`) as string;
@@ -98,9 +98,8 @@ export async function createOrder(formData: FormData) {
       
       if (!brandId || !designId || !productId) continue;
       const product = productMap.get(productId);
-      const design = designMap.get(designId);
       
-      if (!product || !design) continue;
+      if (!product) continue;
 
       orderTotal += product.price;
 
@@ -128,7 +127,9 @@ export async function createOrder(formData: FormData) {
               });
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error("Pack error:", e);
+        }
       }
     }
 
