@@ -46,20 +46,30 @@ export default function OrderForm({
   
   const [localDesigns, setLocalDesigns] = useState(designs);
   const [isRefreshingDesigns, setIsRefreshingDesigns] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(Date.now());
   const [activeItemIdForDesign, setActiveItemIdForDesign] = useState<string | number | null>(null);
 
-  const refreshDesigns = async () => {
-    setIsRefreshingDesigns(true);
+  const refreshDesigns = async (silent = false) => {
+    if (!silent) setIsRefreshingDesigns(true);
     try {
       const res = await fetch('/api/designs');
       const data = await res.json();
       if (Array.isArray(data)) {
         setLocalDesigns(data);
+        setLastRefreshed(Date.now());
       }
     } catch (e) {
       console.error("Failed to refresh designs", e);
     } finally {
-      setIsRefreshingDesigns(false);
+      if (!silent) setIsRefreshingDesigns(false);
+    }
+  };
+
+  const handleDesignFocus = (itemId: string | number) => {
+    setShowDesignList(prev => ({ ...prev, [itemId]: true }));
+    // Auto-refresh if more than 30 seconds old
+    if (Date.now() - lastRefreshed > 30000) {
+      refreshDesigns(true);
     }
   };
 
@@ -349,11 +359,15 @@ export default function OrderForm({
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        onClick={refreshDesigns}
-                        className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                        onClick={() => refreshDesigns(false)}
+                        className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-1 px-2 py-0.5 rounded-md transition-all border ${
+                          isRefreshingDesigns 
+                            ? 'bg-slate-100 text-slate-400 border-slate-200' 
+                            : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
+                        }`}
                       >
                         <RefreshCw className={`w-3 h-3 ${isRefreshingDesigns ? 'animate-spin' : ''}`} />
-                        Refresh Catalog
+                        {isRefreshingDesigns ? 'Updating...' : 'Refresh Catalog'}
                       </button>
                       <a 
                         href="/designs/new" 
@@ -374,7 +388,7 @@ export default function OrderForm({
                         setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
                         setShowDesignList(prev => ({ ...prev, [item.id]: true }));
                       }}
-                      onFocus={() => setShowDesignList(prev => ({ ...prev, [item.id]: true }))}
+                      onFocus={() => handleDesignFocus(item.id)}
                       className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10 pr-4"
                     />
                     <Palette className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
