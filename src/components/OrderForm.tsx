@@ -193,11 +193,20 @@ export default function OrderForm({
     
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
+    
+    // Safety Timeout: Force-unlock UI after 20 seconds
+    const timeoutId = setTimeout(() => {
+      if (setIsSubmitting) {
+        setIsSubmitting(false);
+        alert("Server is taking too long to respond. The order might have been created, but the interface timed out. Please check the order list.");
+      }
+    }, 20000);
+
     try {
       const result = await action(formData);
+      clearTimeout(timeoutId);
+      
       if (result?.success) {
-        // If successful, we trigger the push. 
-        // We don't set isSubmitting to false here because we're leaving the page.
         router.push("/orders");
         router.refresh();
       } else {
@@ -205,6 +214,7 @@ export default function OrderForm({
         setIsSubmitting(false);
       }
     } catch (error: any) {
+      clearTimeout(timeoutId);
       console.error("Order submission failed:", error);
       alert(`Order submission failed: ${error.message || "Unknown error"}. Please try again.`);
       setIsSubmitting(false);

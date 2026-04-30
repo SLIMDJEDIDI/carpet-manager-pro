@@ -54,17 +54,30 @@ export async function createOrder(formData: FormData) {
   }
 
   try {
-    // 1. Pre-fetch products
+    // 1. Pre-fetch products and DESIGNS to ensure they exist
     const productIds = [];
+    const designIds = [];
     for (let i = 0; i < itemCount; i++) {
       const pid = formData.get(`productId_${i}`) as string;
+      const did = formData.get(`designId_${i}`) as string;
       if (pid) productIds.push(pid);
+      if (did) designIds.push(did);
     }
     
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds } }
-    });
+    const [products, designs] = await Promise.all([
+      prisma.product.findMany({ where: { id: { in: productIds } } }),
+      prisma.design.findMany({ where: { id: { in: designIds } } })
+    ]);
+
     const productMap = new Map(products.map(p => [p.id, p]));
+    const designMap = new Map(designs.map(d => [d.id, d]));
+
+    // Validation: Ensure all designs from form actually exist in DB
+    for (const did of designIds) {
+      if (!designMap.has(did)) {
+        return { success: false, error: `Design with ID ${did} not found. Please refresh and try again.` };
+      }
+    }
 
     const result = await prisma.$transaction(async (tx) => {
       // 2. Calculate Reference
