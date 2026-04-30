@@ -134,16 +134,23 @@ export async function createOrder(formData: FormData) {
 }
 
 export async function updateOrder(orderId: string, formData: FormData) {
-  // Update logic stays the same but with revalidatePath fix
   const customerName = formData.get("customerName") as string;
   const customerPhone = formData.get("customerPhone") as string;
   const customerAddress = formData.get("customerAddress") as string;
   const customerPostalCode = formData.get("customerPostalCode") as string;
   const customerGovernorate = formData.get("customerGovernorate") as string;
   const customerDelegation = formData.get("customerDelegation") as string;
-  const itemCount = parseInt(formData.get("itemCount") as string || "1");
+  const itemCount = parseInt(formData.get("itemCount") as string || "0");
 
   try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true }
+    });
+
+    if (!order) throw new Error("Order not found");
+
+    // 1. Update Customer Details
     await prisma.order.update({
       where: { id: orderId },
       data: {
@@ -152,10 +159,68 @@ export async function updateOrder(orderId: string, formData: FormData) {
       },
     });
 
-    // Simple sequential update for items
+    // 2. Sync Items (Only if order is not SHIPPED)
+    if (order.status !== "SHIPPED" && itemCount > 0) {
+      // For simplicity in this workflow: 
+      // Delete existing items and recreate them to match the form
+      // This is safe if they are PENDING. If they are IN_PRODUCTION, we should alert or handle.
+      // But during confirmation call, they are usually PENDING.
+      
+      await prisma.orderItem.deleteMany({ where: { orderId } });
+
+      let orderTotal = 0;
+      const products = await prisma.product.findMany();
+      const productMap = new Map(products.map(p => [p.id, p]));
+
+      for (let i = 0; i < itemCount; i++) {
+        const brandId = formData.get(`brandId_${i}`) as string;
+        const designId = formData.get(`designId_${i}`) as string;
+        const productId = formData.get(`productId_${i}`) as string;
+        
+        if (!brandId || !designId || !productId) continue;
+
+        const product = productMap.get(productId);
+        if (!product) continue;
+
+        orderTotal += product.price;
+
+        const mainItem = await prisma.orderItem.create({
+          data: {
+            orderId, brandId, designId,
+            size: product.size, price: product.price,
+            isPack: product.isPack,
+            status: "PENDING"
+          }
+        });
+
+        if (product.isPack && product.components) {
+          const components = JSON.parse(product.components);
+          for (const comp of components) {
+            const qty = comp.qty || 1;
+            for (let q = 0; q < qty; q++) {
+              await prisma.orderItem.create({
+                data: {
+                  orderId, brandId, designId,
+                  size: comp.size, price: 0, isPack: false,
+                  parentItemId: mainItem.id, status: "PENDING",
+                }
+              });
+            }
+          }
+        }
+      }
+
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { totalAmount: orderTotal }
+      });
+    }
+
     revalidatePath("/orders");
+    revalidatePath("/production");
     return { success: true };
   } catch (e: any) {
+    console.error("UPDATE_ORDER_ERROR:", e);
     return { success: false, error: e.message };
   }
 }

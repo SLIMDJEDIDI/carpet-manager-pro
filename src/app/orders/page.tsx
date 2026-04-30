@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import DeleteOrderButton from "@/components/DeleteOrderButton";
@@ -128,7 +128,23 @@ export default async function OrdersPage({
                       {order.status === "PENDING" ? "RECEIVED (WAITING CALL)" : order.status}
                     </span>
                     {order.status === "PENDING" && (
-                      <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
+                      <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
+                        <a
+                          href={`tel:${order.customerPhone}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-100 transition-all shadow-sm"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          Call Now
+                        </a>
+                        <Link
+                          href={`/orders/edit/${order.id}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-50 text-slate-600 hover:bg-slate-900 hover:text-white border border-slate-100 transition-all shadow-sm"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          Edit Details
+                        </Link>
+                        <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
+                      </div>
                     )}
                   </div>
                 </div>
