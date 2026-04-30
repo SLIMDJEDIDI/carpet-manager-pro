@@ -142,33 +142,63 @@ export default async function ProductionPage() {
 
           <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
             <Factory className="w-5 h-5 text-slate-400" />
-            Active Batches
+            PRODUCTION LISTS
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            {productionLists.map(list => (
-              <div key={list.id} className="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 hover:border-amber-200 transition-colors group">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded uppercase tracking-widest flex items-center gap-1.5">
-                    Batch #{list.id.slice(-4)}
-                  </span>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(list.createdAt).toLocaleDateString()}</span>
-                </div>
-                <h4 className="font-black text-slate-900 leading-tight text-base md:text-lg truncate">{list.batchName}</h4>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                  <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest">{list.items.filter(i => !i.isPack).length} CARPETS</span>
-                  <div className="flex flex-wrap gap-2">
-                    <Link 
-                      href={`/production/${list.id}`}
-                      className="bg-slate-900 text-white px-3 md:px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all text-center flex-1 sm:flex-none"
-                    >
-                      Manage
-                    </Link>
-                    <ExportProductionList orders={list.items as any} batchName={list.batchName} />
-                    <PrintProductionList batchName={list.batchName} items={list.items} />
+          <div className="grid grid-cols-1 gap-4">
+            {productionLists.map(list => {
+              const items = list.items.filter(i => !i.isPack);
+              const isFullyWrapped = items.length > 0 && items.every(i => i.status === "WRAPPED");
+
+              if (isFullyWrapped) {
+                return (
+                  <div key={list.id} className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between gap-4 opacity-60 hover:opacity-100 transition-opacity group">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-[8px] font-black text-slate-400 bg-slate-200 px-2 py-0.5 rounded uppercase tracking-widest shrink-0">
+                        #{list.id.slice(-4)}
+                      </span>
+                      <h4 className="font-bold text-slate-500 text-xs truncate uppercase tracking-tight">{list.batchName}</h4>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-emerald-600 font-black text-[8px] uppercase tracking-widest flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Wrapped
+                      </span>
+                      <Link 
+                        href={`/production/${list.id}`}
+                        className="text-slate-400 hover:text-slate-900 transition-colors"
+                      >
+                        <Factory className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={list.id} className="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 hover:border-amber-200 transition-colors group">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded uppercase tracking-widest flex items-center gap-1.5">
+                      Batch #{list.id.slice(-4)}
+                    </span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(list.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <h4 className="font-black text-slate-900 leading-tight text-base md:text-lg truncate">{list.batchName}</h4>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                    <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest">{items.length} CARPETS</span>
+                    <div className="flex flex-wrap gap-2">
+                      <Link 
+                        href={`/production/${list.id}`}
+                        className="bg-slate-900 text-white px-3 md:px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all text-center flex-1 sm:flex-none"
+                      >
+                        Manage
+                      </Link>
+                      <ExportProductionList orders={list.items as any} batchName={list.batchName} />
+                      <PrintProductionList batchName={list.batchName} items={list.items} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
