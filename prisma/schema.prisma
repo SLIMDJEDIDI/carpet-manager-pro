@@ -36,10 +36,10 @@ model Order {
   status             String      @default("PENDING")
   totalAmount        Float       @default(0)
   parcelNumber       String?     // Keeping this for reference
-  jaxTrackingId      String?     // New field for JAX integration
-  jaxReceiptUrl      String?     // URL to the receipt image/PDF from JAX
+  // jaxTrackingId      String?     // New field for JAX integration
+  // jaxReceiptUrl      String?     // URL to the receipt image/PDF from JAX
   createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  // updatedAt          DateTime    @updatedAt
   items              OrderItem[]
 }
 
@@ -55,7 +55,7 @@ model OrderItem {
   status           String          @default("PENDING")
   productionListId String?
   createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  // updatedAt        DateTime        @updatedAt
   
   productionList   ProductionList? @relation(fields: [productionListId], references: [id])
   design           Design          @relation(fields: [designId], references: [id])
