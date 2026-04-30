@@ -38,9 +38,45 @@ export default async function ProductionPage() {
 
   const wrappedItems = await prisma.orderItem.findMany({
     where: { status: "WRAPPED" },
-    include: { brand: true, design: true, order: true },
+    include: { 
+      brand: true, 
+      design: true, 
+      order: true,
+      parentItem: {
+        include: { design: true }
+      }
+    },
     orderBy: { updatedAt: "desc" },
-    take: 10
+    take: 30
+  });
+
+  // Group wrapped items by pack to save space and show context
+  const displayWrapped: any[] = [];
+  wrappedItems.forEach(item => {
+    if (item.parentItemId) {
+      const existing = displayWrapped.find(d => d.isPack && d.id === item.parentItemId);
+      if (existing) {
+        existing.count++;
+      } else {
+        displayWrapped.push({
+          id: item.parentItemId,
+          isPack: true,
+          design: item.parentItem?.design || item.design,
+          order: item.order,
+          count: 1,
+          updatedAt: item.updatedAt
+        });
+      }
+    } else if (!item.isPack) { // Only show real carpets or packs as groups
+      displayWrapped.push({
+        id: item.id,
+        isPack: false,
+        design: item.design,
+        order: item.order,
+        size: item.size,
+        updatedAt: item.updatedAt
+      });
+    }
   });
 
   return (
@@ -115,24 +151,37 @@ export default async function ProductionPage() {
         </div>
 
         <div className="space-y-6">
-          {wrappedItems.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-emerald-600 uppercase tracking-tight">
-                <Package className="w-5 h-5" />
-                Recently Wrapped ({wrappedItems.length})
+          {displayWrapped.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-black flex items-center gap-2 text-emerald-600 uppercase tracking-widest">
+                <Package className="w-4 h-4" />
+                Recently Wrapped
               </h3>
-              <div className="bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 overflow-hidden">
-                {wrappedItems.map(item => (
-                  <div key={item.id} className="p-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-white p-1 shrink-0 border border-emerald-200">
+              <div className="max-h-[280px] overflow-y-auto bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 shadow-inner custom-scrollbar">
+                {displayWrapped.slice(0, 15).map(item => (
+                  <div key={item.id} className="p-2.5 flex items-center gap-3 hover:bg-emerald-100/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-white p-1 shrink-0 border border-emerald-200">
                       {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
-                      <p className="text-[9px] font-bold text-slate-500 truncate">REF #{item.order.reference}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[10px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
+                        {item.isPack && (
+                          <span className="bg-emerald-600 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
+                            PACK x{item.count}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[9px] font-bold text-slate-500 mt-1 truncate">
+                        REF #{item.order.reference} • {item.isPack ? "Multiple sizes" : item.size}
+                      </p>
                     </div>
-                    <Link href="/shipping" className="bg-emerald-600 text-white p-2 rounded-lg hover:bg-emerald-700 transition-all">
-                      <Truck className="w-3.5 h-3.5" />
+                    <Link 
+                      href="/shipping" 
+                      className="bg-emerald-600 text-white p-2 rounded-lg hover:bg-emerald-700 transition-all shadow-sm"
+                      title="View in Shipping"
+                    >
+                      <Truck className="w-3 h-3" />
                     </Link>
                   </div>
                 ))}
