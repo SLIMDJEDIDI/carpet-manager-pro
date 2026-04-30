@@ -100,14 +100,16 @@ export default function NewDesignPage() {
                     <p className="mb-2 text-sm text-slate-900 font-black uppercase tracking-widest">Click to upload file</p>
                     <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 10MB)</p>
                   </div>
-                   <input 
+                    <input 
                     id="design-image-input"
                     type="file" 
                     name="image" 
+                    required
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" 
                     accept="image/*" 
                     onChange={handleFileChange} 
                   />
+
 
                 </label>
               )}

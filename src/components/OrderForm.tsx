@@ -98,19 +98,14 @@ export default function OrderForm({
       if (phone.length >= 8) {
         setIsSearching(true);
         try {
-          const res = await fetch(`/api/customers/search?phone=${phone}`, { signal: controller.signal });
+          const res = await fetch(`/api/customers?phone=${phone}`, { signal: controller.signal });
           const data = await res.json();
-          if (data.found) {
+          if (data) {
             setName(data.name);
             setAddress(data.address);
             setPostalCode(data.postalCode || "");
             setGovernorate(data.governorate || "");
             setDelegation(data.delegation || "");
-          }
-          setHasPending(data.hasPending);
-        } catch (e) {
-          if (e instanceof Error && e.name !== 'AbortError') {
-            console.error("Search failed", e);
           }
         } finally {
           setIsSearching(false);
@@ -123,28 +118,6 @@ export default function OrderForm({
     };
   }, [phone, initialData]);
 
-  const updateItem = async (id: string | number, field: string, value: any) => {
-    setItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newItem = { ...item, [field]: value };
-        // If brand changes, clear product and design
-        if (field === "brandId") {
-          newItem.productId = "";
-          newItem.price = 0;
-          fetchProductsForBrand(value);
-        }
-        // If product changes, update price
-        if (field === "productId") {
-          const brandId = item.brandId;
-          const product = availableProducts[brandId]?.find((p: any) => p.id === value);
-          newItem.price = product?.price || 0;
-        }
-        return newItem;
-      }
-      return item;
-    }));
-  };
-
   const fetchProductsForBrand = async (brandId: string) => {
     if (!brandId || availableProducts[brandId]) return;
     try {
@@ -156,10 +129,33 @@ export default function OrderForm({
     }
   };
 
-    
-    fetchNeeded();
-    return () => { active = false; };
-  }, [brandsToFetch]);
+  const updateItem = async (id: string | number, field: string, value: any) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const newItem = { ...item, [field]: value };
+        // If brand changes, clear product and design
+        if (field === "brandId") {
+          newItem.productId = "";
+          newItem.size = "";
+          newItem.price = 0;
+          fetchProductsForBrand(value);
+        }
+        // If product changes, update price and size
+        if (field === "productId") {
+          const product = availableProducts[item.brandId]?.find((p: any) => p.id === value);
+          if (product) {
+            newItem.size = product.size;
+            newItem.price = product.price;
+          } else {
+            newItem.size = "";
+            newItem.price = 0;
+          }
+        }
+        return newItem;
+      }
+      return item;
+    }));
+  };
 
   const addItem = () => {
     setItems(prev => [...prev, { 
@@ -174,23 +170,6 @@ export default function OrderForm({
 
   const removeItem = (id: string | number) => {
     setItems(prev => prev.length > 1 ? prev.filter(item => item.id !== id) : prev);
-  };
-
-  const updateItem = (id: string | number, field: keyof Item, value: string) => {
-    setItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const newItem = { ...item, [field]: value };
-        if (field === 'productId') {
-          const product = availableProducts[item.brandId]?.find(p => p.id === value);
-          if (product) {
-            newItem.size = product.size;
-            newItem.price = product.price;
-          }
-        }
-        return newItem;
-      }
-      return item;
-    }));
   };
 
   const totalPrice = items.reduce((sum, item) => sum + (item.price || 0), 0);
@@ -231,314 +210,304 @@ export default function OrderForm({
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 bg-white p-5 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100">
-      {/* Customer Info Section */}
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Phone className="w-4 h-4 text-emerald-600" />
-              Customer Phone
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+              <Phone className="w-3 h-3" /> Customer Phone
             </label>
-            <input 
-              type="tel" 
-              name="customerPhone" 
-              required 
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. 55 123 456"
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
-            />
-            {hasPending && !initialData && (
-              <p className="text-xs font-black text-amber-600 uppercase animate-bounce mt-2">
-                ⚠️ Warning: This customer already has a pending order!
-              </p>
-            )}
+            <div className="relative">
+              <input 
+                name="customerPhone"
+                type="text" 
+                required 
+                placeholder="e.g. 55 123 456"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
+              />
+              {isSearching && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <Loader2 className="w-5 h-5 text-emerald-600 animate-spin" />
+                </div>
+              )}
+            </div>
           </div>
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <User className="w-4 h-4 text-emerald-600" />
-              Full Name
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+              <User className="w-3 h-3" /> Full Name
             </label>
             <input 
+              name="customerName"
               type="text" 
-              name="customerName" 
               required 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
             />
           </div>
         </div>
 
-        <div className="space-y-3">
-          <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-emerald-600" />
-            Delivery Address
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+            <MapPin className="w-3 h-3" /> Delivery Address
           </label>
           <input 
+            name="customerAddress"
             type="text" 
-            name="customerAddress" 
             required 
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+            className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Search className="w-4 h-4 text-emerald-600" />
-              Postal Code
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+              <Search className="w-3 h-3" /> Postal Code
             </label>
             <input 
+              name="customerPostalCode"
               type="text" 
-              name="customerPostalCode" 
+              placeholder="e.g. 1001"
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="e.g. 1001"
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6" 
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
             />
           </div>
 
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-emerald-600" />
-              Gouvernorat
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+              <Globe className="w-3 h-3" /> Gouvernorat
             </label>
-            <select
+            <select 
               name="customerGovernorate"
-              required
+              required 
               value={governorate}
               onChange={(e) => {
                 setGovernorate(e.target.value);
                 setDelegation("");
               }}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none"
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
             >
               <option value="">Sélectionner</option>
-              {Object.keys(TUNISIA_LOCATIONS).sort().map(gov => (
+              {Object.keys(TUNISIA_LOCATIONS).map(gov => (
                 <option key={gov} value={gov}>{gov}</option>
               ))}
             </select>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-sm font-black text-black uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              Délégation
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-black uppercase tracking-widest flex items-center gap-2">
+              <MapPin className="w-3 h-3" /> Délégation
             </label>
-            <select
+            <select 
               name="customerDelegation"
-              required
+              required 
               value={delegation}
               onChange={(e) => setDelegation(e.target.value)}
-              disabled={!governorate}
-              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-6 appearance-none disabled:opacity-50"
+              className="w-full rounded-2xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-14 bg-white font-bold text-black px-4"
             >
               <option value="">Sélectionner</option>
-              {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.sort().map(del => (
+              {governorate && TUNISIA_LOCATIONS[governorate as keyof typeof TUNISIA_LOCATIONS]?.map(del => (
                 <option key={del} value={del}>{del}</option>
               ))}
             </select>
           </div>
         </div>
-      </div>
 
-      <div className="relative py-4">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-slate-100"></span>
-        </div>
-        <div className="relative flex justify-center text-xs uppercase font-black text-slate-400 bg-white px-4 tracking-widest">
-          Carpet Articles in this Order
-        </div>
-      </div>
+        <div className="pt-8 border-t border-slate-100">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-px flex-1 bg-slate-100"></div>
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Carpet Articles in this Order</h2>
+            <div className="h-px flex-1 bg-slate-100"></div>
+          </div>
 
-      {/* Items Section */}
-      <div className="space-y-4">
-        {items.map((item, index) => (
-          <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 relative group animate-in fade-in slide-in-from-top-2">
-            <input type="hidden" name={`itemId_${index}`} value={typeof item.id === 'string' && !String(item.id).startsWith('init') && !String(item.id).startsWith('new') ? item.id : ''} />
-            <input type="hidden" name={`itemStatus_${index}`} value={item.status || 'PENDING'} />
-            
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-black uppercase tracking-widest">Brand</label>
-              <select 
-                name={`brandId_${index}`} 
-                required 
-                value={item.brandId}
-                onChange={(e) => updateItem(item.id, "brandId", e.target.value)}
-                className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black"
-              >
-                <option value="">Brand</option>
-                {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
-            </div>
-            
-              <div className="space-y-2 relative">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={refreshDesigns}
-                    className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+          <div className="space-y-4 md:space-y-6">
+            {items.map((item, index) => (
+              <div key={item.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 relative group animate-in fade-in slide-in-from-top-2">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-black uppercase tracking-widest">Brand</label>
+                  <select 
+                    name={`brandId_${index}`} 
+                    required 
+                    value={item.brandId}
+                    onChange={(e) => updateItem(item.id, "brandId", e.target.value)}
+                    className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black px-4"
                   >
-                    <RefreshCw className={`w-3 h-3 ${isRefreshingDesigns ? 'animate-spin' : ''}`} />
-                    Refresh Catalog
-                  </button>
-                  <a 
-                    href="/designs/new" 
-                    target="_blank" 
-                    className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    New Design
-                  </a>
+                    <option value="">Brand</option>
+                    {brands.map(b => (
+                      <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
-              <div className="relative">
-                <input 
-                  type="text"
-                  placeholder="Search Design Code..."
-                  value={designSearch[item.id] !== undefined ? designSearch[item.id] : (localDesigns.find(d => d.id === item.designId)?.code || "")}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setDesignSearch(prev => ({ ...prev, [item.id]: val }));
-                    setShowDesignList(prev => ({ ...prev, [item.id]: true }));
-                  }}
-                  onFocus={() => setShowDesignList(prev => ({ ...prev, [item.id]: true }))}
-                  className={`w-full rounded-xl border-2 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10 ${
-                    !item.designId ? 'border-amber-300' : 'border-slate-300 focus:border-emerald-600'
-                  }`}
-                />
-                <Palette className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                {!item.designId && (
-                  <p className="text-[9px] font-black text-amber-600 uppercase mt-1">Please select a design from the list</p>
-                )}
-                
-                {showDesignList[item.id] && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto divide-y divide-slate-100">
-                    <a
-                      href="/designs/new"
-                      target="_blank"
-                      onClick={() => {
-                        setShowDesignList(prev => ({ ...prev, [item.id]: false }));
-                      }}
-                      className="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-3 border-b-2 border-emerald-100 sticky top-0 z-10"
-                    >
-                      <ExternalLink className="w-5 h-5 text-emerald-600" />
-                      <div>
-                        <p className="font-black text-emerald-600 text-xs uppercase">Add New Design</p>
-                        <p className="text-[9px] text-emerald-500 font-bold">Opens in new tab</p>
-                      </div>
-                    </a>
 
-                    {localDesigns
-                      .filter(d => 
-                        d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase()) ||
-                        d.name.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())
-                      )
-                      .slice(0, 15)
-                      .map(d => (
-                        <button
-                          key={d.id}
-                          type="button"
+                <div className="space-y-2 relative">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={refreshDesigns}
+                        className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${isRefreshingDesigns ? 'animate-spin' : ''}`} />
+                        Refresh Catalog
+                      </button>
+                      <a 
+                        href="/designs/new" 
+                        target="_blank" 
+                        className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1 hover:bg-emerald-50 px-2 py-0.5 rounded-md transition-colors"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        New Design
+                      </a>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="Search Design Code"
+                      value={designSearch[item.id] || ""}
+                      onChange={(e) => {
+                        setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
+                        setShowDesignList(prev => ({ ...prev, [item.id]: true }));
+                      }}
+                      onFocus={() => setShowDesignList(prev => ({ ...prev, [item.id]: true }))}
+                      className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black pl-10 pr-4"
+                    />
+                    <Palette className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    {!item.designId && (
+                      <p className="absolute -bottom-5 left-0 text-[8px] font-black text-rose-500 uppercase tracking-widest animate-pulse">Please select a design from the list</p>
+                    )}
+                    
+                    {showDesignList[item.id] && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-2xl shadow-xl z-50 max-h-64 overflow-y-auto">
+                        <a
+                          href="/designs/new"
+                          target="_blank"
                           onClick={() => {
-                            updateItem(item.id, "designId", d.id);
-                            setDesignSearch(prev => ({ ...prev, [item.id]: d.code }));
                             setShowDesignList(prev => ({ ...prev, [item.id]: false }));
                           }}
-                          className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                          className="w-full text-left px-4 py-3 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-3 border-b-2 border-emerald-100 sticky top-0 z-10"
                         >
-                          <div className="w-8 h-8 bg-slate-100 rounded border border-slate-200 overflow-hidden flex-shrink-0">
-                            {d.imageUrl && <img src={d.imageUrl} className="w-full h-full object-contain" />}
-                          </div>
+                          <ExternalLink className="w-5 h-5 text-emerald-600" />
                           <div>
-                            <p className="font-black text-black text-xs uppercase">{d.code}</p>
-                            <p className="text-[10px] text-slate-500 font-bold">{d.name}</p>
+                            <p className="font-black text-emerald-600 text-xs uppercase">Add New Design</p>
+                            <p className="text-[9px] text-emerald-500 font-bold">Opens in new tab</p>
                           </div>
-                        </button>
-                      ))}
-                    {localDesigns.filter(d => d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())).length === 0 && (
-                      <div className="p-4 text-center text-xs text-slate-400 font-bold uppercase">No designs found</div>
+                        </a>
+                        
+                        {localDesigns
+                          .filter(d => 
+                            d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase()) ||
+                            d.name.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())
+                          )
+                          .slice(0, 15)
+                          .map(d => (
+                            <button
+                              key={d.id}
+                              type="button"
+                              onClick={() => {
+                                updateItem(item.id, "designId", d.id);
+                                setDesignSearch(prev => ({ ...prev, [item.id]: d.code }));
+                                setShowDesignList(prev => ({ ...prev, [item.id]: false }));
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                            >
+                              <div className="w-8 h-8 bg-slate-100 rounded border border-slate-200 overflow-hidden flex-shrink-0">
+                                {d.imageUrl && <img src={d.imageUrl} className="w-full h-full object-contain" alt={d.code} />}
+                              </div>
+                              <div>
+                                <p className="font-black text-black text-xs uppercase">{d.code}</p>
+                                <p className="text-[10px] text-slate-500 font-bold">{d.name}</p>
+                              </div>
+                            </button>
+                          ))}
+                        {localDesigns.filter(d => d.code.toLowerCase().includes((designSearch[item.id] || "").toLowerCase())).length === 0 && (
+                          <div className="p-4 text-center text-xs text-slate-400 font-bold uppercase">No designs found</div>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-              <input type="hidden" name={`designId_${index}`} value={item.designId} />
-              {showDesignList[item.id] && <div className="fixed inset-0 z-40" onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}></div>}
-            </div>
+                  <input type="hidden" name={`designId_${index}`} value={item.designId} />
+                  {showDesignList[item.id] && <div className="fixed inset-0 z-40" onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}></div>}
+                </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-black uppercase tracking-widest">Article / Size</label>
-              <select 
-                name={`productId_${index}`} 
-                required 
-                value={item.productId}
-                onChange={(e) => updateItem(item.id, "productId", e.target.value)}
-                className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black"
-              >
-                <option value="">Select Article</option>
-                {availableProducts[item.brandId]?.map(p => (
-                  <option key={p.id} value={p.id}>{p.category}: {p.name} ({p.price} DT)</option>
-                ))}
-              </select>
-              <input type="hidden" name={`size_${index}`} value={item.size} />
-            </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-black uppercase tracking-widest">Article / Size</label>
+                  <select 
+                    name={`productId_${index}`} 
+                    required 
+                    value={item.productId}
+                    onChange={(e) => updateItem(item.id, "productId", e.target.value)}
+                    className="w-full rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:ring-0 h-11 bg-white font-bold text-sm text-black px-4"
+                  >
+                    <option value="">Select Article</option>
+                    {availableProducts[item.brandId]?.map(p => (
+                      <option key={p.id} value={p.id}>{p.category}: {p.name} ({p.price} DT)</option>
+                    ))}
+                  </select>
+                  <input type="hidden" name={`size_${index}`} value={item.size} />
+                </div>
 
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex-1">
-                <label className="text-[10px] font-black text-black uppercase tracking-widest">Price</label>
-                <div className="h-11 flex items-center px-4 bg-white border-2 border-slate-300 rounded-xl font-black text-emerald-600">
-                  {item.price || 0} <span className="ml-1 text-[10px] text-black uppercase">DT</span>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <label className="text-[10px] font-black text-black uppercase tracking-widest">Price</label>
+                    <div className="h-11 flex items-center px-4 bg-white border-2 border-slate-300 rounded-xl font-black text-emerald-600">
+                      {item.price || 0} <span className="ml-1 text-[10px] text-black uppercase">DT</span>
+                    </div>
+                  </div>
+                  {items.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeItem(item.id)}
+                      className="mt-6 p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
               </div>
-              {items.length > 1 && (
-                <button 
-                  type="button" 
-                  onClick={() => removeItem(item.id)}
-                  className="mt-5 p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              )}
+            ))}
+
+            <button 
+              type="button" 
+              onClick={addItem}
+              className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 font-bold hover:border-emerald-500 hover:text-emerald-500 transition-all flex items-center justify-center gap-2 group"
+            >
+              <PlusCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+              ADD ANOTHER ARTICLE
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-12 bg-slate-900 rounded-[2rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-slate-200">
+          <div className="text-center md:text-left">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Order Total</p>
+            <div className="text-5xl font-black text-white tracking-tighter">
+              {totalPrice} <span className="text-emerald-500 text-2xl ml-2 uppercase">DT</span>
             </div>
           </div>
-        ))}
-        
-        <button 
-          type="button" 
-          onClick={addItem}
-          className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 font-bold hover:border-emerald-500 hover:text-emerald-500 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-        >
-          <Plus className="w-4 h-4" />
-          Add Another Article
-        </button>
-      </div>
 
-      <div className="bg-slate-900 p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="text-center md:text-left">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Order Total</p>
-          <p className="text-3xl md:text-4xl font-black text-white">{totalPrice} <span className="text-lg md:text-xl text-emerald-500">DT</span></p>
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="w-full md:w-auto bg-emerald-500 text-white px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-[0.2em] shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 disabled:bg-slate-700 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 min-w-[280px]"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                PROCESSING...
+              </>
+            ) : (
+              'CONFIRM FINAL ORDER'
+            )}
+          </button>
         </div>
-        <button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest px-10 py-5 rounded-xl md:rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 w-full md:w-auto flex items-center justify-center gap-2 disabled:opacity-50"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            initialData ? 'Update Order' : 'Confirm Final Order'
-          )}
-        </button>
-      </div>
-      <input type="hidden" name="itemCount" value={items.length} />
-    </form>
-  </>
-);
+        <input type="hidden" name="itemCount" value={items.length} />
+      </form>
+    </>
+  );
 }

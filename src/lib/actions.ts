@@ -213,3 +213,17 @@ export async function shipOrder(formData: FormData) {
     revalidatePath("/shipping");
   } catch (e) { throw e; }
 }
+
+export async function markItemWrapped(formData: FormData) {
+  const itemId = formData.get("itemId") as string;
+  try {
+    await prisma.orderItem.update({
+      where: { id: itemId },
+      data: { status: "WRAPPED" }
+    });
+    revalidatePath("/shipping");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}

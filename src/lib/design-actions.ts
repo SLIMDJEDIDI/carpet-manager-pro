@@ -21,6 +21,7 @@ export async function createDesignAction(prevState: DesignActionState | null, fo
   const imageFile = formData.get("image") as File;
 
   if (!code || !name) return { error: "Design code and name are required." };
+  if (!imageFile || imageFile.size === 0) return { error: "Design image is mandatory." };
 
   let imageUrl: string | null = null;
   
