@@ -37,7 +37,12 @@ export default async function Dashboard() {
     });
 
     const totalOrdersCount = await prisma.order.count();
-    const pendingProduction = await prisma.orderItem.count({ where: { status: "PENDING" } });
+    const pendingProduction = await prisma.orderItem.count({ 
+      where: { 
+        status: "PENDING",
+        order: { status: "CONFIRMED" }
+      } 
+    });
     const totalCustomers = await prisma.order.groupBy({ by: ['customerPhone'] }).then(res => res.length);
     const producedToday = await prisma.orderItem.count({ 
       where: { 

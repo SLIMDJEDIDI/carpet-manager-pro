@@ -176,7 +176,13 @@ export async function createBatch(formData: FormData) {
   const brandId = formData.get("brandId") as string;
   const brandName = formData.get("brandName") as string;
   try {
-    const items = await prisma.orderItem.findMany({ where: { status: "PENDING", brandId } });
+    const items = await prisma.orderItem.findMany({ 
+      where: { 
+        status: "PENDING", 
+        brandId,
+        order: { status: "CONFIRMED" }
+      } 
+    });
     if (items.length > 0) {
       const batchName = `${brandName} - List ${new Date().toLocaleDateString()}`;
       await prisma.productionList.create({
@@ -199,6 +205,21 @@ export async function updateItemStatuses(itemIds: string[], status: string) {
     });
     revalidatePath("/production");
     revalidatePath("/shipping");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}
+
+export async function confirmOrder(formData: FormData) {
+  const orderId = formData.get("orderId") as string;
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "CONFIRMED" }
+    });
+    revalidatePath("/orders");
+    revalidatePath("/production");
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message };

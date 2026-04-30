@@ -1,9 +1,10 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import DeleteOrderButton from "@/components/DeleteOrderButton";
-import { deleteOrder } from "@/lib/actions";
+import ConfirmOrderButton from "@/components/ConfirmOrderButton";
+import { deleteOrder, confirmOrder } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -52,9 +53,10 @@ export default async function OrdersPage({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PENDING": return "bg-slate-100 text-slate-600";
-      case "SHIPPED": return "bg-purple-100 text-purple-600";
-      default: return "bg-emerald-100 text-emerald-600";
+      case "PENDING": return "bg-amber-50 text-amber-600 border border-amber-100";
+      case "CONFIRMED": return "bg-emerald-50 text-emerald-600 border border-emerald-100";
+      case "SHIPPED": return "bg-purple-50 text-purple-600 border border-purple-100";
+      default: return "bg-slate-50 text-slate-400 border border-slate-100";
     }
   };
 
@@ -118,10 +120,17 @@ export default async function OrdersPage({
                   <p className="font-bold text-black text-xs md:text-base">{order.customerPhone}</p>
                 </div>
                 <div className="text-left md:text-right">
-                  <p className="text-[9px] font-black text-black uppercase tracking-widest">Status</p>
-                  <span className={`text-[8px] md:text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
+                  <p className="text-[9px] font-black text-black uppercase tracking-widest mb-1">Status</p>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className={`text-[8px] md:text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
+                      {order.status === "PENDING" && <Clock className="w-3 h-3" />}
+                      {order.status === "CONFIRMED" && <CheckCircle2 className="w-3 h-3" />}
+                      {order.status === "PENDING" ? "RECEIVED (WAITING CALL)" : order.status}
+                    </span>
+                    {order.status === "PENDING" && (
+                      <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1 md:gap-2 pl-3 md:pl-4 border-l border-slate-200">
                   <Link 

@@ -12,7 +12,10 @@ export default async function ProductionPage() {
   const brands = await prisma.brand.findMany();
   
   const pendingItems = await prisma.orderItem.findMany({
-    where: { status: "PENDING" },
+    where: { 
+      status: "PENDING",
+      order: { status: "CONFIRMED" } 
+    },
     include: { 
       brand: true, 
       design: true,
