@@ -2,7 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import { X, Upload, Loader2 } from "lucide-react";
-import { createDesignAction } from "@/lib/design-actions";
+import { createDesignQuickAction } from "@/lib/design-actions";
 
 interface QuickDesignModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface QuickDesignModalProps {
 
 export default function QuickDesignModal({ isOpen, onClose, onSuccess }: QuickDesignModalProps) {
   const [preview, setPreview] = useState<string | null>(null);
-  const [state, formAction, isPending] = useActionState(createDesignAction, null);
+  const [state, formAction, isPending] = useActionState(createDesignQuickAction, null);
 
   useEffect(() => {
     if (state?.success && state?.design) {

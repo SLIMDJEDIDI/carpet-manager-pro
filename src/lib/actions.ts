@@ -46,11 +46,112 @@ export async function createOrder(formData: FormData) {
   const customerPostalCode = formData.get("customerPostalCode") as string;
   const customerGovernorate = formData.get("customerGovernorate") as string;
   const customerDelegation = formData.get("customerDelegation") as string;
-  const itemCount = parseInt(formData.get("itemCount") as string || "0");
+  const itemCountStr = formData.get("itemCount") as string;
+  const itemCount = parseInt(itemCountStr || "0");
 
   if (!customerName || !customerPhone || itemCount === 0) {
-    throw new Error("Missing required order information");
+    return { success: false, error: "Missing required customer or article information" };
   }
+
+  try {
+    // 1. Pre-fetch products
+    const productIds = [];
+    for (let i = 0; i < itemCount; i++) {
+      const pid = formData.get(`productId_${i}`) as string;
+      if (pid) productIds.push(pid);
+    }
+    
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } }
+    });
+    const productMap = new Map(products.map(p => [p.id, p]));
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 2. Calculate Reference INSIDE transaction for better consistency
+      const lastOrder = await tx.order.findFirst({
+        orderBy: { reference: 'desc' },
+        select: { reference: true }
+      });
+      const nextReference = (lastOrder?.reference || 0) + 1;
+
+      // 3. Create Order
+      const order = await tx.order.create({
+        data: {
+          customerName, customerPhone, customerAddress, 
+          customerPostalCode, customerGovernorate, customerDelegation,
+          reference: nextReference, totalAmount: 0,
+        },
+      });
+
+      let orderTotal = 0;
+      for (let i = 0; i < itemCount; i++) {
+        const brandId = formData.get(`brandId_${i}`) as string;
+        const designId = formData.get(`designId_${i}`) as string;
+        const productId = formData.get(`productId_${i}`) as string;
+        
+        if (!brandId || !designId || !productId) continue;
+
+        const product = productMap.get(productId);
+        if (!product) continue;
+
+        orderTotal += product.price;
+
+        const mainItem = await tx.orderItem.create({
+          data: {
+            orderId: order.id, brandId, designId,
+            size: product.size, price: product.price,
+            isPack: product.isPack,
+            status: product.isPack ? "PACK_PARENT" : "PENDING",
+          }
+        });
+
+        if (product.isPack && product.components) {
+          try {
+            const components = JSON.parse(product.components);
+            for (const comp of components) {
+              const qty = comp.qty || 1;
+              for (let q = 0; q < qty; q++) {
+                await tx.orderItem.create({
+                  data: {
+                    orderId: order.id, brandId, designId,
+                    size: comp.size, price: 0, isPack: false,
+                    parentItemId: mainItem.id, status: "PENDING",
+                  }
+                });
+              }
+            }
+          } catch (jsonError) {
+            console.error("Failed to parse pack components:", jsonError);
+          }
+        }
+      }
+
+      const finalOrder = await tx.order.update({
+        where: { id: order.id },
+        data: { totalAmount: orderTotal }
+      });
+
+      return finalOrder;
+    }, { 
+      timeout: 30000,
+      isolationLevel: 'ReadCommitted' 
+    });
+
+    await logActivity("CREATE_ORDER", `New Order REF #${result.reference} created`, { reference: result.reference, orderId: result.id });
+    
+    revalidatePath("/orders");
+    return { success: true, reference: result.reference };
+  } catch (e: any) {
+    console.error("CREATE_ORDER_CRITICAL_FAILURE:", e);
+    // Attempt to log the error to the database (outside the failed transaction)
+    try {
+      await logActivity("ERROR", `Order creation failed: ${e.message}`);
+    } catch {}
+    
+    return { success: false, error: e.message || "A database error occurred during order creation." };
+  }
+}
+
 
   // 1. Pre-fetch all needed products to minimize transaction time
   const productIds = [];
@@ -150,6 +251,15 @@ export async function updateOrder(orderId: string, formData: FormData) {
   const itemCount = parseInt(formData.get("itemCount") as string || "1");
 
   try {
+    // Pre-fetch products
+    const productIds = [];
+    for (let i = 0; i < itemCount; i++) {
+      const pid = formData.get(`productId_${i}`) as string;
+      if (pid) productIds.push(pid);
+    }
+    const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
+    const productMap = new Map(products.map(p => [p.id, p]));
+
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
         where: { id: orderId },
@@ -164,6 +274,81 @@ export async function updateOrder(orderId: string, formData: FormData) {
         const id = formData.get(`itemId_${i}`) as string;
         if (id) itemIdsFromForm.push(id);
       }
+
+      // Delete items not in form
+      await tx.orderItem.deleteMany({
+        where: { orderId, id: { notIn: itemIdsFromForm } }
+      });
+
+      let orderTotal = 0;
+      for (let i = 0; i < itemCount; i++) {
+        const id = formData.get(`itemId_${i}`) as string;
+        const brandId = formData.get(`brandId_${i}`) as string;
+        const designId = formData.get(`designId_${i}`) as string;
+        const productId = formData.get(`productId_${i}`) as string;
+        
+        if (!brandId || !designId || !productId) continue;
+        const product = productMap.get(productId);
+        if (!product) continue;
+
+        orderTotal += product.price;
+
+        if (id) {
+          await tx.orderItem.update({
+            where: { id },
+            data: { brandId, designId, size: product.size, price: product.price }
+          });
+        } else {
+          const mainItem = await tx.orderItem.create({
+            data: {
+              orderId, brandId, designId, size: product.size, price: product.price,
+              isPack: product.isPack, status: product.isPack ? "PACK_PARENT" : "PENDING",
+            }
+          });
+
+          if (product.isPack && product.components) {
+            try {
+              const components = JSON.parse(product.components);
+              for (const comp of components) {
+                for (let q = 0; q < (comp.qty || 1); q++) {
+                  await tx.orderItem.create({
+                    data: {
+                      orderId, brandId, designId, size: comp.size, price: 0, isPack: false,
+                      parentItemId: mainItem.id, status: "PENDING",
+                    }
+                  });
+                }
+              }
+            } catch {}
+          }
+        }
+      }
+
+      await tx.order.update({
+        where: { id: orderId },
+        data: { totalAmount: orderTotal }
+      });
+    }, { timeout: 30000 });
+
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (e: any) {
+    console.error("UPDATE_ORDER_ERROR:", e);
+    return { success: false, error: e.message };
+  }
+}
+
+export async function deleteOrder(id: string) {
+  try {
+    await prisma.order.delete({ where: { id } });
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (e: any) {
+    console.error("DELETE_ORDER_ERROR:", e);
+    return { success: false, error: e.message };
+  }
+}
+
 
       await tx.orderItem.deleteMany({
         where: { orderId, id: { notIn: itemIdsFromForm } }
