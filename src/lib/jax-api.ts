@@ -1,9 +1,9 @@
 // JAX API Integration for Carpet Manager PRO
-// Hardcoded Credentials as provided by the user for reliability
+// Using Token and ID provided via Environment Variables
 
-const JAX_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuamF4LWRlbGl2ZXJ5LmNvbS9hcGkvdXRpbGlzYXRldXJzL0xvbmdUb2tlbiIsImlhdCI6MTc3NzU0ODI4MSwiZXhwIjoxODQwNjIwMjgxLCJuYmYiOjE3Nzc1NDgyODEsImp0aSI6InlZZ00yTnNtdG5BOGVhVlQiLCJzdWIiOiIzNjYxIiwicHJ2IjoiZDA5MDViY2Y2NWE2ZDk5MmQ5MGNiZmU0NjIyNmJkMzEzYWU1MTkzZiJ9.C--tinUREhL30dgNh-RqhcM6Olr0PuzzfUg03G5r4UA";
-const EXPEDITEUR_NAME = "ZARBITI V4";
-const EXPEDITEUR_PHONE = 55123456; // Using number as per Postman collection
+const JAX_TOKEN = process.env.JAX_TOKEN;
+const EXPEDITEUR_NAME = process.env.JAX_EXPEDITEUR_NAME || "ZARBITI V4";
+const EXPEDITEUR_PHONE = process.env.JAX_EXPEDITEUR_PHONE || "55123456";
 
 const GOVERNORATE_MAP: Record<string, string> = {
   "nabeul": "1",
@@ -51,6 +51,18 @@ export async function createJaxReceipt(order: {
   totalAmount: number;
   reference?: string | number;
 }): Promise<JaxReceiptResponse> {
+  if (!JAX_TOKEN) {
+    return { success: false, error: "JAX API Token is not configured in Environment Variables." };
+  }
+
+  // Pre-validation of required fields
+  if (!order.customerName?.trim()) return { success: false, error: "Customer Name is required." };
+  if (!order.customerPhone?.trim()) return { success: false, error: "Customer Phone is required." };
+  if (!order.customerAddress?.trim()) return { success: false, error: "Delivery Address is required." };
+  if (!order.customerGovernorate?.trim()) return { success: false, error: "Governorate is required." };
+  if (!order.customerDelegation?.trim()) return { success: false, error: "Delegation is required." };
+  if (order.totalAmount <= 0) return { success: false, error: "COD Amount must be greater than 0." };
+
   try {
     const govKey = order.customerGovernorate.toLowerCase().trim();
     const govId = GOVERNORATE_MAP[govKey] || "4"; // Default to Tunis if not found
@@ -74,11 +86,14 @@ export async function createJaxReceipt(order: {
       echange: 0,
       gouvernorat_pickup: 23, // Sousse
       adresse_pickup: "Sousse",
-      expediteur_phone: EXPEDITEUR_PHONE,
+      expediteur_phone: parseInt(cleanPhone.startsWith("216") ? cleanPhone : "216" + cleanPhone), // Just an example, normally sender phone
       expediteur_name: EXPEDITEUR_NAME
     };
 
-    console.log("JAX API Payload:", JSON.stringify(payload, null, 2));
+    // Override with actual sender phone if configured
+    if (EXPEDITEUR_PHONE) {
+      payload.expediteur_phone = parseInt(EXPEDITEUR_PHONE.replace(/[^0-9]/g, ""));
+    }
 
     const response = await fetch(`https://core.jax-delivery.com/api/user/colis/add?token=${JAX_TOKEN}`, {
       method: "POST",
@@ -89,25 +104,28 @@ export async function createJaxReceipt(order: {
     });
 
     const data = await response.json();
-    console.log("JAX API Response:", JSON.stringify(data, null, 2));
+    
+    // RELIABLE SUCCESS CHECK:
+    // If JAX returns an object with 'ean', 'code', or 'id', it's a success even if 'status' field is missing.
+    const trackingId = data.ean || data.code || data.id?.toString();
 
-    if (data.status === "success" || data.ean) {
+    if (trackingId || data.status === "success") {
       return {
         success: true,
-        trackingId: data.ean || data.tracking_id || data.id?.toString(),
-        receiptUrl: `https://core.jax-delivery.com/api/user/colis/pdf/${data.ean || data.id}?token=${JAX_TOKEN}`
+        trackingId: trackingId,
+        receiptUrl: `https://core.jax-delivery.com/api/user/colis/pdf/${trackingId}?token=${JAX_TOKEN}`
       };
     } else {
       return {
         success: false,
-        error: data.message || data.error || JSON.stringify(data) || "JAX API returned an unknown error"
+        error: data.message || data.error || JSON.stringify(data)
       };
     }
   } catch (error: any) {
     console.error("JAX_API_CRITICAL_FAILURE:", error);
     return {
       success: false,
-      error: error.message || "Failed to connect to JAX API"
+      error: "Network error connecting to JAX platform."
     };
   }
 }

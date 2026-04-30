@@ -14,7 +14,6 @@ export default function BulkJaxShipping({
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentOrderName, setCurrentOrderName] = useState("");
   const [progress, setProgress] = useState({ current: 0, total: readyOrders.length });
-  const [shippedOrders, setShippedOrders] = useState<any[]>([]);
 
   const handleBulkShip = async () => {
     if (readyOrders.length === 0) return;
@@ -42,7 +41,6 @@ export default function BulkJaxShipping({
       }
     }
     
-    setShippedOrders(results);
     setIsProcessing(false);
     setCurrentOrderName("");
 
@@ -57,27 +55,47 @@ export default function BulkJaxShipping({
   const generateReceiptsPDF = (orders: any[]) => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
-    doc.text("JAX DELIVERY RECEIPTS BATCH", 20, 20);
+    doc.text("JAX DELIVERY RECEIPTS - BATCH PRINTING", 20, 20);
+    doc.setFontSize(8);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 25);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
 
     let y = 40;
     orders.forEach((order, index) => {
-      if (y > 270) {
+      if (y > 240) {
         doc.addPage();
         y = 20;
       }
+
+      // Unique brands in this order
+      const brands = Array.from(new Set(order.items.map((i: any) => i.brand?.name))).join(", ");
+      
+      doc.setFillColor(248, 250, 252);
+      doc.rect(15, y - 5, 180, 45, 'F');
+      
       doc.setFont("helvetica", "bold");
-      doc.text(`${index + 1}. ${order.customerName} - ${order.customerPhone}`, 20, y);
+      doc.text(`[${index + 1}] REF #${order.reference}`, 20, y);
+      doc.text(`JAX EAN: ${order.trackingId}`, 120, y);
+      
       doc.setFont("helvetica", "normal");
-      doc.text(`Tracking: ${order.trackingId}`, 30, y + 5);
-      doc.text(`Address: ${order.customerAddress}`, 30, y + 10);
-      doc.text(`Amount: ${order.totalAmount} DT`, 30, y + 15);
-      doc.line(20, y + 18, 190, y + 18);
-      y += 25;
+      doc.setFontSize(9);
+      doc.text(`Customer: ${order.customerName} (${order.customerPhone})`, 20, y + 8);
+      doc.text(`Address: ${order.customerAddress}, ${order.customerDelegation}, ${order.customerGovernorate}`, 20, y + 14);
+      doc.text(`Brands: ${brands}`, 20, y + 20);
+      doc.text(`Items: ${order.items.length} units | Pkgs: 1`, 20, y + 26);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(`COD AMOUNT: ${order.totalAmount} DT`, 120, y + 26);
+      
+      doc.setDrawColor(226, 232, 240);
+      doc.line(15, y + 35, 195, y + 35);
+      
+      y += 45;
     });
 
-    doc.save(`jax-receipts-${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`jax-printing-batch-${Date.now()}.pdf`);
   };
 
   if (readyOrders.length === 0) return null;

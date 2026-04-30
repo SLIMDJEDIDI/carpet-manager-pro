@@ -317,6 +317,11 @@ export async function shipOrder(formData: FormData) {
       };
     }
 
+    // IDEMPOTENCY CHECK: Do not ship if already has JAX ID
+    if (order.jaxTrackingId) {
+      return { success: false, error: `Order #${order.reference} already has a JAX ID: ${order.jaxTrackingId}` };
+    }
+
     // 1. Trigger JAX API
     const jaxResponse = await createJaxReceipt({
       customerName: order.customerName,
@@ -334,6 +339,7 @@ export async function shipOrder(formData: FormData) {
     }
 
     // 2. Persist to DB using Transaction for Atomicity
+    // Map JAX success to our internal status "CHEZ JAX" for better tracking
     await prisma.$transaction([
       prisma.order.update({ 
         where: { id: orderId }, 
