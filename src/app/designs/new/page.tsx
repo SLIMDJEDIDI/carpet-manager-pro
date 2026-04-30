@@ -3,12 +3,13 @@
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Upload, X, Loader2, AlertCircle } from "lucide-react";
 import { createDesignAction, DesignActionState } from "@/lib/design-actions";
 
 export default function NewDesignPage() {
   const router = useRouter();
   const [preview, setPreview] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [state, formAction, isPending] = useActionState(createDesignAction, null);
 
   // Handle successful creation and redirect
@@ -19,8 +20,18 @@ export default function NewDesignPage() {
   }, [state, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileError(null);
     const file = e.target.files?.[0];
+    
     if (file) {
+      // Vercel Hobby Limit is 4.5MB
+      if (file.size > 4.5 * 1024 * 1024) {
+        setFileError("Image is too large. Maximum size is 4MB.");
+        setPreview(null);
+        e.target.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -45,9 +56,10 @@ export default function NewDesignPage() {
 
       <form action={formAction} className="space-y-6 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
         <div className="space-y-6">
-          {state?.error && (
-            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-black uppercase">
-              {state.error}
+          {(state?.error || fileError) && (
+            <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl text-rose-600 text-xs font-black uppercase flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              {state?.error || fileError}
             </div>
           )}
           
@@ -76,6 +88,7 @@ export default function NewDesignPage() {
           <div className="space-y-2">
             <label className="text-sm font-black text-black uppercase tracking-wider">Design Image</label>
             <div className="relative group">
+              {/* This input is ALWAYS in the DOM and covers the entire area */}
               <input 
                 id="design-image-input"
                 type="file" 
@@ -85,12 +98,14 @@ export default function NewDesignPage() {
                 accept="image/*" 
                 onChange={handleFileChange} 
               />
+              
               {preview ? (
                 <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-100">
                   <img src={preview} alt="Preview" className="w-full h-full object-contain bg-slate-50" />
                   <button 
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setPreview(null);
                       const input = document.getElementById('design-image-input') as HTMLInputElement;
                       if (input) input.value = '';
@@ -107,34 +122,9 @@ export default function NewDesignPage() {
                       <Upload className="w-8 h-8 text-emerald-600" />
                     </div>
                     <p className="mb-2 text-sm text-slate-900 font-black uppercase tracking-widest">Click to upload file</p>
-                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 10MB)</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 4MB)</p>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-
-              ) : (
-                <label className="flex flex-col items-center justify-center w-full aspect-video rounded-2xl border-4 border-dashed border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all cursor-pointer group">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <div className="p-4 bg-emerald-100 rounded-full mb-4 group-hover:scale-110 transition-transform">
-                      <Upload className="w-8 h-8 text-emerald-600" />
-                    </div>
-                    <p className="mb-2 text-sm text-slate-900 font-black uppercase tracking-widest">Click to upload file</p>
-                    <p className="text-xs text-slate-400 font-bold uppercase">PNG, JPG or WEBP (Max 10MB)</p>
-                  </div>
-                    <input 
-                    id="design-image-input"
-                    type="file" 
-                    name="image" 
-                    required
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" 
-                    accept="image/*" 
-                    onChange={handleFileChange} 
-                  />
-
-
-                </label>
               )}
             </div>
           </div>
