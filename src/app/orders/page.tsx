@@ -101,103 +101,95 @@ export default async function OrdersPage({
   };
 
   const renderOrderCard = (order: any, isArchive: boolean = false) => (
-    <div key={order.id} className={`bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-300 ${isArchive ? 'opacity-80' : ''}`}>
-      {/* Order Header */}
-      <div className={`p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 ${isArchive ? 'bg-slate-50/30' : 'bg-slate-50/50'}`}>
-        <div className="flex items-center gap-4">
-          <div className="bg-white p-3 rounded-2xl shadow-sm hidden sm:block">
-            {isArchive ? <Archive className="w-6 h-6 text-slate-400" /> : <ShoppingBag className="w-6 h-6 text-slate-900" />}
+    <div key={order.id} className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 ${isArchive ? 'opacity-75' : ''}`}>
+      {/* Top Line: Customer & Status */}
+      <div className={`px-4 py-3 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 ${isArchive ? 'bg-slate-50/50' : 'bg-slate-50'}`}>
+        <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+          <div className="bg-white p-2 rounded-lg shadow-xs border border-slate-200">
+            {isArchive ? <Archive className="w-4 h-4 text-slate-400" /> : <ShoppingBag className="w-4 h-4 text-slate-900" />}
           </div>
           <div>
-            <h3 className="text-lg md:text-xl font-black text-black leading-none capitalize truncate max-w-[200px] md:max-w-none">{order.customerName}</h3>
-            <p className="text-[10px] font-bold text-black uppercase mt-1.5 tracking-widest">
-              REF #{order.reference} • {format(order.createdAt, "MMM d, yyyy")}
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-black text-black leading-none capitalize truncate max-w-[150px]">{order.customerName}</h3>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">#{order.reference}</span>
+            </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-widest">
+              {format(order.createdAt, "MMM d, HH:mm")}
             </p>
           </div>
         </div>
-        
-        <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
-          <div className="text-left md:text-right">
-            <p className="text-[9px] font-black text-black uppercase tracking-widest">Phone</p>
-            <p className="font-bold text-black text-xs md:text-base">{order.customerPhone}</p>
+
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:block">
+            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Phone</p>
+            <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
           </div>
-          <div className="text-left md:text-right">
-            <p className="text-[9px] font-black text-black uppercase tracking-widest mb-1">Status</p>
-            <div className="flex flex-col items-end gap-2">
-              <span className={`text-[8px] md:text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
-                {order.status === "PENDING" && <Clock className="w-3 h-3" />}
-                {order.status === "CONFIRMED" && <CheckCircle2 className="w-3 h-3" />}
-                {order.status === "PENDING" ? "RECEIVED (WAITING CONFIRMATION)" : order.status}
-              </span>
-              {!isArchive && order.status === "PENDING" && (
-                <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
-                  <a
-                    href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, "").startsWith("216") ? order.customerPhone.replace(/[^0-9]/g, "") : "216" + order.customerPhone.replace(/[^0-9]/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-100 transition-all shadow-sm"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    Call Now
-                  </a>
-                  <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
-                </div>
-              )}
-            </div>
+          
+          <div>
+            <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
+              {order.status === "PENDING" ? "RECEIVED" : order.status}
+            </span>
           </div>
-          <div className="flex items-center gap-1 md:gap-2 pl-3 md:pl-4 border-l border-slate-200">
+
+          <div className="flex items-center gap-1 pl-4 border-l border-slate-200">
+            {!isArchive && order.status === "PENDING" && (
+              <div className="flex items-center gap-1 mr-2">
+                 <a
+                  href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, "").startsWith("216") ? order.customerPhone.replace(/[^0-9]/g, "") : "216" + order.customerPhone.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-xs border border-emerald-100"
+                  title="WhatsApp"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                </a>
+                <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
+              </div>
+            )}
             <Link 
               href={`/orders/edit/${order.id}`}
-              className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
-              title="Edit Order"
+              className="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
             >
-              <Edit3 className="w-5 h-5" />
+              <Edit3 className="w-4 h-4" />
             </Link>
             <DeleteOrderButton orderId={order.id} action={deleteOrder} />
           </div>
         </div>
       </div>
 
-      {/* Order Items */}
-      <div className="p-4 md:p-6">
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 ${isArchive ? 'opacity-70' : ''}`}>
+      {/* Middle Area: Items (Horizontal Scroll or Compact Grid) */}
+      <div className="px-4 py-2 bg-white">
+        <div className="flex flex-wrap gap-2">
           {order.items.map((item: any) => (
-            <div key={item.id} className="bg-slate-50 p-3 md:p-4 rounded-3xl border border-slate-100 flex items-center gap-3 md:gap-4">
-              <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl border border-slate-200 overflow-hidden flex-shrink-0">
+            <div key={item.id} className="inline-flex items-center gap-2 bg-slate-50 p-1.5 pr-3 rounded-xl border border-slate-100 min-w-[140px] max-w-[200px]">
+              <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 overflow-hidden flex-shrink-0">
                 {item.design.imageUrl ? (
                   <img src={item.design.imageUrl} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 font-black text-[8px] md:text-xs">NO IMG</div>
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 text-[6px]">N/A</div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[8px] md:text-[10px] font-black text-black bg-slate-100 px-2 py-0.5 rounded uppercase tracking-widest truncate max-w-[60px]">
-                    {item.brand.name}
+              <div className="min-w-0 flex-1">
+                <p className="font-black text-black truncate uppercase text-[9px] tracking-tighter leading-none">{item.design.code}</p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-[8px] font-bold text-slate-500">{item.size}</p>
+                  <span className={`text-[6px] font-black px-1 rounded-full uppercase ${getItemStatusColor(item.status)}`}>
+                    {item.status.split('_')[0]}
                   </span>
-                  <span className={`text-[7px] md:text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${getItemStatusColor(item.status)}`}>
-                    {item.status.replace("_", " ")}
-                  </span>
-                </div>
-                <p className="font-black text-black truncate uppercase text-xs md:text-sm tracking-tight">{item.design.code} - {item.design.name}</p>
-                <div className="flex items-center justify-between mt-0.5">
-                  <p className="text-xs md:text-sm font-black text-black tracking-tight">{item.size}</p>
-                  {item.isPack && (
-                    <span className="text-[7px] md:text-[9px] font-black bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm shadow-amber-200">Pack</span>
-                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 md:pt-6 border-t border-slate-100">
-          <div className="flex items-center gap-2 text-[8px] md:text-[10px] font-bold text-black uppercase tracking-widest">
-            <MapPin className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate">{order.customerAddress} {order.customerPostalCode && `(${order.customerPostalCode})`} - {order.customerGovernorate}, {order.customerDelegation}</span>
-          </div>
-          <div className="text-lg md:text-xl font-black text-black text-right">
-            {order.totalAmount} <span className="text-xs text-black uppercase">DT</span>
-          </div>
+      </div>
+
+      {/* Bottom Line: Address & Total */}
+      <div className="px-4 py-2 flex items-center justify-between bg-slate-50/30 border-t border-slate-100/50">
+        <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 truncate max-w-[70%]">
+          <MapPin className="w-3 h-3 flex-shrink-0 text-slate-300" />
+          <span className="truncate">{order.customerAddress}, {order.customerGovernorate}</span>
+        </div>
+        <div className="text-sm font-black text-black">
+          {order.totalAmount} <span className="text-[10px] text-slate-400">DT</span>
         </div>
       </div>
     </div>
