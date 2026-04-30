@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 // UTILS
 async function logActivity(action: string, details: string, metadata?: any) {
@@ -20,25 +19,6 @@ async function logActivity(action: string, details: string, metadata?: any) {
 }
 
 // ORDER ACTIONS
-export async function deleteOrder(formData: FormData) {
-  const id = formData.get("id") as string;
-  try {
-    const order = await prisma.order.findUnique({ where: { id } });
-    if (order) {
-      await logActivity(
-        "DELETE_ORDER", 
-        `Order REF #${order.reference} was deleted.`,
-        { orderId: id, reference: order.reference }
-      );
-      await prisma.order.delete({ where: { id } });
-    }
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed to delete order: ${e.message}`);
-    throw e;
-  }
-  revalidatePath("/orders");
-}
-
 export async function createOrder(formData: FormData) {
   const customerName = formData.get("customerName") as string;
   const customerPhone = formData.get("customerPhone") as string;
@@ -142,99 +122,11 @@ export async function createOrder(formData: FormData) {
     // Fire and forget logging (Non-blocking)
     logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: order.id });
     
+    revalidatePath("/orders");
     return { success: true, reference: nextReference };
   } catch (e: any) {
     console.error("CREATE_ORDER_FAILED:", e);
     return { success: false, error: e.message || "Database Error. Please try again." };
-  }
-}
-
-
-  // 1. Pre-fetch all needed products to minimize transaction time
-  const productIds = [];
-  for (let i = 0; i < itemCount; i++) {
-    const pid = formData.get(`productId_${i}`) as string;
-    if (pid) productIds.push(pid);
-  }
-  
-  const products = await prisma.product.findMany({
-    where: { id: { in: productIds } }
-  });
-  const productMap = new Map(products.map(p => [p.id, p]));
-
-  let nextReference = 1;
-  const lastOrder = await prisma.order.findFirst({
-    orderBy: { reference: 'desc' },
-    select: { reference: true }
-  });
-  nextReference = (lastOrder?.reference || 0) + 1;
-
-  try {
-    const result = await prisma.$transaction(async (tx) => {
-      const order = await tx.order.create({
-        data: {
-          customerName, customerPhone, customerAddress, 
-          customerPostalCode, customerGovernorate, customerDelegation,
-          reference: nextReference, totalAmount: 0,
-        },
-      });
-
-      let orderTotal = 0;
-      const orderItemsData = [];
-
-      for (let i = 0; i < itemCount; i++) {
-        const brandId = formData.get(`brandId_${i}`) as string;
-        const designId = formData.get(`designId_${i}`) as string;
-        const productId = formData.get(`productId_${i}`) as string;
-        
-        if (!brandId || !designId || !productId) continue;
-
-        const product = productMap.get(productId);
-        if (!product) continue;
-
-        orderTotal += product.price;
-
-        const mainItem = await tx.orderItem.create({
-          data: {
-            orderId: order.id, brandId, designId,
-            size: product.size, price: product.price,
-            isPack: product.isPack,
-            status: product.isPack ? "PACK_PARENT" : "PENDING",
-          }
-        });
-
-        if (product.isPack && product.components) {
-          const components = JSON.parse(product.components);
-          for (const comp of components) {
-            for (let q = 0; q < (comp.qty || 1); q++) {
-              await tx.orderItem.create({
-                data: {
-                  orderId: order.id, brandId, designId,
-                  size: comp.size, price: 0, isPack: false,
-                  parentItemId: mainItem.id, status: "PENDING",
-                }
-              });
-            }
-          }
-        }
-      }
-
-      const finalOrder = await tx.order.update({
-        where: { id: order.id },
-        data: { totalAmount: orderTotal }
-      });
-
-      return finalOrder;
-    }, { timeout: 30000 }); // Increase timeout to 30s just in case
-
-    await logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: result.id });
-    
-    revalidatePath("/orders");
-    return { success: true, reference: nextReference };
-  } catch (e: any) {
-    console.error("CREATE_ORDER_ERROR:", e);
-    await logActivity("ERROR", `Failed to create order: ${e.message}`);
-    return { success: false, error: e.message };
   }
 }
 
@@ -335,75 +227,24 @@ export async function updateOrder(orderId: string, formData: FormData) {
   }
 }
 
-export async function deleteOrder(id: string) {
+export async function deleteOrder(formData: FormData) {
+  const id = formData.get("id") as string;
   try {
-    await prisma.order.delete({ where: { id } });
+    const order = await prisma.order.findUnique({ where: { id } });
+    if (order) {
+      await logActivity(
+        "DELETE_ORDER", 
+        `Order REF #${order.reference} was deleted.`,
+        { orderId: id, reference: order.reference }
+      );
+      await prisma.order.delete({ where: { id } });
+    }
     revalidatePath("/orders");
     return { success: true };
   } catch (e: any) {
     console.error("DELETE_ORDER_ERROR:", e);
     return { success: false, error: e.message };
   }
-}
-
-
-      await tx.orderItem.deleteMany({
-        where: { orderId, id: { notIn: itemIdsFromForm } }
-      });
-
-      for (let i = 0; i < itemCount; i++) {
-        const id = formData.get(`itemId_${i}`) as string;
-        const brandId = formData.get(`brandId_${i}`) as string;
-        const designId = formData.get(`designId_${i}`) as string;
-        const productId = formData.get(`productId_${i}`) as string;
-        
-        if (!brandId || !designId || !productId) continue;
-        const product = await tx.product.findUnique({ where: { id: productId } });
-        if (!product) continue;
-
-        if (id) {
-          await tx.orderItem.update({
-            where: { id },
-            data: { brandId, designId, size: product.size, price: product.price }
-          });
-        } else {
-          const mainItem = await tx.orderItem.create({
-            data: {
-              orderId, brandId, designId, size: product.size, price: product.price,
-              isPack: product.isPack, status: product.isPack ? "PACK_PARENT" : "PENDING",
-            }
-          });
-
-          if (product.isPack && product.components) {
-            const components = JSON.parse(product.components);
-            for (const comp of components) {
-              for (let q = 0; q < (comp.qty || 1); q++) {
-                await tx.orderItem.create({
-                  data: {
-                    orderId, brandId, designId, size: comp.size, price: 0,
-                    isPack: false, parentItemId: mainItem.id, status: "PENDING",
-                  }
-                });
-              }
-            }
-          }
-        }
-      }
-
-      const allItems = await tx.orderItem.findMany({ where: { orderId } });
-      const newTotal = allItems.reduce((sum, item) => sum + (item.price || 0), 0);
-      await tx.order.update({
-        where: { id: orderId },
-        data: { totalAmount: newTotal }
-      });
-    });
-  } catch (e: any) {
-    await logActivity("ERROR", `Failed to update order ${orderId}: ${e.message}`);
-    throw e;
-  }
-
-  revalidatePath("/orders");
-  return { success: true };
 }
 
 // PRODUCTION & SHIPPING
@@ -440,4 +281,19 @@ export async function markItemWrapped(itemId: string) {
     await prisma.orderItem.update({ where: { id: itemId }, data: { status: "WRAPPED" } });
     revalidatePath("/shipping");
   } catch (error) { throw error; }
+}
+
+export async function updateItemStatuses(itemIds: string[], status: string) {
+  try {
+    await prisma.orderItem.updateMany({
+      where: { id: { in: itemIds } },
+      data: { status }
+    });
+    revalidatePath("/production");
+    revalidatePath("/shipping");
+    return { success: true };
+  } catch (e: any) {
+    console.error("UPDATE_STATUSES_ERROR:", e);
+    return { success: false, error: e.message };
+  }
 }

@@ -365,6 +365,7 @@ export default function OrderForm({
               </select>
             </div>
             
+              <div className="space-y-2 relative">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] font-black text-black uppercase tracking-widest">Design</label>
                 <div className="flex gap-2">
