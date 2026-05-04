@@ -302,19 +302,27 @@ export async function createBatch(formData: FormData) {
         order: { status: { in: ["CONFIRMED", "ON_HOLD"] } }
       } 
     });
-    if (items.length > 0) {
-      const batchName = `${brandName} - List ${new Date().toLocaleDateString()}`;
-      await prisma.productionList.create({
-        data: { batchName, items: { connect: items.map(o => ({ id: o.id })) } },
-      });
-      await prisma.orderItem.updateMany({
-        where: { id: { in: items.map(o => o.id) } },
-        data: { status: "IN_PRODUCTION" },
-      });
-      await logActivity("CREATE_BATCH", `Production Batch created: ${batchName}`);
-      revalidatePath("/production");
+    
+    if (items.length === 0) {
+      return { success: false, error: `No items with READY designs found for ${brandName}.` };
     }
-  } catch (e) { throw e; }
+
+    const batchName = `${brandName} - List ${new Date().toLocaleDateString()}`;
+    await prisma.productionList.create({
+      data: { batchName, items: { connect: items.map(o => ({ id: o.id })) } },
+    });
+    
+    await prisma.orderItem.updateMany({
+      where: { id: { in: items.map(o => o.id) } },
+      data: { status: "IN_PRODUCTION" },
+    });
+    
+    await logActivity("CREATE_BATCH", `Production Batch created: ${batchName}`);
+    revalidatePath("/production");
+    return { success: true };
+  } catch (e: any) { 
+    return { success: false, error: e.message || "Failed to create batch." }; 
+  }
 }
 
 export async function shipOrder(formData: FormData) {

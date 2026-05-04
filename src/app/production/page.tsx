@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createBatch } from "@/lib/actions";
 import ExportProductionList from "@/components/ExportProductionList";
 import PrintProductionList from "@/components/PrintProductionList";
+import CreateBatchButton from "@/components/CreateBatchButton";
 
 export const dynamic = "force-dynamic";
 
@@ -18,33 +19,19 @@ export default async function ProductionPage() {
     },
     include: { 
       brand: true, 
-      design: true,
+      design: true, 
       order: true,
-      parentItem: true
+      parentItem: { include: { design: true } }
     },
-    orderBy: { order: { reference: "asc" } } // First come first served
-  });
-
-  const productionLists = await prisma.productionList.findMany({
-    take: 10, // Only show recent batches
-    include: { 
-      items: {
-        include: { brand: true, design: true, order: true }
-      },
-      _count: { select: { items: true } } 
-    },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "desc" }
   });
 
   const wrappedItems = await prisma.orderItem.findMany({
     where: { status: "WRAPPED" },
     include: { 
-      brand: true, 
       design: true, 
       order: true,
-      parentItem: {
-        include: { design: true }
-      }
+      parentItem: { include: { design: true } }
     },
     orderBy: { updatedAt: "desc" },
     take: 30
@@ -79,6 +66,12 @@ export default async function ProductionPage() {
     }
   });
 
+  const lists = await prisma.productionList.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { items: { include: { design: true, order: true } } },
+    take: 10
+  });
+
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
@@ -91,22 +84,33 @@ export default async function ProductionPage() {
           {brands.map(brand => {
             const brandPending = pendingItems.filter(o => o.brandId === brand.id);
             if (brandPending.length === 0) return null;
+            
+            const readyToBatchCount = brandPending.filter(item => item.designStatus === "READY" && !item.isPack).length;
 
             return (
               <div key={brand.id} className="space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                  <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
-                    <PlusCircle className="w-5 h-5 text-amber-500" />
-                    {brand.name} Pending ({brandPending.length})
-                  </h3>
-                  <form action={createBatch}>
-                    <input type="hidden" name="brandId" value={brand.id} />
-                    <input type="hidden" name="brandName" value={brand.name} />
-                    <button type="submit" className="w-full md:w-auto bg-amber-600 text-white px-5 py-3 md:py-2.5 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-amber-700 transition-all shadow-lg shadow-amber-100 flex items-center justify-center gap-2">
-                      <Printer className="w-4 h-4" />
-                      Create {brand.name} List
-                    </button>
-                  </form>
+                  <div>
+                    <h3 className="text-base md:text-lg font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
+                      <PlusCircle className="w-5 h-5 text-amber-500" />
+                      {brand.name} Pending ({brandPending.length})
+                    </h3>
+                    {readyToBatchCount > 0 ? (
+                      <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-0.5">
+                        {readyToBatchCount} items ready for production
+                      </p>
+                    ) : (
+                      <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest mt-0.5">
+                        No items ready (Waiting for Designs)
+                      </p>
+                    )}
+                  </div>
+                  <CreateBatchButton 
+                    brandId={brand.id} 
+                    brandName={brand.name} 
+                    action={createBatch} 
+                    disabled={readyToBatchCount === 0}
+                  />
                 </div>
                 
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm divide-y divide-slate-50 overflow-hidden">
@@ -162,102 +166,89 @@ export default async function ProductionPage() {
         </div>
 
         <div className="space-y-6">
-          {displayWrapped.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-[10px] font-black flex items-center gap-2 text-emerald-600 uppercase tracking-widest">
-                <Package className="w-3.5 h-3.5" />
-                Recently Wrapped
-              </h3>
-              <div className="max-h-[200px] overflow-y-auto bg-emerald-50 rounded-2xl border border-emerald-100 divide-y divide-emerald-100 shadow-inner custom-scrollbar">
-                {displayWrapped.slice(0, 20).map(item => (
-                  <div key={item.id} className="p-2 flex items-center gap-3 hover:bg-emerald-100/50 transition-colors">
-                    <div className="w-7 h-7 rounded bg-white p-0.5 shrink-0 border border-emerald-200">
-                      {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-[9px] font-black text-slate-900 leading-none truncate">{item.design.code}</p>
-                        {item.isPack && (
-                          <span className="bg-emerald-600 text-white text-[6px] font-black px-1 rounded-full uppercase tracking-tighter">
-                            PACK x{item.count}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[8px] font-bold text-slate-500 mt-0.5 truncate uppercase">
-                        REF #{item.order.reference}
-                      </p>
-                    </div>
-                    <Link 
-                      href="/shipping" 
-                      className="bg-emerald-600 text-white p-1.5 rounded-lg hover:bg-emerald-700 transition-all shadow-sm shrink-0"
-                    >
-                      <Truck className="w-2.5 h-2.5" />
-                    </Link>
-                  </div>
-                ))}
-              </div>
+          <div className="flex items-center gap-3 px-2">
+            <div className="bg-slate-100 p-2 rounded-xl">
+              <Factory className="w-5 h-5 text-slate-500" />
             </div>
-          )}
-
-          <h3 className="text-sm font-black flex items-center gap-2 text-slate-700 uppercase tracking-tight">
-            <Factory className="w-5 h-5 text-slate-400" />
-            PRODUCTION LISTS
-          </h3>
-          <div className="grid grid-cols-1 gap-4">
-            {productionLists.map(list => {
-              const items = list.items.filter(i => !i.isPack);
-              const isFullyWrapped = items.length > 0 && items.every(i => i.status === "WRAPPED");
-
-              if (isFullyWrapped) {
-                return (
-                  <div key={list.id} className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between gap-4 opacity-60 hover:opacity-100 transition-opacity group">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-[8px] font-black text-slate-400 bg-slate-200 px-2 py-0.5 rounded uppercase tracking-widest shrink-0">
-                        #{list.id.slice(-4)}
-                      </span>
-                      <h4 className="font-bold text-slate-500 text-xs truncate uppercase tracking-tight">{list.batchName}</h4>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-emerald-600 font-black text-[8px] uppercase tracking-widest flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Wrapped
-                      </span>
-                      <Link 
-                        href={`/production/${list.id}`}
-                        className="text-slate-400 hover:text-slate-900 transition-colors"
-                      >
-                        <Factory className="w-4 h-4" />
-                      </Link>
-                    </div>
+            <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Production Lists</h2>
+          </div>
+          
+          <div className="space-y-4">
+            {lists.map(list => (
+              <div key={list.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:shadow-md transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Batch Name</p>
+                    <p className="font-black text-slate-900 truncate max-w-[150px]">{list.batchName}</p>
                   </div>
-                );
-              }
-
-              return (
-                <div key={list.id} className="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 hover:border-amber-200 transition-colors group">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded uppercase tracking-widest flex items-center gap-1.5">
-                      Batch #{list.id.slice(-4)}
-                    </span>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(list.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <h4 className="font-black text-slate-900 leading-tight text-base md:text-lg truncate">{list.batchName}</h4>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                    <span className="text-slate-500 font-black text-[10px] uppercase tracking-widest">{items.length} CARPETS</span>
-                    <div className="flex flex-wrap gap-2">
-                      <Link 
-                        href={`/production/${list.id}`}
-                        className="bg-slate-900 text-white px-3 md:px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all text-center flex-1 sm:flex-none"
-                      >
-                        Manage
-                      </Link>
-                      <ExportProductionList orders={list.items as any} batchName={list.batchName} />
-                      <PrintProductionList batchName={list.batchName} items={list.items} />
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <PrintProductionList list={list} />
+                    <ExportProductionList list={list} />
                   </div>
                 </div>
-              );
-            })}
+                <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                  <div className="flex items-center gap-1">
+                    <Package className="w-3 h-3" />
+                    {list.items.length} Articles
+                  </div>
+                  <div>
+                    {new Date(list.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <Link 
+                  href={`/production/${list.id}`}
+                  className="mt-4 w-full bg-slate-50 text-slate-600 hover:bg-slate-900 hover:text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                >
+                  Manage Batch Items
+                </Link>
+              </div>
+            ))}
+            {lists.length === 0 && (
+              <p className="text-center text-slate-300 font-bold py-10 uppercase tracking-widest text-[10px]">No production lists yet.</p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 px-2 mt-8">
+            <div className="bg-emerald-100 p-2 rounded-xl">
+              <Package className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Wrapped / Ready</h2>
+          </div>
+
+          <div className="space-y-3">
+            {displayWrapped.map(item => (
+              <div key={item.id} className="bg-emerald-50/50 rounded-2xl border border-emerald-100 p-3 flex items-center justify-between group">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white rounded-lg border border-emerald-100 overflow-hidden p-0.5 shadow-sm">
+                    {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[10px] font-black text-slate-900 leading-none">{item.design.code}</p>
+                      {item.isPack && (
+                         <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-600 text-white uppercase tracking-tighter">PACK x{item.count}</span>
+                      )}
+                    </div>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">{item.isPack ? "Ready for Shipping" : item.size}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-900 capitalize">{item.order.customerName}</p>
+                  <p className="text-[7px] font-bold text-emerald-600 uppercase tracking-tighter mt-0.5">Wrapped</p>
+                </div>
+              </div>
+            ))}
+            {displayWrapped.length === 0 && (
+              <p className="text-center text-slate-300 font-bold py-10 uppercase tracking-widest text-[10px]">No wrapped items ready.</p>
+            )}
+            
+            <Link 
+              href="/shipping" 
+              className="mt-4 w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-100"
+            >
+              <Truck className="w-4 h-4" />
+              Go to Shipping Queue
+            </Link>
           </div>
         </div>
       </div>
