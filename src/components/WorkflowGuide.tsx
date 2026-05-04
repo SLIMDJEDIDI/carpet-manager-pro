@@ -90,21 +90,21 @@ export default function WorkflowGuide({
             <h2 className="text-3xl font-black uppercase tracking-tighter leading-tight drop-shadow-sm">{step}</h2>
           </div>
           
-          <div className="relative z-10 pt-10 space-y-4">
+          <div className="relative z-10 pt-8 space-y-6">
             {prevStep && (
-              <div className="group cursor-pointer opacity-40 hover:opacity-100 transition-all" onClick={() => prevHref && router.push(prevHref)}>
-                <p className="text-[8px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 text-slate-400">
-                  <ChevronLeft className="w-3 h-3" /> Previous Step
+              <div className="group cursor-pointer opacity-30 hover:opacity-100 transition-all" onClick={() => prevHref && router.push(prevHref)}>
+                <p className="text-[7px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 text-slate-400">
+                  <ChevronLeft className="w-2.5 h-2.5" /> Previous Stage
                 </p>
-                <p className="text-[11px] font-black uppercase truncate group-hover:text-emerald-400">{prevStep}</p>
+                <p className="text-[10px] font-black uppercase truncate text-slate-400 group-hover:text-white">{prevStep}</p>
               </div>
             )}
             {nextStep && (
               <div className="group cursor-pointer transition-all" onClick={() => nextHref && router.push(nextHref)}>
-                <p className="text-[8px] font-black uppercase tracking-widest text-emerald-500 mb-1 flex items-center gap-1">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-1 flex items-center gap-1">
                   Ready For <ChevronRight className="w-3 h-3" />
                 </p>
-                <p className="text-[11px] font-black uppercase truncate group-hover:text-white transition-colors">{nextStep}</p>
+                <p className="text-xl font-black uppercase tracking-tighter group-hover:text-emerald-400 transition-colors leading-none">{nextStep}</p>
               </div>
             )}
           </div>
@@ -150,7 +150,7 @@ export default function WorkflowGuide({
                 onClick={() => router.push(nextHref)}
                 className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-4 shadow-2xl shadow-emerald-100 ring-4 ring-transparent hover:ring-emerald-50"
               >
-                Continue Flow
+                Continue to {nextStep}
                 <ChevronRight className="w-5 h-5" />
               </button>
             ) : null}

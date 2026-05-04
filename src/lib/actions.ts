@@ -387,6 +387,7 @@ export async function createBatch(formData: FormData) {
     
     await logActivity("CREATE_BATCH", `Production Batch created: ${batchName}`);
     revalidatePath("/production");
+    revalidatePath("/shipping");
     return { success: true };
   } catch (e: any) { 
     return { success: false, error: e.message || "Failed to create batch." }; 

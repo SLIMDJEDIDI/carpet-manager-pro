@@ -12,7 +12,14 @@ export default async function ShippingPage() {
   const orders = await prisma.order.findMany({
     where: { 
       status: { in: ["CONFIRMED", "READY_TO_SHIP"] },
-      items: { some: { status: "WRAPPED" } } 
+      items: { 
+        some: { 
+          OR: [
+            { status: "WRAPPED" },
+            { productionListId: { not: null } }
+          ]
+        } 
+      } 
     },
     include: { items: { include: { design: true, brand: true } } },
     orderBy: { reference: 'desc' }
