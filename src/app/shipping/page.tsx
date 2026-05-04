@@ -96,6 +96,7 @@ export default async function ShippingPage() {
                     <BatchWrapButton 
                       itemIds={order.items.filter(i => !i.isPack && i.status !== "WRAPPED" && i.status !== "SHIPPED").map(i => i.id)} 
                       orderId={order.id} 
+                      onWrap={updateItemStatuses}
                     />
                   )}
                   {allWrapped ? (
@@ -127,6 +128,8 @@ export default async function ShippingPage() {
                   customerName={order.customerName}
                   items={order.items}
                   onShip={shipOrder}
+                  onWrap={markItemWrapped}
+                  onBatchWrap={updateItemStatuses}
                 />
               </div>
             </div>

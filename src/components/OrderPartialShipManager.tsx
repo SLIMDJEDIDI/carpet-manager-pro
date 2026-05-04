@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Truck, Loader2, Package, CheckCircle2, ChevronRight, AlertTriangle, Layers, Square } from "lucide-react";
-import { markItemWrapped, updateItemStatuses } from "@/lib/actions";
 
 interface Item {
   id: string;
@@ -27,6 +26,8 @@ interface OrderPartialShipManagerProps {
   customerName: string;
   items: Item[];
   onShip: (formData: FormData) => Promise<any>;
+  onWrap: (formData: FormData) => Promise<any>;
+  onBatchWrap: (itemIds: string[], status: string) => Promise<any>;
 }
 
 export default function OrderPartialShipManager({ 
@@ -34,7 +35,9 @@ export default function OrderPartialShipManager({
   orderRef,
   customerName,
   items, 
-  onShip 
+  onShip,
+  onWrap,
+  onBatchWrap
 }: OrderPartialShipManagerProps) {
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [isPending, setIsPending] = useState(false);
@@ -132,6 +135,7 @@ export default function OrderPartialShipManager({
                   item={item} 
                   isSelected={selectedItemIds.includes(item.id)} 
                   onToggle={() => toggleItem(item.id)} 
+                  onWrap={onWrap}
                 />
               ))}
             </div>
@@ -176,7 +180,7 @@ export default function OrderPartialShipManager({
                             onClick={async () => {
                               if (!confirm("Mark all items in this pack as WRAPPED?")) return;
                               setIsPending(true);
-                              await updateItemStatuses(children.map(c => c.id), "WRAPPED");
+                              await onBatchWrap(children.map(c => c.id), "WRAPPED");
                               setIsPending(false);
                             }}
                             className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center gap-2"
@@ -208,6 +212,7 @@ export default function OrderPartialShipManager({
                         onToggle={() => toggleItem(item.id)}
                         disabled={true} // Children only selectable via Parent for Packs
                         forceWhite={allChildrenSelected}
+                        onWrap={onWrap}
                       />
                     ))}
                   </div>
@@ -226,13 +231,15 @@ function ItemSelectionCard({
   isSelected, 
   onToggle, 
   disabled = false,
-  forceWhite = false
+  forceWhite = false,
+  onWrap
 }: { 
   item: Item, 
   isSelected: boolean, 
   onToggle: () => void,
   disabled?: boolean,
-  forceWhite?: boolean
+  forceWhite?: boolean,
+  onWrap: (formData: FormData) => Promise<any>
 }) {
   const [wrapping, setWrapping] = useState(false);
   const isShipped = item.status === "SHIPPED";
@@ -243,7 +250,7 @@ function ItemSelectionCard({
     setWrapping(true);
     const formData = new FormData();
     formData.append("itemId", item.id);
-    await markItemWrapped(formData);
+    await onWrap(formData);
     setWrapping(false);
   };
 

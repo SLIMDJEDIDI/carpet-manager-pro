@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { CheckCircle2, Loader2, Layers } from "lucide-react";
-import { updateItemStatuses } from "@/lib/actions";
 
 interface BatchWrapButtonProps {
   itemIds: string[];
   orderId: string;
+  onWrap: (itemIds: string[], status: string) => Promise<any>;
 }
 
-export default function BatchWrapButton({ itemIds, orderId }: BatchWrapButtonProps) {
+export default function BatchWrapButton({ itemIds, orderId, onWrap }: BatchWrapButtonProps) {
   const [loading, setLoading] = useState(false);
 
   if (itemIds.length === 0) return null;
@@ -20,7 +20,7 @@ export default function BatchWrapButton({ itemIds, orderId }: BatchWrapButtonPro
         if (!confirm(`Mark all ${itemIds.length} items as WRAPPED?`)) return;
         setLoading(true);
         try {
-          await updateItemStatuses(itemIds, "WRAPPED");
+          await onWrap(itemIds, "WRAPPED");
         } catch (e) {
           console.error(e);
           alert("Failed to wrap items");
