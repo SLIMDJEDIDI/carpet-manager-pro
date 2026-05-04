@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 import { Truck, Package, CheckCircle2, MapPin, Loader2 } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
 import BulkJaxShipping from "@/components/BulkJaxShipping";
