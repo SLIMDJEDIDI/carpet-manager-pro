@@ -185,9 +185,20 @@ export default async function ProductionPage() {
           </div>
           
           <div className="space-y-4">
-            {lists.map(list => (
-              <div key={list.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:shadow-md transition-all group">
-                <div className="flex items-center justify-between mb-3">
+            {lists.map(list => {
+              const allWrapped = list.items.length > 0 && list.items.every(i => i.status === "WRAPPED");
+              const allShipped = list.items.length > 0 && list.items.every(i => i.order?.status === "SHIPPED" || i.order?.status === "DELIVERED");
+              const isDone = allWrapped || allShipped;
+
+              return (
+                <div key={list.id} className={`bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:shadow-md transition-all group relative overflow-hidden ${isDone ? 'opacity-50 grayscale' : ''}`}>
+                  {allShipped ? (
+                    <div className="absolute -right-4 top-4 rotate-45 bg-emerald-600 text-white px-10 py-1 font-black text-[8px] uppercase tracking-widest z-10 shadow-lg">SHIPPED</div>
+                  ) : allWrapped ? (
+                    <div className="absolute -right-4 top-4 rotate-45 bg-blue-600 text-white px-10 py-1 font-black text-[8px] uppercase tracking-widest z-10 shadow-lg">WRAPPED</div>
+                  ) : null}
+
+                  <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Batch Name</p>
                     <p className="font-black text-slate-900 truncate max-w-[150px]">{list.batchName}</p>
@@ -213,8 +224,9 @@ export default async function ProductionPage() {
                   Manage Batch Items
                 </Link>
               </div>
-            ))}
-            {lists.length === 0 && (
+            );
+          })}
+          {lists.length === 0 && (
               <p className="text-center text-slate-300 font-bold py-10 uppercase tracking-widest text-[10px]">No production lists yet.</p>
             )}
           </div>
