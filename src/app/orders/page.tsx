@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import WorkflowGuide from "@/components/WorkflowGuide";
+import ConfirmOrderButton from "@/components/ConfirmOrderButton";
+import { confirmOrder } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -83,9 +85,14 @@ export default async function OrdersPage({
           </div>
           
           <div className="flex flex-col gap-1 items-end ml-auto md:ml-0">
-            <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
-              {order.status === "PENDING" ? "RECEIVED" : order.status}
-            </span>
+            <div className="flex items-center gap-2">
+              {order.status === "PENDING" && (
+                <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
+              )}
+              <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
+                {order.status === "PENDING" ? "RECEIVED" : order.status}
+              </span>
+            </div>
             {order.status === "CONFIRMED" && (
               <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest text-right">
                 order in production list
