@@ -53,11 +53,10 @@ export default async function Dashboard({
   const jaxErrors = await prisma.jaxLog.count({ where: { status: "ERROR" } });
   
   const pendingConfirm = await prisma.order.count({ where: { status: "PENDING" } });
-  const waitingDesign = await prisma.orderItem.count({ 
+  const waitingDesign = await prisma.order.count({ 
     where: { 
-      designStatus: "PENDING", 
-      order: { status: "CONFIRMED" },
-      isPack: false 
+      status: "CONFIRMED",
+      items: { some: { designStatus: "PENDING", isPack: false } } 
     } 
   });
   const readyToShipCount = await prisma.order.count({ where: { status: "READY_TO_SHIP" } });
@@ -66,9 +65,29 @@ export default async function Dashboard({
   const tunnelStats = {
     received: await prisma.order.count({ where: { status: "PENDING" } }),
     confirmed: await prisma.order.count({ where: { status: "CONFIRMED" } }),
-    design: await prisma.orderItem.count({ where: { designStatus: "PENDING", order: { status: "CONFIRMED" } } }),
-    production: await prisma.orderItem.count({ where: { status: "IN_PRODUCTION" } }),
-    wrapped: await prisma.orderItem.count({ where: { status: "WRAPPED" } }),
+    design: await prisma.order.count({ 
+      where: { 
+        status: "CONFIRMED",
+        items: { some: { designStatus: "PENDING", isPack: false } } 
+      } 
+    }),
+    production: await prisma.order.count({ 
+      where: { 
+        status: { in: ["CONFIRMED", "ON_HOLD"] },
+        items: { some: { status: "IN_PRODUCTION" } } 
+      } 
+    }),
+    wrapped: await prisma.order.count({ 
+      where: { 
+        OR: [
+          { status: "READY_TO_SHIP" },
+          { 
+            status: "CONFIRMED",
+            items: { some: { status: "WRAPPED" } } 
+          }
+        ]
+      } 
+    }),
     shipped: await prisma.order.count({ where: { status: "SHIPPED" } }),
     delivered: await prisma.order.count({ where: { status: "DELIVERED" } }),
     returned: await prisma.order.count({ where: { status: "RETURNED" } }),
@@ -85,7 +104,11 @@ export default async function Dashboard({
   const snapshot = {
     created: await prisma.order.count({ where: { createdAt: dateFilter } }),
     confirmed: await prisma.order.count({ where: { status: { in: ["CONFIRMED", "SHIPPED", "DELIVERED"] }, updatedAt: dateFilter } }),
-    produced: await prisma.orderItem.count({ where: { status: "WRAPPED", updatedAt: dateFilter } }),
+    produced: await prisma.order.count({ 
+      where: { 
+        items: { some: { status: "WRAPPED", updatedAt: dateFilter } } 
+      } 
+    }),
     sent: await prisma.order.count({ where: { status: "SHIPPED", updatedAt: dateFilter } }),
     revenue: await prisma.order.aggregate({
       where: { status: { in: ["SHIPPED", "DELIVERED"] }, updatedAt: dateFilter },
