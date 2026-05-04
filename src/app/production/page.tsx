@@ -49,7 +49,7 @@ export default async function ProductionPage() {
         displayWrapped.push({
           id: item.parentItemId,
           isPack: true,
-          design: item.parentItem?.design || item.design,
+          design: item.parentItem?.design || item.design || { code: '???', name: 'Unknown' },
           order: item.order,
           count: 1,
           updatedAt: item.updatedAt
@@ -59,7 +59,7 @@ export default async function ProductionPage() {
       displayWrapped.push({
         id: item.id,
         isPack: false,
-        design: item.design,
+        design: item.design || { code: '???', name: 'Unknown' },
         order: item.order,
         size: item.size,
         updatedAt: item.updatedAt
@@ -152,8 +152,8 @@ export default async function ProductionPage() {
                         </div>
                       </div>
                       <div className="text-left sm:text-right flex sm:flex-col justify-between items-center sm:items-end border-t sm:border-t-0 pt-3 sm:pt-0">
-                        <p className="text-xs md:text-sm font-bold text-slate-900 truncate max-w-[150px]">{item.order.customerName}</p>
-                        <p className="text-[8px] md:text-[10px] text-slate-400 font-medium uppercase tracking-widest">REF #{item.order.reference}</p>
+                        <p className="text-xs md:text-sm font-bold text-slate-900 truncate max-w-[150px]">{item.order?.customerName || "No Name"}</p>
+                        <p className="text-[8px] md:text-[10px] text-slate-400 font-medium uppercase tracking-widest">REF #{item.order?.reference || "???"}</p>
                       </div>
                       {item.order.note && (
                         <div className="mt-2 sm:mt-0 p-2 bg-amber-50 rounded-xl border border-amber-100/50 flex items-start gap-2 max-w-md">

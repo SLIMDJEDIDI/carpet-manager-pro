@@ -122,15 +122,15 @@ function ItemRow({ item }: { item: any }) {
       <div className="w-10 h-10 border-4 border-slate-200 rounded-xl flex-shrink-0"></div>
       
       <div className="w-20 h-20 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden flex-shrink-0">
-        {item.design.imageUrl && (
+        {item.design?.imageUrl && (
           <img src={item.design.imageUrl} alt="" className="w-full h-full object-cover" />
         )}
       </div>
 
       <div className="flex-1">
         <div className="flex items-center gap-3 mb-1">
-          <p className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{item.design.code}</p>
-          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest">{item.brand.name}</span>
+          <p className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{item.design?.code || "???"}</p>
+          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest">{item.brand?.name || "???"}</span>
         </div>
         <p className="text-lg font-black text-slate-400 tracking-tight">{item.size}</p>
       </div>

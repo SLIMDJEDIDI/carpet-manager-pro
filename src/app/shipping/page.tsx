@@ -80,12 +80,12 @@ export default async function ShippingPage() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg md:text-xl font-black text-slate-900 leading-none capitalize truncate max-w-[150px] md:max-w-none">{order.customerName}</h3>
+                      <h3 className="text-lg md:text-xl font-black text-slate-900 leading-none capitalize truncate max-w-[150px] md:max-w-none">{order.customerName || 'No Name'}</h3>
                       {order.status === "PARTIALLY_SHIPPED" && (
                         <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest leading-none shadow-lg shadow-indigo-100">Partial</span>
                       )}
                     </div>
-                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase mt-1.5 tracking-widest truncate">REF #{order.reference} • {order.customerPhone}</p>
+                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase mt-1.5 tracking-widest truncate">REF #{order.reference || '??'} • {order.customerPhone || 'No Phone'}</p>
                   </div>
                 </div>
 

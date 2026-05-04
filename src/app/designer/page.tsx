@@ -40,15 +40,15 @@ export default async function DesignerHubPage() {
       };
     }
     groupsMap[key].items.push(item);
-    groupsMap[key].brandNames.add(item.brand.name);
-    groupsMap[key].orders.push(item.order.reference);
-    if (item.order.note) {
+    if (item.brand?.name) groupsMap[key].brandNames.add(item.brand.name);
+    if (item.order?.reference) groupsMap[key].orders.push(item.order.reference);
+    if (item.order?.note) {
       groupsMap[key].notes.add(item.order.note);
     }
   });
 
   const groups = Object.values(groupsMap).sort((a, b) => 
-    a.design.code.localeCompare(b.design.code)
+    (a.design?.code || "").localeCompare(b.design?.code || "")
   );
 
   return (
@@ -89,8 +89,8 @@ export default async function DesignerHubPage() {
             <div key={idx} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]">
               {/* Design Image Section */}
               <div className="w-full md:w-80 bg-slate-50 relative flex-shrink-0">
-                {group.design.imageUrl ? (
-                  <img src={group.design.imageUrl} className="w-full h-full object-contain p-4" alt={group.design.code} />
+                {group.design?.imageUrl ? (
+                  <img src={group.design.imageUrl} className="w-full h-full object-contain p-4" alt={group.design.code || "Design"} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">
                     <Palette className="w-16 h-16" />
@@ -115,9 +115,9 @@ export default async function DesignerHubPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-                        {group.design.code}
+                        {group.design?.code || "???"}
                       </h2>
-                      <p className="text-slate-400 font-bold text-sm uppercase tracking-tight mt-1">{group.design.name}</p>
+                      <p className="text-slate-400 font-bold text-sm uppercase tracking-tight mt-1">{group.design?.name || "Unknown Design"}</p>
                     </div>
                     <div className="px-4 py-2 bg-amber-50 rounded-2xl border border-amber-100 text-amber-600 font-black text-xs uppercase tracking-widest flex items-center gap-2">
                       <Clock className="w-4 h-4" />
