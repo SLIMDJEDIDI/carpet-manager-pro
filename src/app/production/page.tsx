@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Factory, Printer, PlusCircle, CheckCircle2, Package, Truck } from "lucide-react";
+import { Factory, Printer, PlusCircle, CheckCircle2, Package, Truck, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { createBatch } from "@/lib/actions";
 import ExportProductionList from "@/components/ExportProductionList";

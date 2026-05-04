@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import DeleteOrderButton from "@/components/DeleteOrderButton";

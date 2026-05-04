@@ -7,15 +7,19 @@ import { createJaxReceipt } from "./jax-api";
 
 // UTILS
 async function logActivity(action: string, details: string, metadata?: any) {
-  const session = await getSession();
-  const userName = session?.user?.name || "System";
-  await prisma.activityLog.create({
-    data: { 
-      action, 
-      details: `${details} (by ${userName})`, 
-      metadata: metadata ? JSON.stringify(metadata) : null 
-    }
-  });
+  try {
+    const session = await getSession();
+    const userName = session?.user?.name || "System";
+    await prisma.activityLog.create({
+      data: { 
+        action, 
+        details: `${details} (by ${userName})`, 
+        metadata: metadata ? JSON.stringify(metadata) : null 
+      }
+    });
+  } catch (e) {
+    console.error("Failed to log activity:", e);
+  }
 }
 
 // ORDER ACTIONS
@@ -125,7 +129,7 @@ export async function createOrder(formData: FormData) {
       data: { totalAmount: orderTotal + deliveryFee }
     });
 
-    logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: order.id });
+    await logActivity("CREATE_ORDER", `New Order REF #${nextReference} created`, { reference: nextReference, orderId: order.id });
     
     revalidatePath("/orders");
     return { success: true, reference: nextReference };
@@ -236,7 +240,7 @@ export async function confirmOrder(formData: FormData) {
         confirmedById: session?.user?.id || null,
       }
     });
-    logActivity("CONFIRM_ORDER", `Order REF #${orderId} confirmed`);
+    await logActivity("CONFIRM_ORDER", `Order REF #${orderId} confirmed`);
     revalidatePath("/orders");
     revalidatePath("/production");
     return { success: true };
@@ -266,7 +270,7 @@ export async function markItemDamaged(itemId: string) {
       where: { id: item.orderId },
       data: { status: "ON_HOLD" }
     });
-    logActivity("ITEM_DAMAGED", `Item in Order REF #${item.order.reference} marked as DAMAGED`);
+    await logActivity("ITEM_DAMAGED", `Item in Order REF #${item.order.reference} marked as DAMAGED`);
     revalidatePath("/production");
     revalidatePath("/orders");
     return { success: true };
@@ -307,6 +311,7 @@ export async function createBatch(formData: FormData) {
         where: { id: { in: items.map(o => o.id) } },
         data: { status: "IN_PRODUCTION" },
       });
+      await logActivity("CREATE_BATCH", `Production Batch created: ${batchName}`);
       revalidatePath("/production");
     }
   } catch (e) { throw e; }
@@ -369,14 +374,28 @@ export async function shipOrder(formData: FormData) {
       }),
       prisma.orderItem.updateMany({
         where: { orderId },
-        data: { status: "SHIPPED" }
+        data: { status: "WRAPPED" }
       })
     ]);
 
-    logActivity("JAX_SHIPPING_SUCCESS", `Order REF #${order.reference} shipped`, { orderId, trackingId: jaxResponse.trackingId });
+    await logActivity("JAX_SHIPPING_SUCCESS", `Order REF #${order.reference} shipped`, { orderId, trackingId: jaxResponse.trackingId });
     revalidatePath("/shipping");
     revalidatePath("/orders");
-    return { success: true, trackingId: jaxResponse.trackingId };
+    return { success: true };
+  } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function archiveDispatch(formData: FormData) {
+  const orderId = formData.get("orderId") as string;
+  try {
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "DISPATCHED" }
+    });
+    await logActivity("ORDER_DISPATCHED", `Order REF #${order.reference} archived`, { orderId });
+    revalidatePath("/jax");
+    revalidatePath("/history");
+    return { success: true };
   } catch (e: any) { return { success: false, error: e.message }; }
 }
 
@@ -404,18 +423,4 @@ export async function markItemWrapped(formData: FormData) {
   } catch (e: any) {
     return { success: false, error: e.message };
   }
-}
-
-export async function archiveDispatch(formData: FormData) {
-  const orderId = formData.get("orderId") as string;
-  try {
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: { status: "DISPATCHED" }
-    });
-    logActivity("ORDER_DISPATCHED", `Order REF #${order.reference} archived`, { orderId });
-    revalidatePath("/jax");
-    revalidatePath("/history");
-    return { success: true };
-  } catch (e: any) { return { success: false, error: e.message }; }
 }
