@@ -7,13 +7,14 @@ export default async function WrappingPrintPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  try {
   const { id } = await params;
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
       items: {
         include: { brand: true, design: true },
-        orderBy: { packId: 'asc' }
+        orderBy: { parentItemId: 'asc' }
       }
     }
   });
@@ -21,13 +22,13 @@ export default async function WrappingPrintPage({
   if (!order) return notFound();
 
   // Group items by pack
-  const normalItems = order.items.filter(i => !i.isPack && !i.packId);
+  const normalItems = order.items.filter(i => !i.isPack && !i.parentItemId);
   const packs: Record<string, any[]> = {};
   
   order.items.forEach(item => {
-    if (item.packId) {
-      if (!packs[item.packId]) packs[item.packId] = [];
-      packs[item.packId].push(item);
+    if (item.parentItemId) {
+      if (!packs[item.parentItemId]) packs[item.parentItemId] = [];
+      packs[item.parentItemId].push(item);
     }
   });
 
@@ -70,8 +71,8 @@ export default async function WrappingPrintPage({
 
       <div className="space-y-12">
         {/* Packs Section */}
-        {Object.entries(packs).map(([packId, items]) => (
-          <div key={packId} className="border-4 border-indigo-600 rounded-[3rem] p-8 relative">
+        {Object.entries(packs).map(([parentItemId, items]) => (
+          <div key={parentItemId} className="border-4 border-indigo-600 rounded-[3rem] p-8 relative">
             <div className="absolute -top-6 left-10 bg-indigo-600 text-white px-6 py-2 rounded-2xl font-black uppercase text-xs tracking-[0.2em] flex items-center gap-3 shadow-xl shadow-indigo-200">
               <Package className="w-4 h-4" />
               Atomic Pack Unit
@@ -114,6 +115,16 @@ export default async function WrappingPrintPage({
       <script dangerouslySetInnerHTML={{ __html: 'window.print()' }} />
     </div>
   );
+  } catch (error: any) {
+    console.error("Print page crashed:", error?.message || error);
+    return (
+      <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-rose-200">
+        <h1 className="text-2xl font-black text-rose-600 uppercase">Print Error</h1>
+        <p className="text-slate-500 mt-4 font-bold">{error?.message || "Unknown server error"}</p>
+        <a href="/shipping" className="inline-block mt-8 bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase text-xs">Back to Shipping</a>
+      </div>
+    );
+  }
 }
 
 function ItemRow({ item }: { item: any }) {

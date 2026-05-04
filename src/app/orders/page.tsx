@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare, AlertOctagon, TrendingUp, Filter, Factory, RotateCcw, Truck } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare, AlertOctagon, TrendingUp, Filter, Factory, RotateCcw, Truck, Printer } from "lucide-react";
 import Link from "next/link";
 import WorkflowGuide from "@/components/WorkflowGuide";
 import ConfirmOrderButton from "@/components/ConfirmOrderButton";
@@ -12,6 +12,7 @@ export default async function OrdersPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
+  try {
   const { q: query = "", page: pageStr = "1" } = await searchParams;
   const page = parseInt(pageStr);
   const pageSize = 10;
@@ -346,6 +347,16 @@ export default async function OrdersPage({
       </div>
     </div>
   );
+  } catch (error: any) {
+    console.error("Orders page crashed:", error?.message || error);
+    return (
+      <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-rose-200">
+        <h1 className="text-2xl font-black text-rose-600 uppercase">Orders Error</h1>
+        <p className="text-slate-500 mt-4 font-bold">{error?.message || "Unknown server error"}</p>
+        <a href="/orders" className="inline-block mt-8 bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase text-xs">Retry</a>
+      </div>
+    );
+  }
 }
 
 function SummaryCard({ label, value, color, icon: Icon }: { label: string, value: number, color: string, icon: any }) {

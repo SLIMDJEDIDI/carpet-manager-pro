@@ -12,6 +12,7 @@ import { FileText } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function ShippingPage() {
+  try {
   const orders = await prisma.order.findMany({
     where: { 
       status: { in: ["CONFIRMED", "READY_TO_SHIP", "PARTIALLY_SHIPPED"] },
@@ -142,6 +143,16 @@ export default async function ShippingPage() {
       </div>
     </div>
   );
+  } catch (error: any) {
+    console.error("Shipping page crashed:", error?.message || error);
+    return (
+      <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-rose-200">
+        <h1 className="text-2xl font-black text-rose-600 uppercase">Shipping Error</h1>
+        <p className="text-slate-500 mt-4 font-bold">{error?.message || "Unknown server error"}</p>
+        <a href="/shipping" className="inline-block mt-8 bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase text-xs">Retry</a>
+      </div>
+    );
+  }
 }
 
 function ItemCard({ item }: { item: any }) {
