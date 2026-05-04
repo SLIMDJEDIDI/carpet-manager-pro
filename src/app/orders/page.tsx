@@ -129,6 +129,11 @@ export default async function OrdersPage({
             <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
               {order.status === "PENDING" ? "RECEIVED" : order.status}
             </span>
+            {order.status === "CONFIRMED" && (
+              <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest text-right">
+                order in production list
+              </p>
+            )}
             {order.isFreeDelivery && (
               <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 uppercase tracking-tighter">
                 Free Delivery
