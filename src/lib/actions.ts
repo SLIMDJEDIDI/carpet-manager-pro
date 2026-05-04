@@ -403,7 +403,11 @@ export async function shipOrder(formData: FormData) {
     await logActivity("JAX_SHIPPING_SUCCESS", `Order REF #${order.reference} shipped`, { orderId, trackingId: jaxResponse.trackingId });
     revalidatePath("/shipping");
     revalidatePath("/orders");
-    return { success: true };
+    return { 
+      success: true, 
+      trackingId: jaxResponse.trackingId, 
+      receiptUrl: jaxResponse.receiptUrl 
+    };
   } catch (e: any) { return { success: false, error: e.message }; }
 }
 

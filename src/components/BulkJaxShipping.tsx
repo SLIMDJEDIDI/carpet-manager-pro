@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Truck, Loader2, FileText, CheckCircle2, ChevronRight, AlertTriangle, ShieldCheck } from "lucide-react";
-import { jsPDF } from "jspdf";
 
 export default function BulkJaxShipping({ 
   readyOrders, 
@@ -16,6 +15,7 @@ export default function BulkJaxShipping({
   const [currentOrderName, setCurrentOrderName] = useState("");
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [showConfirm, setShowConfirm] = useState(false);
+  const [shipResults, setShipResults] = useState<any[]>([]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => 
@@ -49,69 +49,87 @@ export default function BulkJaxShipping({
         const formData = new FormData();
         formData.append("orderId", order.id);
         const res = await onShip(formData);
-        if (res.success) {
-          results.push({ ...order, trackingId: res.trackingId });
-        } else {
-          console.error(`JAX Error for ${order.customerName}:`, res.error);
+        
+        results.push({ 
+          reference: order.reference,
+          customerName: order.customerName,
+          success: res.success,
+          error: res.error,
+          trackingId: res.trackingId,
+          receiptUrl: res.receiptUrl
+        });
+
+        // Add 1.5s delay between requests to avoid JAX rate limits/congestion
+        if (i < total - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
         }
       } catch (e) {
-        console.error("Failed to ship order:", order.id, e);
+        results.push({
+          reference: order.reference,
+          customerName: order.customerName,
+          success: false,
+          error: "Connection failed"
+        });
       }
     }
     
+    setShipResults(results);
     setIsProcessing(false);
     setCurrentOrderName("");
     setSelectedIds([]);
-
-    if (results.length > 0) {
-      generateReceiptsPDF(results);
-      alert(`Successfully processed ${results.length} JAX receipts! PDF download starting...`);
-    } else {
-      alert("No receipts were generated. Please check for errors.");
-    }
   };
 
-  const generateReceiptsPDF = (orders: any[]) => {
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.text("JAX DELIVERY RECEIPTS - BATCH PRINTING", 20, 20);
-    doc.setFontSize(8);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 25);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-
-    let y = 40;
-    orders.forEach((order, index) => {
-      if (y > 240) {
-        doc.addPage();
-        y = 20;
-      }
-      const brands = Array.from(new Set(order.items.map((i: any) => i.brand?.name))).join(", ");
-      doc.setFillColor(248, 250, 252);
-      doc.rect(15, y - 5, 180, 45, 'F');
-      doc.setFont("helvetica", "bold");
-      doc.text(`[${index + 1}] REF #${order.reference}`, 20, y);
-      doc.text(`JAX EAN: ${order.trackingId}`, 120, y);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.text(`Customer: ${order.customerName} (${order.customerPhone})`, 20, y + 8);
-      doc.text(`Address: ${order.customerAddress}, ${order.customerDelegation}, ${order.customerGovernorate}`, 20, y + 14);
-      doc.text(`Brands: ${brands}`, 20, y + 20);
-      doc.text(`Items: ${order.items.length} units | Pkgs: 1`, 20, y + 26);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text(`COD AMOUNT: ${order.totalAmount} DT`, 120, y + 26);
-      doc.setDrawColor(226, 232, 240);
-      doc.line(15, y + 35, 195, y + 35);
-      y += 45;
-    });
-    doc.save(`jax-printing-batch-${Date.now()}.pdf`);
-  };
-
-  if (readyOrders.length === 0) return null;
+  if (readyOrders.length === 0 && shipResults.length === 0) return null;
 
   return (
     <div className="space-y-6">
+      {shipResults.length > 0 && (
+        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl overflow-hidden mb-8">
+          <div className="bg-slate-900 px-8 py-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tighter">Shipping Results</h3>
+              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Summary of last batch</p>
+            </div>
+            <button 
+              onClick={() => setShipResults([])}
+              className="text-slate-400 hover:text-white text-[10px] font-black uppercase tracking-widest"
+            >
+              Clear Results
+            </button>
+          </div>
+          <div className="p-4 space-y-2 max-h-[300px] overflow-y-auto">
+            {shipResults.map((res, i) => (
+              <div key={i} className={`flex items-center justify-between p-4 rounded-2xl border ${res.success ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${res.success ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
+                    {res.success ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-900 uppercase">REF #{res.reference} - {res.customerName}</p>
+                    {res.success ? (
+                      <p className="text-[10px] font-bold text-emerald-600 uppercase">Tracking: {res.trackingId}</p>
+                    ) : (
+                      <p className="text-[10px] font-bold text-rose-600 uppercase">Error: {res.error}</p>
+                    )}
+                  </div>
+                </div>
+                {res.success && res.receiptUrl && (
+                  <a 
+                    href={res.receiptUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-emerald-200 text-[10px] font-black text-emerald-600 uppercase hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    Print Official JAX Receipt
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full -translate-y-48 translate-x-48 blur-3xl"></div>
         
