@@ -19,7 +19,7 @@ export default async function OrdersPage({
   const pageSize = 15;
 
   const activeStatuses = ["PENDING", "CONFIRMED"];
-  const archiveStatuses = ["SHIPPED", "DISPATCHED", "DELIVERED", "RETURNED", "CANCELLED", "COMPLETED", "DISPATCHED"];
+  const archiveStatuses = ["SHIPPED", "DISPATCHED", "DELIVERED", "RETURNED", "CANCELLED", "COMPLETED"];
 
   // 1. Fetch Active Orders (Priority - usually not many)
   const activeOrders = await prisma.order.findMany({

@@ -116,10 +116,10 @@ export async function createOrder(formData: FormData) {
       }
     }
 
-    // Update total amount
+    // Update total amount (including 8 DT delivery cost)
     await prisma.order.update({
       where: { id: order.id },
-      data: { totalAmount: orderTotal }
+      data: { totalAmount: orderTotal + 8 }
     });
 
     // Logging (Fire and forget)
@@ -210,7 +210,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
 
       await prisma.order.update({
         where: { id: orderId },
-        data: { totalAmount: orderTotal }
+        data: { totalAmount: orderTotal + 8 }
       });
     }
 
@@ -328,7 +328,7 @@ export async function shipOrder(formData: FormData) {
       customerAddress: order.customerAddress,
       customerGovernorate: order.customerGovernorate || "",
       customerDelegation: order.customerDelegation || "",
-      totalAmount: order.totalAmount,
+      totalAmount: order.totalAmount, // order.totalAmount now includes the 8 DT cost
       reference: order.reference
     });
 

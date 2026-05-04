@@ -175,7 +175,9 @@ export default function OrderForm({
     setItems(prev => prev.length > 1 ? prev.filter(item => item.id !== id) : prev);
   };
 
-  const totalPrice = items.reduce((sum, item) => sum + (item.price || 0), 0);
+  const totalPrice = items.length > 0 
+    ? items.reduce((sum, item) => sum + (item.price || 0), 0) + 8 
+    : 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -322,23 +324,14 @@ export default function OrderForm({
 
       {/* Articles Section */}
       <div className="pt-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200">
-              <ShoppingBag className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Order Articles</h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Select products & designs</p>
-            </div>
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200">
+            <ShoppingBag className="w-6 h-6 text-white" />
           </div>
-          <button 
-            type="button" 
-            onClick={addItem}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
-          >
-            <Plus className="w-4 h-4" /> Add Item
-          </button>
+          <div>
+            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Order Articles</h2>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Select products & designs</p>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -493,6 +486,16 @@ export default function OrderForm({
             </div>
           ))}
         </div>
+
+        <div className="mt-8 flex justify-end">
+          <button 
+            type="button" 
+            onClick={addItem}
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200"
+          >
+            <Plus className="w-4 h-4" /> Add Item
+          </button>
+        </div>
       </div>
 
       {/* Footer / Total Area */}
@@ -508,6 +511,9 @@ export default function OrderForm({
           <div className="text-6xl md:text-7xl font-black text-white tracking-tighter flex items-baseline gap-3 justify-center md:justify-start">
             {totalPrice} <span className="text-2xl text-slate-500 font-bold uppercase tracking-widest">DT</span>
           </div>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">
+            (Includes 8 DT Delivery Cost)
+          </p>
         </div>
 
         <button 

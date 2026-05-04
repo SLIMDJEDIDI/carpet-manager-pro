@@ -44,7 +44,7 @@ export default async function NewOrderPage() {
       </Link>
 
       <div className="border-l-8 border-emerald-500 pl-6">
-        <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">New Messenger Order</h1>
+        <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">Order Creation</h1>
         <p className="text-slate-500 font-bold">Manage multiple articles in a single customer order.</p>
       </div>
 
