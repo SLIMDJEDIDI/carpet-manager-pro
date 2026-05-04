@@ -138,7 +138,7 @@ export default async function OrdersPage({
         {order.note && (
            <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100">
             <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
-            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Note attached</p>
+            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest italic truncate max-w-[300px]">"{order.note}"</p>
           </div>
         )}
       </div>
