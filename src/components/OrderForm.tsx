@@ -548,7 +548,9 @@ export default function OrderForm({
                   >
                     <option value="">Select Article</option>
                     {availableProducts[item.brandId]?.map(p => (
-                      <option key={p.id} value={p.id}>{p.category}: {p.name}</option>
+                      <option key={p.id} value={p.id}>
+                        {p.isPack ? `[PACK] ${p.name}` : `${p.category} — ${p.size.replace(' cm', '')}`}
+                      </option>
                     ))}
                   </select>
                   <input type="hidden" name={`size_${index}`} value={item.size} />
