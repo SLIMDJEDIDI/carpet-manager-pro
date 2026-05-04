@@ -245,15 +245,28 @@ export default function OrderForm({
               <Phone className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
             </div>
             {phone.length >= 8 && (
-              <a 
-                href={`https://wa.me/216${phone.replace(/\s+/g, '')}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="h-16 px-6 bg-emerald-600 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 font-black uppercase text-[10px] tracking-widest gap-2"
-              >
-                <span className="hidden sm:inline">WhatsApp</span>
-                <span className="sm:hidden">WA</span>
-              </a>
+              <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border-2 border-slate-200 shadow-sm">
+                <a 
+                  href={`https://wa.me/216${phone.replace(/\s+/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-14 px-6 bg-[#25D366] text-white rounded-xl flex items-center justify-center hover:bg-[#128C7E] transition-all shadow-lg shadow-emerald-100 font-black uppercase text-[10px] tracking-[0.2em] gap-3 group"
+                >
+                  <div className="flex items-center -space-x-1">
+                    <MessageSquare className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                    <Phone className="w-3 h-3 translate-y-0.5 group-hover:-rotate-12 transition-transform" />
+                  </div>
+                  <span className="hidden sm:inline">WhatsApp Contact</span>
+                  <span className="sm:hidden">WhatsApp</span>
+                </a>
+                <a 
+                  href={`tel:+216${phone.replace(/\s+/g, '')}`}
+                  className="h-14 w-14 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-50 rounded-xl transition-all"
+                  title="Direct GSM Call"
+                >
+                  <Phone className="w-6 h-6" />
+                </a>
+              </div>
             )}
           </div>
         </div>

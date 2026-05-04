@@ -81,16 +81,30 @@ export default async function OrdersPage({
               <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{order.customerName}</h3>
               <p className="text-[10px] md:text-xs font-black text-slate-300 uppercase tracking-widest leading-none">REF #{order.reference}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
-              <a 
-                href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all border border-emerald-100"
-              >
-                WhatsApp
-              </a>
+              <div className="flex items-center gap-0.5 bg-slate-50 p-0.5 rounded-xl border border-slate-100 shadow-inner">
+                <a 
+                  href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  title="WhatsApp Chat & Call"
+                  className="flex items-center gap-1.5 bg-[#25D366] text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#128C7E] hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 group"
+                >
+                  <div className="flex items-center -space-x-1">
+                    <MessageSquare className="w-3 h-3 group-hover:rotate-12 transition-transform" />
+                    <Phone className="w-2.5 h-2.5 translate-y-0.5 group-hover:-rotate-12 transition-transform" />
+                  </div>
+                  WhatsApp
+                </a>
+                <a 
+                  href={`tel:+216${order.customerPhone.replace(/\s+/g, '')}`}
+                  title="Direct GSM Call"
+                  className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
+                >
+                  <Phone className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
           
