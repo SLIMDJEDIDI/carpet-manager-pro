@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Truck, Loader2, Package, CheckCircle2, ChevronRight, AlertTriangle, Layers } from "lucide-react";
+import { Truck, Loader2, Package, CheckCircle2, ChevronRight, AlertTriangle, Layers, Square } from "lucide-react";
+import { markItemWrapped, updateItemStatuses } from "@/lib/actions";
 
 interface Item {
   id: string;
@@ -169,16 +170,32 @@ export default function OrderPartialShipManager({
                     </div>
 
                     {!allChildrenShipped && (
-                      <button 
-                        onClick={() => selectPack(parent.id)}
-                        className={`h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${
-                          allChildrenSelected 
-                            ? "bg-white text-blue-600 shadow-lg" 
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
-                      >
-                        {allChildrenSelected ? "Deselect Pack" : "Select Full Pack"}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        {!allChildrenWrapped && (
+                          <button
+                            onClick={async () => {
+                              if (!confirm("Mark all items in this pack as WRAPPED?")) return;
+                              setIsPending(true);
+                              await updateItemStatuses(children.map(c => c.id), "WRAPPED");
+                              setIsPending(false);
+                            }}
+                            className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center gap-2"
+                          >
+                            <Layers className="w-4 h-4" />
+                            Wrap Pack
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => selectPack(parent.id)}
+                          className={`h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${
+                            allChildrenSelected 
+                              ? "bg-white text-blue-600 shadow-lg" 
+                              : "bg-blue-600 text-white hover:bg-blue-700"
+                          }`}
+                        >
+                          {allChildrenSelected ? "Deselect Pack" : "Select Full Pack"}
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -217,8 +234,18 @@ function ItemSelectionCard({
   disabled?: boolean,
   forceWhite?: boolean
 }) {
+  const [wrapping, setWrapping] = useState(false);
   const isShipped = item.status === "SHIPPED";
   const isWrapped = item.status === "WRAPPED";
+
+  const handleWrap = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setWrapping(true);
+    const formData = new FormData();
+    formData.append("itemId", item.id);
+    await markItemWrapped(formData);
+    setWrapping(false);
+  };
 
   return (
     <div 
@@ -227,7 +254,7 @@ function ItemSelectionCard({
         isShipped ? "bg-slate-100 border-slate-200 grayscale opacity-50 cursor-not-allowed" :
         isSelected || forceWhite ? "bg-white border-emerald-500 shadow-lg" :
         isWrapped ? "bg-white border-slate-200 cursor-pointer hover:border-emerald-500" :
-        "bg-slate-50 border-slate-100 opacity-50 cursor-not-allowed"
+        "bg-white border-slate-100 shadow-sm"
       }`}
     >
       <div className="flex items-center gap-3">
@@ -254,9 +281,14 @@ function ItemSelectionCard({
             <div className="w-2 h-2 rounded-full bg-slate-200"></div>
           </div>
         ) : (
-          <div className="bg-amber-100 p-2 rounded-full">
-            <Loader2 className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-          </div>
+          <button
+            onClick={handleWrap}
+            disabled={wrapping}
+            className="bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+          >
+            {wrapping ? <Loader2 className="w-3 h-3 animate-spin" /> : <Square className="w-3 h-3" />}
+            Wrap
+          </button>
         )}
       </div>
     </div>
