@@ -3,8 +3,9 @@ import { Truck, Package, CheckCircle2, MapPin, Loader2 } from "lucide-react";
 import PrintLabel from "@/components/PrintLabel";
 import BulkJaxShipping from "@/components/BulkJaxShipping";
 import SingleShipButton from "@/components/SingleShipButton";
-import { shipOrder, markItemWrapped } from "@/lib/actions";
+import { shipOrder, markItemWrapped, updateItemStatuses } from "@/lib/actions";
 import WorkflowGuide from "@/components/WorkflowGuide";
+import BatchWrapButton from "@/components/BatchWrapButton";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,12 @@ export default async function ShippingPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
+                  {!allWrapped && (
+                    <BatchWrapButton 
+                      itemIds={order.items.filter(i => !i.isPack && i.status !== "WRAPPED").map(i => i.id)} 
+                      orderId={order.id} 
+                    />
+                  )}
                   {allWrapped ? (
                     <SingleShipButton orderId={order.id} onShip={shipOrder} />
                   ) : (
@@ -89,40 +96,59 @@ export default async function ShippingPage() {
               </div>
 
               <div className="p-4 md:p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                  {order.items.filter(i => !i.isPack).map((item) => (
-                    <div key={item.id} className={`p-3 md:p-4 rounded-2xl md:rounded-3xl border flex items-center justify-between gap-3 md:gap-4 transition-all ${
-                      item.status === "WRAPPED" ? "bg-emerald-50 border-emerald-100" : "bg-slate-50 border-slate-100"
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg md:rounded-xl border border-slate-200 flex-shrink-0 overflow-hidden">
-                          {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1 truncate">{item.design?.code || '???'}</p>
-                          <p className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest truncate">{item.brand?.name || '???'}</p>
-                          <div className="inline-block bg-white px-2 py-0.5 rounded border border-slate-100 mt-1">
-                            <p className="text-[10px] md:text-xs font-black text-slate-900 tracking-tight">{item.size}</p>
+                <div className="space-y-6">
+                  {/* Separate logical grouping: Packs vs Individual */}
+                  {(() => {
+                    const individualItems = order.items.filter(i => !i.isPack && !i.parentItemId);
+                    const packParents = order.items.filter(i => i.isPack);
+                    
+                    return (
+                      <>
+                        {/* 1. INDIVIDUAL ITEMS */}
+                        {individualItems.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                            {individualItems.map((item) => (
+                              <ItemCard key={item.id} item={item} />
+                            ))}
                           </div>
-                        </div>
-                      </div>
-                      
-                      {item.status === "IN_PRODUCTION" && (
-                        <form action={markItemWrapped}>
-                          <input type="hidden" name="itemId" value={item.id} />
-                          <button type="submit" className="text-emerald-600 font-black text-[9px] uppercase border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors bg-white">
-                            Wrap
-                          </button>
-                        </form>
-                      )}
+                        )}
 
-                      {item.status === "WRAPPED" && (
-                        <div className="bg-emerald-500 p-1.5 rounded-full">
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        {/* 2. PACK GROUPS */}
+                        {packParents.map(parent => {
+                          const children = order.items.filter(i => i.parentItemId === parent.id);
+                          const allChildrenWrapped = children.every(c => c.status === "WRAPPED");
+                          
+                          return (
+                            <div key={parent.id} className={`rounded-[2rem] border-2 border-dashed p-6 transition-all ${
+                              allChildrenWrapped ? "bg-emerald-50/30 border-emerald-200" : "bg-blue-50/30 border-blue-200"
+                            }`}>
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className={`p-2 rounded-lg ${allChildrenWrapped ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"}`}>
+                                  <Package className="w-5 h-5" />
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter">Pack: {parent.design?.name || 'Bundle'}</h4>
+                                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Must be wrapped together in Liquid Glass</p>
+                                </div>
+                                <div className="ml-auto flex items-center gap-2">
+                                  <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                    allChildrenWrapped ? "bg-emerald-100 text-emerald-600 border-emerald-200" : "bg-blue-100 text-blue-600 border-blue-200"
+                                  }`}>
+                                    {children.length} Articles
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                                {children.map((item) => (
+                                  <ItemCard key={item.id} item={item} />
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -138,6 +164,42 @@ export default async function ShippingPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ItemCard({ item }: { item: any }) {
+  return (
+    <div className={`p-3 md:p-4 rounded-2xl md:rounded-3xl border flex items-center justify-between gap-3 md:gap-4 transition-all ${
+      item.status === "WRAPPED" ? "bg-emerald-50 border-emerald-100 shadow-inner" : "bg-slate-50 border-slate-100"
+    }`}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg md:rounded-xl border border-slate-200 flex-shrink-0 overflow-hidden">
+          {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1 truncate">{item.design?.code || '???'}</p>
+          <p className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest truncate">{item.brand?.name || '???'}</p>
+          <div className="inline-block bg-white px-2 py-0.5 rounded border border-slate-100 mt-1">
+            <p className="text-[10px] md:text-xs font-black text-slate-900 tracking-tight">{item.size}</p>
+          </div>
+        </div>
+      </div>
+      
+      {item.status === "IN_PRODUCTION" && (
+        <form action={markItemWrapped}>
+          <input type="hidden" name="itemId" value={item.id} />
+          <button type="submit" className="text-emerald-600 font-black text-[9px] uppercase border border-emerald-200 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors bg-white">
+            Wrap
+          </button>
+        </form>
+      )}
+
+      {item.status === "WRAPPED" && (
+        <div className="bg-emerald-500 p-1.5 rounded-full">
+          <CheckCircle2 className="w-4 h-4 text-white" />
+        </div>
+      )}
     </div>
   );
 }
