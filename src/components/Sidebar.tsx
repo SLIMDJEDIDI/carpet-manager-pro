@@ -21,12 +21,11 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard, roles: ["ADMIN", "ORDER", "ACCOUNTING"] },
   { label: "Orders", href: "/orders", icon: ShoppingCart, roles: ["ADMIN", "ORDER"] },
-  { label: "Designer Hub", href: "/designer", icon: Palette, roles: ["ADMIN", "DESIGNER"] },
-  { label: "Design Catalog", href: "/designs", icon: Palette, roles: ["ADMIN", "ORDER"] },
   { label: "Production", href: "/production", icon: Factory, roles: ["ADMIN", "PRODUCTION"] },
   { label: "Shipping", href: "/shipping", icon: Truck, roles: ["ADMIN", "SHIPPING"] },
+  { label: "Design Catalog", href: "/designs", icon: Palette, roles: ["ADMIN", "ORDER"] },
+  { label: "Designer Hub", href: "/designer", icon: Palette, roles: ["ADMIN", "DESIGNER"] },
   { label: "JAX Dispatch", href: "/jax", icon: Printer, roles: ["ADMIN", "SHIPPING"] },
   { label: "Accounting", href: "/accounting", icon: BarChart3, roles: ["ADMIN", "ACCOUNTING"] },
   { label: "History", href: "/history", icon: History, roles: ["ADMIN"] },
