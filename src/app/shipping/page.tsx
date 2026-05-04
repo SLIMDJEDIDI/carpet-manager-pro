@@ -10,28 +10,23 @@ export const dynamic = "force-dynamic";
 
 export default async function ShippingPage() {
   const orders = await prisma.order.findMany({
-    where: {
-      status: "CONFIRMED", 
-      items: {
-        some: {
-          status: { in: ["IN_PRODUCTION", "WRAPPED"] }
-        }
-      }
+    where: { 
+      status: { in: ["CONFIRMED", "READY_TO_SHIP"] },
+      items: { some: { status: "WRAPPED" } } 
     },
-    include: { 
-      items: {
-        include: { brand: true, design: true }
-      }
-    },
-    orderBy: { updatedAt: "desc" },
+    include: { items: { include: { design: true } } },
+    orderBy: { reference: 'desc' }
   });
 
   const getWrappedCount = (items: any[]) => items ? items.filter(i => !i.isPack && i.status === "WRAPPED").length : 0;
   const getTotalItems = (items: any[]) => items ? items.filter(i => !i.isPack).length : 0;
+  const getDesignsReady = (items: any[]) => items ? items.filter(i => !i.isPack && i.designStatus === "READY").length : 0;
   
   const readyOrders = orders.filter(order => {
     const total = getTotalItems(order.items);
-    return total > 0 && getWrappedCount(order.items) === total;
+    const wrapped = getWrappedCount(order.items);
+    const designs = getDesignsReady(order.items);
+    return total > 0 && wrapped === total && designs === total;
   });
 
   return (

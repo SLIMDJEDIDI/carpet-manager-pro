@@ -22,6 +22,36 @@ async function logActivity(action: string, details: string, metadata?: any) {
   }
 }
 
+// HELPER: Automatic Readiness Trigger
+async function checkAndSetOrderReady(orderId: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true }
+    });
+    
+    if (!order || !["CONFIRMED", "ON_HOLD"].includes(order.status)) return;
+
+    // Physical items only (exclude pack parents)
+    const prodItems = order.items.filter(i => !i.isPack);
+    if (prodItems.length === 0) return;
+
+    const allWrapped = prodItems.every(i => i.status === "WRAPPED");
+    const allDesignsReady = prodItems.every(i => i.designStatus === "READY");
+    const noDamaged = prodItems.every(i => i.status !== "DAMAGED");
+
+    if (allWrapped && allDesignsReady && noDamaged) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: "READY_TO_SHIP" }
+      });
+      await logActivity("ORDER_READY", `Order REF #${order.reference} automatically marked as READY_TO_SHIP`);
+    }
+  } catch (e) {
+    console.error("Readiness trigger failed:", e);
+  }
+}
+
 // ORDER ACTIONS
 export async function createOrder(formData: FormData) {
   const session = await getSession();
@@ -249,10 +279,11 @@ export async function confirmOrder(formData: FormData) {
 
 export async function setDesignStatus(itemId: string, status: "PENDING" | "READY") {
   try {
-    await prisma.orderItem.update({
+    const item = await prisma.orderItem.update({
       where: { id: itemId },
       data: { designStatus: status }
     });
+    await checkAndSetOrderReady(item.orderId);
     revalidatePath("/production");
     revalidatePath("/designer");
     revalidatePath("/designs");
@@ -266,6 +297,17 @@ export async function setDesignStatusBulk(itemIds: string[], status: "PENDING" |
       where: { id: { in: itemIds } },
       data: { designStatus: status }
     });
+    
+    // Get unique order IDs to check
+    const items = await prisma.orderItem.findMany({
+      where: { id: { in: itemIds } },
+      select: { orderId: true }
+    });
+    const orderIds = Array.from(new Set(items.map(i => i.orderId)));
+    for (const oId of orderIds) {
+      await checkAndSetOrderReady(oId);
+    }
+
     revalidatePath("/production");
     revalidatePath("/designer");
     revalidatePath("/designs");
@@ -297,6 +339,18 @@ export async function updateItemStatuses(itemIds: string[], status: string) {
       where: { id: { in: itemIds } },
       data: { status }
     });
+    
+    if (status === "WRAPPED") {
+      const items = await prisma.orderItem.findMany({
+        where: { id: { in: itemIds } },
+        select: { orderId: true }
+      });
+      const orderIds = Array.from(new Set(items.map(i => i.orderId)));
+      for (const oId of orderIds) {
+        await checkAndSetOrderReady(oId);
+      }
+    }
+
     revalidatePath("/production");
     revalidatePath("/shipping");
     return { success: true };
@@ -352,7 +406,7 @@ export async function shipOrder(formData: FormData) {
     // JAX SAFETY
     if (order.jaxTrackingId) return { success: false, error: `Order #${order.reference} already has a JAX ID.` };
 
-    const prodItems = order.items.filter(i => !i.isPack || !i.parentItemId);
+    const prodItems = order.items.filter(i => !i.isPack);
     const allWrapped = prodItems.every(i => i.status === "WRAPPED");
     const allDesignsReady = prodItems.every(i => i.designStatus === "READY");
     const noDamaged = prodItems.every(i => i.status !== "DAMAGED");
@@ -439,10 +493,11 @@ export async function deleteOrder(formData: FormData) {
 export async function markItemWrapped(formData: FormData) {
   const itemId = formData.get("itemId") as string;
   try {
-    await prisma.orderItem.update({
+    const item = await prisma.orderItem.update({
       where: { id: itemId },
       data: { status: "WRAPPED" }
     });
+    await checkAndSetOrderReady(item.orderId);
     revalidatePath("/shipping");
     revalidatePath("/production");
     return { success: true };
