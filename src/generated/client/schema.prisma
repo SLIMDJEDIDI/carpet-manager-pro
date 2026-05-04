@@ -25,26 +25,47 @@ model Design {
   items     OrderItem[]
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("ORDER") // ADMIN, ORDER, DESIGNER, PRODUCTION, SHIPPING, ACCOUNTING
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdOrders   Order[]  @relation("CreatedBy")
+  confirmedOrders Order[]  @relation("ConfirmedBy")
+  jaxLogs         JaxLog[]
+}
+
 model Order {
-  id                  String      @id @default(cuid())
-  reference           Int?        @unique
+  id                  String   @id @default(cuid())
+  reference           Int?     @unique
   customerName        String
   customerPhone       String
   customerAddress     String
   customerPostalCode  String?
   customerGovernorate String?
   customerDelegation  String?
-  status              String      @default("PENDING")
-  totalAmount         Float       @default(0)
-  parcelNumber        String? // Keeping this for reference
-  jaxTrackingId       String? // New field for JAX integration
-  jaxReceiptUrl       String? // URL to the receipt image/PDF from JAX
-  isFreeDelivery      Boolean     @default(false)
-  isExchange          Boolean     @default(false)
-  note                String? // Internal notes for the order
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  items               OrderItem[]
+  status              String   @default("PENDING") // PENDING, CONFIRMED, ON_HOLD, READY_TO_SHIP, SHIPPED, DISPATCHED, DELIVERED, RETURNED, CANCELLED
+  totalAmount         Float    @default(0)
+  parcelNumber        String?
+  jaxTrackingId       String?
+  jaxReceiptUrl       String?
+  isFreeDelivery      Boolean  @default(false)
+  isExchange          Boolean  @default(false)
+  note                String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  createdById   String?
+  confirmedById String?
+  createdBy     User?   @relation("CreatedBy", fields: [createdById], references: [id])
+  confirmedBy   User?   @relation("ConfirmedBy", fields: [confirmedById], references: [id])
+
+  items   OrderItem[]
+  jaxLogs JaxLog[]
 }
 
 model OrderItem {
@@ -56,7 +77,8 @@ model OrderItem {
   parentItemId     String?
   brandId          String
   designId         String
-  status           String   @default("PENDING")
+  status           String   @default("PENDING") // PENDING, IN_PRODUCTION, DAMAGED, WRAPPED
+  designStatus     String   @default("PENDING") // PENDING, READY
   productionListId String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -67,6 +89,20 @@ model OrderItem {
   order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   parentItem     OrderItem?      @relation("PackItems", fields: [parentItemId], references: [id])
   subItems       OrderItem[]     @relation("PackItems")
+}
+
+model JaxLog {
+  id           String   @id @default(cuid())
+  orderId      String
+  requestBody  String   @db.Text
+  responseBody String   @db.Text
+  status       String // SUCCESS, ERROR
+  trackingId   String?
+  userId       String?
+  createdAt    DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+  user  User? @relation(fields: [userId], references: [id])
 }
 
 model Product {

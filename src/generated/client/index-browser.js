@@ -136,6 +136,16 @@ exports.Prisma.DesignScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  password: 'password',
+  name: 'name',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   reference: 'reference',
@@ -154,7 +164,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   isExchange: 'isExchange',
   note: 'note',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  confirmedById: 'confirmedById'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
@@ -167,9 +179,21 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   brandId: 'brandId',
   designId: 'designId',
   status: 'status',
+  designStatus: 'designStatus',
   productionListId: 'productionListId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.JaxLogScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  requestBody: 'requestBody',
+  responseBody: 'responseBody',
+  status: 'status',
+  trackingId: 'trackingId',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -217,8 +241,10 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   Brand: 'Brand',
   Design: 'Design',
+  User: 'User',
   Order: 'Order',
   OrderItem: 'OrderItem',
+  JaxLog: 'JaxLog',
   Product: 'Product',
   ProductionList: 'ProductionList',
   ActivityLog: 'ActivityLog'

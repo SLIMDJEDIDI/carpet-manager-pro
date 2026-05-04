@@ -120,6 +120,11 @@ export default async function ProductionPage() {
                           <div className="flex flex-wrap items-center gap-2 mb-1">
                             <span className="text-[8px] md:text-[10px] font-black bg-slate-900 px-2 py-0.5 rounded text-white uppercase tracking-wider">{item.design.code}</span>
                             <p className="font-black text-slate-900 uppercase text-xs md:text-sm tracking-tight truncate max-w-[120px] md:max-w-none">{item.design.name}</p>
+                            {item.designStatus === "READY" ? (
+                              <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 uppercase tracking-tighter">Design Ready</span>
+                            ) : (
+                              <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 uppercase tracking-tighter">Design Pending</span>
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="inline-block bg-slate-100 px-2 md:px-3 py-1 rounded-xl border border-slate-200">

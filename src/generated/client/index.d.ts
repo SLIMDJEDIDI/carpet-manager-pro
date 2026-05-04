@@ -24,6 +24,11 @@ export type Brand = $Result.DefaultSelection<Prisma.$BrandPayload>
  */
 export type Design = $Result.DefaultSelection<Prisma.$DesignPayload>
 /**
+ * Model User
+ * 
+ */
+export type User = $Result.DefaultSelection<Prisma.$UserPayload>
+/**
  * Model Order
  * 
  */
@@ -33,6 +38,11 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  * 
  */
 export type OrderItem = $Result.DefaultSelection<Prisma.$OrderItemPayload>
+/**
+ * Model JaxLog
+ * 
+ */
+export type JaxLog = $Result.DefaultSelection<Prisma.$JaxLogPayload>
 /**
  * Model Product
  * 
@@ -193,6 +203,16 @@ export class PrismaClient<
   get design(): Prisma.DesignDelegate<ExtArgs>;
 
   /**
+   * `prisma.user`: Exposes CRUD operations for the **User** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.user.findMany()
+    * ```
+    */
+  get user(): Prisma.UserDelegate<ExtArgs>;
+
+  /**
    * `prisma.order`: Exposes CRUD operations for the **Order** model.
     * Example usage:
     * ```ts
@@ -211,6 +231,16 @@ export class PrismaClient<
     * ```
     */
   get orderItem(): Prisma.OrderItemDelegate<ExtArgs>;
+
+  /**
+   * `prisma.jaxLog`: Exposes CRUD operations for the **JaxLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more JaxLogs
+    * const jaxLogs = await prisma.jaxLog.findMany()
+    * ```
+    */
+  get jaxLog(): Prisma.JaxLogDelegate<ExtArgs>;
 
   /**
    * `prisma.product`: Exposes CRUD operations for the **Product** model.
@@ -684,8 +714,10 @@ export namespace Prisma {
   export const ModelName: {
     Brand: 'Brand',
     Design: 'Design',
+    User: 'User',
     Order: 'Order',
     OrderItem: 'OrderItem',
+    JaxLog: 'JaxLog',
     Product: 'Product',
     ProductionList: 'ProductionList',
     ActivityLog: 'ActivityLog'
@@ -704,7 +736,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "brand" | "design" | "order" | "orderItem" | "product" | "productionList" | "activityLog"
+      modelProps: "brand" | "design" | "user" | "order" | "orderItem" | "jaxLog" | "product" | "productionList" | "activityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -848,6 +880,76 @@ export namespace Prisma {
           }
         }
       }
+      User: {
+        payload: Prisma.$UserPayload<ExtArgs>
+        fields: Prisma.UserFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          findFirst: {
+            args: Prisma.UserFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          findMany: {
+            args: Prisma.UserFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+          }
+          create: {
+            args: Prisma.UserCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          createMany: {
+            args: Prisma.UserCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+          }
+          delete: {
+            args: Prisma.UserDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          update: {
+            args: Prisma.UserUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.UserUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+          }
+          aggregate: {
+            args: Prisma.UserAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUser>
+          }
+          groupBy: {
+            args: Prisma.UserGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserCountArgs<ExtArgs>
+            result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
       Order: {
         payload: Prisma.$OrderPayload<ExtArgs>
         fields: Prisma.OrderFieldRefs
@@ -985,6 +1087,76 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderItemCountArgs<ExtArgs>
             result: $Utils.Optional<OrderItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      JaxLog: {
+        payload: Prisma.$JaxLogPayload<ExtArgs>
+        fields: Prisma.JaxLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.JaxLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.JaxLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          findFirst: {
+            args: Prisma.JaxLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.JaxLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          findMany: {
+            args: Prisma.JaxLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>[]
+          }
+          create: {
+            args: Prisma.JaxLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          createMany: {
+            args: Prisma.JaxLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.JaxLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>[]
+          }
+          delete: {
+            args: Prisma.JaxLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          update: {
+            args: Prisma.JaxLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.JaxLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.JaxLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.JaxLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JaxLogPayload>
+          }
+          aggregate: {
+            args: Prisma.JaxLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateJaxLog>
+          }
+          groupBy: {
+            args: Prisma.JaxLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<JaxLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.JaxLogCountArgs<ExtArgs>
+            result: $Utils.Optional<JaxLogCountAggregateOutputType> | number
           }
         }
       }
@@ -1417,15 +1589,66 @@ export namespace Prisma {
 
 
   /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    createdOrders: number
+    confirmedOrders: number
+    jaxLogs: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdOrders?: boolean | UserCountOutputTypeCountCreatedOrdersArgs
+    confirmedOrders?: boolean | UserCountOutputTypeCountConfirmedOrdersArgs
+    jaxLogs?: boolean | UserCountOutputTypeCountJaxLogsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountConfirmedOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountJaxLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JaxLogWhereInput
+  }
+
+
+  /**
    * Count Type OrderCountOutputType
    */
 
   export type OrderCountOutputType = {
     items: number
+    jaxLogs: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | OrderCountOutputTypeCountItemsArgs
+    jaxLogs?: boolean | OrderCountOutputTypeCountJaxLogsArgs
   }
 
   // Custom InputTypes
@@ -1444,6 +1667,13 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderItemWhereInput
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountJaxLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JaxLogWhereInput
   }
 
 
@@ -3386,6 +3616,1026 @@ export namespace Prisma {
 
 
   /**
+   * Model User
+   */
+
+  export type AggregateUser = {
+    _count: UserCountAggregateOutputType | null
+    _min: UserMinAggregateOutputType | null
+    _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserMinAggregateOutputType = {
+    id: string | null
+    email: string | null
+    password: string | null
+    name: string | null
+    role: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserMaxAggregateOutputType = {
+    id: string | null
+    email: string | null
+    password: string | null
+    name: string | null
+    role: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserCountAggregateOutputType = {
+    id: number
+    email: number
+    password: number
+    name: number
+    role: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UserMinAggregateInputType = {
+    id?: true
+    email?: true
+    password?: true
+    name?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserMaxAggregateInputType = {
+    id?: true
+    email?: true
+    password?: true
+    name?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserCountAggregateInputType = {
+    id?: true
+    email?: true
+    password?: true
+    name?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which User to aggregate.
+     */
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Users
+    **/
+    _count?: true | UserCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserMaxAggregateInputType
+  }
+
+  export type GetUserAggregateType<T extends UserAggregateArgs> = {
+        [P in keyof T & keyof AggregateUser]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUser[P]>
+      : GetScalarType<T[P], AggregateUser[P]>
+  }
+
+
+
+
+  export type UserGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithAggregationInput | UserOrderByWithAggregationInput[]
+    by: UserScalarFieldEnum[] | UserScalarFieldEnum
+    having?: UserScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserCountAggregateInputType | true
+    _min?: UserMinAggregateInputType
+    _max?: UserMaxAggregateInputType
+  }
+
+  export type UserGroupByOutputType = {
+    id: string
+    email: string
+    password: string
+    name: string
+    role: string
+    createdAt: Date
+    updatedAt: Date
+    _count: UserCountAggregateOutputType | null
+    _min: UserMinAggregateOutputType | null
+    _max: UserMaxAggregateOutputType | null
+  }
+
+  type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserGroupByOutputType[P]>
+            : GetScalarType<T[P], UserGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    password?: boolean
+    name?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdOrders?: boolean | User$createdOrdersArgs<ExtArgs>
+    confirmedOrders?: boolean | User$confirmedOrdersArgs<ExtArgs>
+    jaxLogs?: boolean | User$jaxLogsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["user"]>
+
+  export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    email?: boolean
+    password?: boolean
+    name?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["user"]>
+
+  export type UserSelectScalar = {
+    id?: boolean
+    email?: boolean
+    password?: boolean
+    name?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdOrders?: boolean | User$createdOrdersArgs<ExtArgs>
+    confirmedOrders?: boolean | User$confirmedOrdersArgs<ExtArgs>
+    jaxLogs?: boolean | User$jaxLogsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "User"
+    objects: {
+      createdOrders: Prisma.$OrderPayload<ExtArgs>[]
+      confirmedOrders: Prisma.$OrderPayload<ExtArgs>[]
+      jaxLogs: Prisma.$JaxLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      email: string
+      password: string
+      name: string
+      role: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["user"]>
+    composites: {}
+  }
+
+  type UserGetPayload<S extends boolean | null | undefined | UserDefaultArgs> = $Result.GetResult<Prisma.$UserPayload, S>
+
+  type UserCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<UserFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UserCountAggregateInputType | true
+    }
+
+  export interface UserDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['User'], meta: { name: 'User' } }
+    /**
+     * Find zero or one User that matches the filter.
+     * @param {UserFindUniqueArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one User that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {UserFindUniqueOrThrowArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(args: SelectSubset<T, UserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first User that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindFirstArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserFindFirstArgs>(args?: SelectSubset<T, UserFindFirstArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first User that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindFirstOrThrowArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(args?: SelectSubset<T, UserFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Users
+     * const users = await prisma.user.findMany()
+     * 
+     * // Get first 10 Users
+     * const users = await prisma.user.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a User.
+     * @param {UserCreateArgs} args - Arguments to create a User.
+     * @example
+     * // Create one User
+     * const User = await prisma.user.create({
+     *   data: {
+     *     // ... data to create a User
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Users.
+     * @param {UserCreateManyArgs} args - Arguments to create many Users.
+     * @example
+     * // Create many Users
+     * const user = await prisma.user.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Users and returns the data saved in the database.
+     * @param {UserCreateManyAndReturnArgs} args - Arguments to create many Users.
+     * @example
+     * // Create many Users
+     * const user = await prisma.user.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Users and only return the `id`
+     * const userWithIdOnly = await prisma.user.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a User.
+     * @param {UserDeleteArgs} args - Arguments to delete one User.
+     * @example
+     * // Delete one User
+     * const User = await prisma.user.delete({
+     *   where: {
+     *     // ... filter to delete one User
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one User.
+     * @param {UserUpdateArgs} args - Arguments to update one User.
+     * @example
+     * // Update one User
+     * const user = await prisma.user.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Users.
+     * @param {UserDeleteManyArgs} args - Arguments to filter Users to delete.
+     * @example
+     * // Delete a few Users
+     * const { count } = await prisma.user.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserDeleteManyArgs>(args?: SelectSubset<T, UserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Users
+     * const user = await prisma.user.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one User.
+     * @param {UserUpsertArgs} args - Arguments to update or create a User.
+     * @example
+     * // Update or create a User
+     * const user = await prisma.user.upsert({
+     *   create: {
+     *     // ... data to create a User
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the User we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserUpsertArgs>(args: SelectSubset<T, UserUpsertArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserCountArgs} args - Arguments to filter Users to count.
+     * @example
+     * // Count the number of Users
+     * const count = await prisma.user.count({
+     *   where: {
+     *     // ... the filter for the Users we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserCountArgs>(
+      args?: Subset<T, UserCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a User.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): Prisma.PrismaPromise<GetUserAggregateType<T>>
+
+    /**
+     * Group by User.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserGroupByArgs['orderBy'] }
+        : { orderBy?: UserGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the User model
+   */
+  readonly fields: UserFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for User.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdOrders<T extends User$createdOrdersArgs<ExtArgs> = {}>(args?: Subset<T, User$createdOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
+    confirmedOrders<T extends User$confirmedOrdersArgs<ExtArgs> = {}>(args?: Subset<T, User$confirmedOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
+    jaxLogs<T extends User$jaxLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$jaxLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the User model
+   */ 
+  interface UserFieldRefs {
+    readonly id: FieldRef<"User", 'String'>
+    readonly email: FieldRef<"User", 'String'>
+    readonly password: FieldRef<"User", 'String'>
+    readonly name: FieldRef<"User", 'String'>
+    readonly role: FieldRef<"User", 'String'>
+    readonly createdAt: FieldRef<"User", 'DateTime'>
+    readonly updatedAt: FieldRef<"User", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * User findUnique
+   */
+  export type UserFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter, which User to fetch.
+     */
+    where: UserWhereUniqueInput
+  }
+
+  /**
+   * User findUniqueOrThrow
+   */
+  export type UserFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter, which User to fetch.
+     */
+    where: UserWhereUniqueInput
+  }
+
+  /**
+   * User findFirst
+   */
+  export type UserFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter, which User to fetch.
+     */
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Users.
+     */
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * User findFirstOrThrow
+   */
+  export type UserFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter, which User to fetch.
+     */
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Users.
+     */
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * User findMany
+   */
+  export type UserFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter, which Users to fetch.
+     */
+    where?: UserWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Users to fetch.
+     */
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Users.
+     */
+    cursor?: UserWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Users.
+     */
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * User create
+   */
+  export type UserCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * The data needed to create a User.
+     */
+    data: XOR<UserCreateInput, UserUncheckedCreateInput>
+  }
+
+  /**
+   * User createMany
+   */
+  export type UserCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Users.
+     */
+    data: UserCreateManyInput | UserCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * User createManyAndReturn
+   */
+  export type UserCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Users.
+     */
+    data: UserCreateManyInput | UserCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * User update
+   */
+  export type UserUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * The data needed to update a User.
+     */
+    data: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+    /**
+     * Choose, which User to update.
+     */
+    where: UserWhereUniqueInput
+  }
+
+  /**
+   * User updateMany
+   */
+  export type UserUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Users.
+     */
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyInput>
+    /**
+     * Filter which Users to update
+     */
+    where?: UserWhereInput
+  }
+
+  /**
+   * User upsert
+   */
+  export type UserUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * The filter to search for the User to update in case it exists.
+     */
+    where: UserWhereUniqueInput
+    /**
+     * In case the User found by the `where` argument doesn't exist, create a new User with this data.
+     */
+    create: XOR<UserCreateInput, UserUncheckedCreateInput>
+    /**
+     * In case the User was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+  }
+
+  /**
+   * User delete
+   */
+  export type UserDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
+     * Filter which User to delete.
+     */
+    where: UserWhereUniqueInput
+  }
+
+  /**
+   * User deleteMany
+   */
+  export type UserDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Users to delete
+     */
+    where?: UserWhereInput
+  }
+
+  /**
+   * User.createdOrders
+   */
+  export type User$createdOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * User.confirmedOrders
+   */
+  export type User$confirmedOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * User.jaxLogs
+   */
+  export type User$jaxLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    where?: JaxLogWhereInput
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    cursor?: JaxLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: JaxLogScalarFieldEnum | JaxLogScalarFieldEnum[]
+  }
+
+  /**
+   * User without action
+   */
+  export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Order
    */
 
@@ -3426,6 +4676,8 @@ export namespace Prisma {
     note: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    createdById: string | null
+    confirmedById: string | null
   }
 
   export type OrderMaxAggregateOutputType = {
@@ -3447,6 +4699,8 @@ export namespace Prisma {
     note: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    createdById: string | null
+    confirmedById: string | null
   }
 
   export type OrderCountAggregateOutputType = {
@@ -3468,6 +4722,8 @@ export namespace Prisma {
     note: number
     createdAt: number
     updatedAt: number
+    createdById: number
+    confirmedById: number
     _all: number
   }
 
@@ -3501,6 +4757,8 @@ export namespace Prisma {
     note?: true
     createdAt?: true
     updatedAt?: true
+    createdById?: true
+    confirmedById?: true
   }
 
   export type OrderMaxAggregateInputType = {
@@ -3522,6 +4780,8 @@ export namespace Prisma {
     note?: true
     createdAt?: true
     updatedAt?: true
+    createdById?: true
+    confirmedById?: true
   }
 
   export type OrderCountAggregateInputType = {
@@ -3543,6 +4803,8 @@ export namespace Prisma {
     note?: true
     createdAt?: true
     updatedAt?: true
+    createdById?: true
+    confirmedById?: true
     _all?: true
   }
 
@@ -3651,6 +4913,8 @@ export namespace Prisma {
     note: string | null
     createdAt: Date
     updatedAt: Date
+    createdById: string | null
+    confirmedById: string | null
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -3691,7 +4955,12 @@ export namespace Prisma {
     note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdById?: boolean
+    confirmedById?: boolean
+    createdBy?: boolean | Order$createdByArgs<ExtArgs>
+    confirmedBy?: boolean | Order$confirmedByArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
+    jaxLogs?: boolean | Order$jaxLogsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -3714,6 +4983,10 @@ export namespace Prisma {
     note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdById?: boolean
+    confirmedById?: boolean
+    createdBy?: boolean | Order$createdByArgs<ExtArgs>
+    confirmedBy?: boolean | Order$confirmedByArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -3735,18 +5008,29 @@ export namespace Prisma {
     note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    createdById?: boolean
+    confirmedById?: boolean
   }
 
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Order$createdByArgs<ExtArgs>
+    confirmedBy?: boolean | Order$confirmedByArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
+    jaxLogs?: boolean | Order$jaxLogsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Order$createdByArgs<ExtArgs>
+    confirmedBy?: boolean | Order$confirmedByArgs<ExtArgs>
+  }
 
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
     objects: {
+      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      confirmedBy: Prisma.$UserPayload<ExtArgs> | null
       items: Prisma.$OrderItemPayload<ExtArgs>[]
+      jaxLogs: Prisma.$JaxLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3767,6 +5051,8 @@ export namespace Prisma {
       note: string | null
       createdAt: Date
       updatedAt: Date
+      createdById: string | null
+      confirmedById: string | null
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -4131,7 +5417,10 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdBy<T extends Order$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Order$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    confirmedBy<T extends Order$confirmedByArgs<ExtArgs> = {}>(args?: Subset<T, Order$confirmedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     items<T extends Order$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany"> | Null>
+    jaxLogs<T extends Order$jaxLogsArgs<ExtArgs> = {}>(args?: Subset<T, Order$jaxLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4179,6 +5468,8 @@ export namespace Prisma {
     readonly note: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
+    readonly createdById: FieldRef<"Order", 'String'>
+    readonly confirmedById: FieldRef<"Order", 'String'>
   }
     
 
@@ -4400,6 +5691,10 @@ export namespace Prisma {
      */
     data: OrderCreateManyInput | OrderCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4493,6 +5788,36 @@ export namespace Prisma {
   }
 
   /**
+   * Order.createdBy
+   */
+  export type Order$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Order.confirmedBy
+   */
+  export type Order$confirmedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Order.items
    */
   export type Order$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4510,6 +5835,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
+  }
+
+  /**
+   * Order.jaxLogs
+   */
+  export type Order$jaxLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    where?: JaxLogWhereInput
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    cursor?: JaxLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: JaxLogScalarFieldEnum | JaxLogScalarFieldEnum[]
   }
 
   /**
@@ -4557,6 +5902,7 @@ export namespace Prisma {
     brandId: string | null
     designId: string | null
     status: string | null
+    designStatus: string | null
     productionListId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4572,6 +5918,7 @@ export namespace Prisma {
     brandId: string | null
     designId: string | null
     status: string | null
+    designStatus: string | null
     productionListId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4587,6 +5934,7 @@ export namespace Prisma {
     brandId: number
     designId: number
     status: number
+    designStatus: number
     productionListId: number
     createdAt: number
     updatedAt: number
@@ -4612,6 +5960,7 @@ export namespace Prisma {
     brandId?: true
     designId?: true
     status?: true
+    designStatus?: true
     productionListId?: true
     createdAt?: true
     updatedAt?: true
@@ -4627,6 +5976,7 @@ export namespace Prisma {
     brandId?: true
     designId?: true
     status?: true
+    designStatus?: true
     productionListId?: true
     createdAt?: true
     updatedAt?: true
@@ -4642,6 +5992,7 @@ export namespace Prisma {
     brandId?: true
     designId?: true
     status?: true
+    designStatus?: true
     productionListId?: true
     createdAt?: true
     updatedAt?: true
@@ -4744,6 +6095,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status: string
+    designStatus: string
     productionListId: string | null
     createdAt: Date
     updatedAt: Date
@@ -4778,6 +6130,7 @@ export namespace Prisma {
     brandId?: boolean
     designId?: boolean
     status?: boolean
+    designStatus?: boolean
     productionListId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4800,6 +6153,7 @@ export namespace Prisma {
     brandId?: boolean
     designId?: boolean
     status?: boolean
+    designStatus?: boolean
     productionListId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4820,6 +6174,7 @@ export namespace Prisma {
     brandId?: boolean
     designId?: boolean
     status?: boolean
+    designStatus?: boolean
     productionListId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4862,6 +6217,7 @@ export namespace Prisma {
       brandId: string
       designId: string
       status: string
+      designStatus: string
       productionListId: string | null
       createdAt: Date
       updatedAt: Date
@@ -5273,6 +6629,7 @@ export namespace Prisma {
     readonly brandId: FieldRef<"OrderItem", 'String'>
     readonly designId: FieldRef<"OrderItem", 'String'>
     readonly status: FieldRef<"OrderItem", 'String'>
+    readonly designStatus: FieldRef<"OrderItem", 'String'>
     readonly productionListId: FieldRef<"OrderItem", 'String'>
     readonly createdAt: FieldRef<"OrderItem", 'DateTime'>
     readonly updatedAt: FieldRef<"OrderItem", 'DateTime'>
@@ -5655,6 +7012,996 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model JaxLog
+   */
+
+  export type AggregateJaxLog = {
+    _count: JaxLogCountAggregateOutputType | null
+    _min: JaxLogMinAggregateOutputType | null
+    _max: JaxLogMaxAggregateOutputType | null
+  }
+
+  export type JaxLogMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    requestBody: string | null
+    responseBody: string | null
+    status: string | null
+    trackingId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type JaxLogMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    requestBody: string | null
+    responseBody: string | null
+    status: string | null
+    trackingId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type JaxLogCountAggregateOutputType = {
+    id: number
+    orderId: number
+    requestBody: number
+    responseBody: number
+    status: number
+    trackingId: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type JaxLogMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    requestBody?: true
+    responseBody?: true
+    status?: true
+    trackingId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type JaxLogMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    requestBody?: true
+    responseBody?: true
+    status?: true
+    trackingId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type JaxLogCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    requestBody?: true
+    responseBody?: true
+    status?: true
+    trackingId?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type JaxLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JaxLog to aggregate.
+     */
+    where?: JaxLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JaxLogs to fetch.
+     */
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: JaxLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JaxLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JaxLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned JaxLogs
+    **/
+    _count?: true | JaxLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: JaxLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: JaxLogMaxAggregateInputType
+  }
+
+  export type GetJaxLogAggregateType<T extends JaxLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateJaxLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateJaxLog[P]>
+      : GetScalarType<T[P], AggregateJaxLog[P]>
+  }
+
+
+
+
+  export type JaxLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JaxLogWhereInput
+    orderBy?: JaxLogOrderByWithAggregationInput | JaxLogOrderByWithAggregationInput[]
+    by: JaxLogScalarFieldEnum[] | JaxLogScalarFieldEnum
+    having?: JaxLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: JaxLogCountAggregateInputType | true
+    _min?: JaxLogMinAggregateInputType
+    _max?: JaxLogMaxAggregateInputType
+  }
+
+  export type JaxLogGroupByOutputType = {
+    id: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId: string | null
+    userId: string | null
+    createdAt: Date
+    _count: JaxLogCountAggregateOutputType | null
+    _min: JaxLogMinAggregateOutputType | null
+    _max: JaxLogMaxAggregateOutputType | null
+  }
+
+  type GetJaxLogGroupByPayload<T extends JaxLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<JaxLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof JaxLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], JaxLogGroupByOutputType[P]>
+            : GetScalarType<T[P], JaxLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type JaxLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    requestBody?: boolean
+    responseBody?: boolean
+    status?: boolean
+    trackingId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    user?: boolean | JaxLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["jaxLog"]>
+
+  export type JaxLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    requestBody?: boolean
+    responseBody?: boolean
+    status?: boolean
+    trackingId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    user?: boolean | JaxLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["jaxLog"]>
+
+  export type JaxLogSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    requestBody?: boolean
+    responseBody?: boolean
+    status?: boolean
+    trackingId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type JaxLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    user?: boolean | JaxLog$userArgs<ExtArgs>
+  }
+  export type JaxLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+    user?: boolean | JaxLog$userArgs<ExtArgs>
+  }
+
+  export type $JaxLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "JaxLog"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      requestBody: string
+      responseBody: string
+      status: string
+      trackingId: string | null
+      userId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["jaxLog"]>
+    composites: {}
+  }
+
+  type JaxLogGetPayload<S extends boolean | null | undefined | JaxLogDefaultArgs> = $Result.GetResult<Prisma.$JaxLogPayload, S>
+
+  type JaxLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<JaxLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: JaxLogCountAggregateInputType | true
+    }
+
+  export interface JaxLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['JaxLog'], meta: { name: 'JaxLog' } }
+    /**
+     * Find zero or one JaxLog that matches the filter.
+     * @param {JaxLogFindUniqueArgs} args - Arguments to find a JaxLog
+     * @example
+     * // Get one JaxLog
+     * const jaxLog = await prisma.jaxLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends JaxLogFindUniqueArgs>(args: SelectSubset<T, JaxLogFindUniqueArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one JaxLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {JaxLogFindUniqueOrThrowArgs} args - Arguments to find a JaxLog
+     * @example
+     * // Get one JaxLog
+     * const jaxLog = await prisma.jaxLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends JaxLogFindUniqueOrThrowArgs>(args: SelectSubset<T, JaxLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first JaxLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogFindFirstArgs} args - Arguments to find a JaxLog
+     * @example
+     * // Get one JaxLog
+     * const jaxLog = await prisma.jaxLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends JaxLogFindFirstArgs>(args?: SelectSubset<T, JaxLogFindFirstArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first JaxLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogFindFirstOrThrowArgs} args - Arguments to find a JaxLog
+     * @example
+     * // Get one JaxLog
+     * const jaxLog = await prisma.jaxLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends JaxLogFindFirstOrThrowArgs>(args?: SelectSubset<T, JaxLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more JaxLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all JaxLogs
+     * const jaxLogs = await prisma.jaxLog.findMany()
+     * 
+     * // Get first 10 JaxLogs
+     * const jaxLogs = await prisma.jaxLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const jaxLogWithIdOnly = await prisma.jaxLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends JaxLogFindManyArgs>(args?: SelectSubset<T, JaxLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a JaxLog.
+     * @param {JaxLogCreateArgs} args - Arguments to create a JaxLog.
+     * @example
+     * // Create one JaxLog
+     * const JaxLog = await prisma.jaxLog.create({
+     *   data: {
+     *     // ... data to create a JaxLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends JaxLogCreateArgs>(args: SelectSubset<T, JaxLogCreateArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many JaxLogs.
+     * @param {JaxLogCreateManyArgs} args - Arguments to create many JaxLogs.
+     * @example
+     * // Create many JaxLogs
+     * const jaxLog = await prisma.jaxLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends JaxLogCreateManyArgs>(args?: SelectSubset<T, JaxLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many JaxLogs and returns the data saved in the database.
+     * @param {JaxLogCreateManyAndReturnArgs} args - Arguments to create many JaxLogs.
+     * @example
+     * // Create many JaxLogs
+     * const jaxLog = await prisma.jaxLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many JaxLogs and only return the `id`
+     * const jaxLogWithIdOnly = await prisma.jaxLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends JaxLogCreateManyAndReturnArgs>(args?: SelectSubset<T, JaxLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a JaxLog.
+     * @param {JaxLogDeleteArgs} args - Arguments to delete one JaxLog.
+     * @example
+     * // Delete one JaxLog
+     * const JaxLog = await prisma.jaxLog.delete({
+     *   where: {
+     *     // ... filter to delete one JaxLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends JaxLogDeleteArgs>(args: SelectSubset<T, JaxLogDeleteArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one JaxLog.
+     * @param {JaxLogUpdateArgs} args - Arguments to update one JaxLog.
+     * @example
+     * // Update one JaxLog
+     * const jaxLog = await prisma.jaxLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends JaxLogUpdateArgs>(args: SelectSubset<T, JaxLogUpdateArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more JaxLogs.
+     * @param {JaxLogDeleteManyArgs} args - Arguments to filter JaxLogs to delete.
+     * @example
+     * // Delete a few JaxLogs
+     * const { count } = await prisma.jaxLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends JaxLogDeleteManyArgs>(args?: SelectSubset<T, JaxLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more JaxLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many JaxLogs
+     * const jaxLog = await prisma.jaxLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends JaxLogUpdateManyArgs>(args: SelectSubset<T, JaxLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one JaxLog.
+     * @param {JaxLogUpsertArgs} args - Arguments to update or create a JaxLog.
+     * @example
+     * // Update or create a JaxLog
+     * const jaxLog = await prisma.jaxLog.upsert({
+     *   create: {
+     *     // ... data to create a JaxLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the JaxLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends JaxLogUpsertArgs>(args: SelectSubset<T, JaxLogUpsertArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of JaxLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogCountArgs} args - Arguments to filter JaxLogs to count.
+     * @example
+     * // Count the number of JaxLogs
+     * const count = await prisma.jaxLog.count({
+     *   where: {
+     *     // ... the filter for the JaxLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends JaxLogCountArgs>(
+      args?: Subset<T, JaxLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], JaxLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a JaxLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends JaxLogAggregateArgs>(args: Subset<T, JaxLogAggregateArgs>): Prisma.PrismaPromise<GetJaxLogAggregateType<T>>
+
+    /**
+     * Group by JaxLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JaxLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends JaxLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: JaxLogGroupByArgs['orderBy'] }
+        : { orderBy?: JaxLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, JaxLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJaxLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the JaxLog model
+   */
+  readonly fields: JaxLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for JaxLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__JaxLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends JaxLog$userArgs<ExtArgs> = {}>(args?: Subset<T, JaxLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the JaxLog model
+   */ 
+  interface JaxLogFieldRefs {
+    readonly id: FieldRef<"JaxLog", 'String'>
+    readonly orderId: FieldRef<"JaxLog", 'String'>
+    readonly requestBody: FieldRef<"JaxLog", 'String'>
+    readonly responseBody: FieldRef<"JaxLog", 'String'>
+    readonly status: FieldRef<"JaxLog", 'String'>
+    readonly trackingId: FieldRef<"JaxLog", 'String'>
+    readonly userId: FieldRef<"JaxLog", 'String'>
+    readonly createdAt: FieldRef<"JaxLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * JaxLog findUnique
+   */
+  export type JaxLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter, which JaxLog to fetch.
+     */
+    where: JaxLogWhereUniqueInput
+  }
+
+  /**
+   * JaxLog findUniqueOrThrow
+   */
+  export type JaxLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter, which JaxLog to fetch.
+     */
+    where: JaxLogWhereUniqueInput
+  }
+
+  /**
+   * JaxLog findFirst
+   */
+  export type JaxLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter, which JaxLog to fetch.
+     */
+    where?: JaxLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JaxLogs to fetch.
+     */
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JaxLogs.
+     */
+    cursor?: JaxLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JaxLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JaxLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JaxLogs.
+     */
+    distinct?: JaxLogScalarFieldEnum | JaxLogScalarFieldEnum[]
+  }
+
+  /**
+   * JaxLog findFirstOrThrow
+   */
+  export type JaxLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter, which JaxLog to fetch.
+     */
+    where?: JaxLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JaxLogs to fetch.
+     */
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JaxLogs.
+     */
+    cursor?: JaxLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JaxLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JaxLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JaxLogs.
+     */
+    distinct?: JaxLogScalarFieldEnum | JaxLogScalarFieldEnum[]
+  }
+
+  /**
+   * JaxLog findMany
+   */
+  export type JaxLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter, which JaxLogs to fetch.
+     */
+    where?: JaxLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JaxLogs to fetch.
+     */
+    orderBy?: JaxLogOrderByWithRelationInput | JaxLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing JaxLogs.
+     */
+    cursor?: JaxLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JaxLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JaxLogs.
+     */
+    skip?: number
+    distinct?: JaxLogScalarFieldEnum | JaxLogScalarFieldEnum[]
+  }
+
+  /**
+   * JaxLog create
+   */
+  export type JaxLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a JaxLog.
+     */
+    data: XOR<JaxLogCreateInput, JaxLogUncheckedCreateInput>
+  }
+
+  /**
+   * JaxLog createMany
+   */
+  export type JaxLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many JaxLogs.
+     */
+    data: JaxLogCreateManyInput | JaxLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * JaxLog createManyAndReturn
+   */
+  export type JaxLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many JaxLogs.
+     */
+    data: JaxLogCreateManyInput | JaxLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * JaxLog update
+   */
+  export type JaxLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a JaxLog.
+     */
+    data: XOR<JaxLogUpdateInput, JaxLogUncheckedUpdateInput>
+    /**
+     * Choose, which JaxLog to update.
+     */
+    where: JaxLogWhereUniqueInput
+  }
+
+  /**
+   * JaxLog updateMany
+   */
+  export type JaxLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update JaxLogs.
+     */
+    data: XOR<JaxLogUpdateManyMutationInput, JaxLogUncheckedUpdateManyInput>
+    /**
+     * Filter which JaxLogs to update
+     */
+    where?: JaxLogWhereInput
+  }
+
+  /**
+   * JaxLog upsert
+   */
+  export type JaxLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the JaxLog to update in case it exists.
+     */
+    where: JaxLogWhereUniqueInput
+    /**
+     * In case the JaxLog found by the `where` argument doesn't exist, create a new JaxLog with this data.
+     */
+    create: XOR<JaxLogCreateInput, JaxLogUncheckedCreateInput>
+    /**
+     * In case the JaxLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<JaxLogUpdateInput, JaxLogUncheckedUpdateInput>
+  }
+
+  /**
+   * JaxLog delete
+   */
+  export type JaxLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    /**
+     * Filter which JaxLog to delete.
+     */
+    where: JaxLogWhereUniqueInput
+  }
+
+  /**
+   * JaxLog deleteMany
+   */
+  export type JaxLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JaxLogs to delete
+     */
+    where?: JaxLogWhereInput
+  }
+
+  /**
+   * JaxLog.user
+   */
+  export type JaxLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * JaxLog without action
+   */
+  export type JaxLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
   }
 
 
@@ -8454,6 +10801,19 @@ export namespace Prisma {
   export type DesignScalarFieldEnum = (typeof DesignScalarFieldEnum)[keyof typeof DesignScalarFieldEnum]
 
 
+  export const UserScalarFieldEnum: {
+    id: 'id',
+    email: 'email',
+    password: 'password',
+    name: 'name',
+    role: 'role',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
   export const OrderScalarFieldEnum: {
     id: 'id',
     reference: 'reference',
@@ -8472,7 +10832,9 @@ export namespace Prisma {
     isExchange: 'isExchange',
     note: 'note',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    createdById: 'createdById',
+    confirmedById: 'confirmedById'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -8488,12 +10850,27 @@ export namespace Prisma {
     brandId: 'brandId',
     designId: 'designId',
     status: 'status',
+    designStatus: 'designStatus',
     productionListId: 'productionListId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+  export const JaxLogScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    requestBody: 'requestBody',
+    responseBody: 'responseBody',
+    status: 'status',
+    trackingId: 'trackingId',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type JaxLogScalarFieldEnum = (typeof JaxLogScalarFieldEnum)[keyof typeof JaxLogScalarFieldEnum]
 
 
   export const ProductScalarFieldEnum: {
@@ -8726,6 +11103,77 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Design"> | Date | string
   }
 
+  export type UserWhereInput = {
+    AND?: UserWhereInput | UserWhereInput[]
+    OR?: UserWhereInput[]
+    NOT?: UserWhereInput | UserWhereInput[]
+    id?: StringFilter<"User"> | string
+    email?: StringFilter<"User"> | string
+    password?: StringFilter<"User"> | string
+    name?: StringFilter<"User"> | string
+    role?: StringFilter<"User"> | string
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    createdOrders?: OrderListRelationFilter
+    confirmedOrders?: OrderListRelationFilter
+    jaxLogs?: JaxLogListRelationFilter
+  }
+
+  export type UserOrderByWithRelationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdOrders?: OrderOrderByRelationAggregateInput
+    confirmedOrders?: OrderOrderByRelationAggregateInput
+    jaxLogs?: JaxLogOrderByRelationAggregateInput
+  }
+
+  export type UserWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    email?: string
+    AND?: UserWhereInput | UserWhereInput[]
+    OR?: UserWhereInput[]
+    NOT?: UserWhereInput | UserWhereInput[]
+    password?: StringFilter<"User"> | string
+    name?: StringFilter<"User"> | string
+    role?: StringFilter<"User"> | string
+    createdAt?: DateTimeFilter<"User"> | Date | string
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    createdOrders?: OrderListRelationFilter
+    confirmedOrders?: OrderListRelationFilter
+    jaxLogs?: JaxLogListRelationFilter
+  }, "id" | "email">
+
+  export type UserOrderByWithAggregationInput = {
+    id?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UserCountOrderByAggregateInput
+    _max?: UserMaxOrderByAggregateInput
+    _min?: UserMinOrderByAggregateInput
+  }
+
+  export type UserScalarWhereWithAggregatesInput = {
+    AND?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
+    OR?: UserScalarWhereWithAggregatesInput[]
+    NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"User"> | string
+    email?: StringWithAggregatesFilter<"User"> | string
+    password?: StringWithAggregatesFilter<"User"> | string
+    name?: StringWithAggregatesFilter<"User"> | string
+    role?: StringWithAggregatesFilter<"User"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
   export type OrderWhereInput = {
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
@@ -8748,7 +11196,12 @@ export namespace Prisma {
     note?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    createdById?: StringNullableFilter<"Order"> | string | null
+    confirmedById?: StringNullableFilter<"Order"> | string | null
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    confirmedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
+    jaxLogs?: JaxLogListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -8770,7 +11223,12 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    confirmedById?: SortOrderInput | SortOrder
+    createdBy?: UserOrderByWithRelationInput
+    confirmedBy?: UserOrderByWithRelationInput
     items?: OrderItemOrderByRelationAggregateInput
+    jaxLogs?: JaxLogOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -8795,7 +11253,12 @@ export namespace Prisma {
     note?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    createdById?: StringNullableFilter<"Order"> | string | null
+    confirmedById?: StringNullableFilter<"Order"> | string | null
+    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    confirmedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
+    jaxLogs?: JaxLogListRelationFilter
   }, "id" | "reference">
 
   export type OrderOrderByWithAggregationInput = {
@@ -8817,6 +11280,8 @@ export namespace Prisma {
     note?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    confirmedById?: SortOrderInput | SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -8846,6 +11311,8 @@ export namespace Prisma {
     note?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+    createdById?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    confirmedById?: StringNullableWithAggregatesFilter<"Order"> | string | null
   }
 
   export type OrderItemWhereInput = {
@@ -8861,6 +11328,7 @@ export namespace Prisma {
     brandId?: StringFilter<"OrderItem"> | string
     designId?: StringFilter<"OrderItem"> | string
     status?: StringFilter<"OrderItem"> | string
+    designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
@@ -8882,6 +11350,7 @@ export namespace Prisma {
     brandId?: SortOrder
     designId?: SortOrder
     status?: SortOrder
+    designStatus?: SortOrder
     productionListId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -8906,6 +11375,7 @@ export namespace Prisma {
     brandId?: StringFilter<"OrderItem"> | string
     designId?: StringFilter<"OrderItem"> | string
     status?: StringFilter<"OrderItem"> | string
+    designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
@@ -8927,6 +11397,7 @@ export namespace Prisma {
     brandId?: SortOrder
     designId?: SortOrder
     status?: SortOrder
+    designStatus?: SortOrder
     productionListId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -8950,9 +11421,83 @@ export namespace Prisma {
     brandId?: StringWithAggregatesFilter<"OrderItem"> | string
     designId?: StringWithAggregatesFilter<"OrderItem"> | string
     status?: StringWithAggregatesFilter<"OrderItem"> | string
+    designStatus?: StringWithAggregatesFilter<"OrderItem"> | string
     productionListId?: StringNullableWithAggregatesFilter<"OrderItem"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
+  }
+
+  export type JaxLogWhereInput = {
+    AND?: JaxLogWhereInput | JaxLogWhereInput[]
+    OR?: JaxLogWhereInput[]
+    NOT?: JaxLogWhereInput | JaxLogWhereInput[]
+    id?: StringFilter<"JaxLog"> | string
+    orderId?: StringFilter<"JaxLog"> | string
+    requestBody?: StringFilter<"JaxLog"> | string
+    responseBody?: StringFilter<"JaxLog"> | string
+    status?: StringFilter<"JaxLog"> | string
+    trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    userId?: StringNullableFilter<"JaxLog"> | string | null
+    createdAt?: DateTimeFilter<"JaxLog"> | Date | string
+    order?: XOR<OrderRelationFilter, OrderWhereInput>
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type JaxLogOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    requestBody?: SortOrder
+    responseBody?: SortOrder
+    status?: SortOrder
+    trackingId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type JaxLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: JaxLogWhereInput | JaxLogWhereInput[]
+    OR?: JaxLogWhereInput[]
+    NOT?: JaxLogWhereInput | JaxLogWhereInput[]
+    orderId?: StringFilter<"JaxLog"> | string
+    requestBody?: StringFilter<"JaxLog"> | string
+    responseBody?: StringFilter<"JaxLog"> | string
+    status?: StringFilter<"JaxLog"> | string
+    trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    userId?: StringNullableFilter<"JaxLog"> | string | null
+    createdAt?: DateTimeFilter<"JaxLog"> | Date | string
+    order?: XOR<OrderRelationFilter, OrderWhereInput>
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type JaxLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    requestBody?: SortOrder
+    responseBody?: SortOrder
+    status?: SortOrder
+    trackingId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: JaxLogCountOrderByAggregateInput
+    _max?: JaxLogMaxOrderByAggregateInput
+    _min?: JaxLogMinOrderByAggregateInput
+  }
+
+  export type JaxLogScalarWhereWithAggregatesInput = {
+    AND?: JaxLogScalarWhereWithAggregatesInput | JaxLogScalarWhereWithAggregatesInput[]
+    OR?: JaxLogScalarWhereWithAggregatesInput[]
+    NOT?: JaxLogScalarWhereWithAggregatesInput | JaxLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"JaxLog"> | string
+    orderId?: StringWithAggregatesFilter<"JaxLog"> | string
+    requestBody?: StringWithAggregatesFilter<"JaxLog"> | string
+    responseBody?: StringWithAggregatesFilter<"JaxLog"> | string
+    status?: StringWithAggregatesFilter<"JaxLog"> | string
+    trackingId?: StringNullableWithAggregatesFilter<"JaxLog"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"JaxLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"JaxLog"> | Date | string
   }
 
   export type ProductWhereInput = {
@@ -9232,6 +11777,88 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderCreateNestedManyWithoutCreatedByInput
+    confirmedOrders?: OrderCreateNestedManyWithoutConfirmedByInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedByInput
+    confirmedOrders?: OrderUncheckedCreateNestedManyWithoutConfirmedByInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUpdateManyWithoutCreatedByNestedInput
+    confirmedOrders?: OrderUpdateManyWithoutConfirmedByNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+    confirmedOrders?: OrderUncheckedUpdateManyWithoutConfirmedByNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateManyInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderCreateInput = {
     id?: string
     reference?: number | null
@@ -9251,7 +11878,10 @@ export namespace Prisma {
     note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedOrdersInput
+    confirmedBy?: UserCreateNestedOneWithoutConfirmedOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -9273,7 +11903,10 @@ export namespace Prisma {
     note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdById?: string | null
+    confirmedById?: string | null
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -9295,7 +11928,10 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedOrdersNestedInput
+    confirmedBy?: UserUpdateOneWithoutConfirmedOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -9317,7 +11953,10 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -9339,6 +11978,8 @@ export namespace Prisma {
     note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdById?: string | null
+    confirmedById?: string | null
   }
 
   export type OrderUpdateManyMutationInput = {
@@ -9381,6 +12022,8 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderItemCreateInput = {
@@ -9389,6 +12032,7 @@ export namespace Prisma {
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -9409,6 +12053,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9421,6 +12066,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -9441,6 +12087,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9457,6 +12104,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9468,6 +12116,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9482,9 +12131,85 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogCreateInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutJaxLogsInput
+    user?: UserCreateNestedOneWithoutJaxLogsInput
+  }
+
+  export type JaxLogUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type JaxLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutJaxLogsNestedInput
+    user?: UserUpdateOneWithoutJaxLogsNestedInput
+  }
+
+  export type JaxLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogCreateManyInput = {
+    id?: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type JaxLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductCreateInput = {
@@ -9821,6 +12546,56 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type OrderListRelationFilter = {
+    every?: OrderWhereInput
+    some?: OrderWhereInput
+    none?: OrderWhereInput
+  }
+
+  export type JaxLogListRelationFilter = {
+    every?: JaxLogWhereInput
+    some?: JaxLogWhereInput
+    none?: JaxLogWhereInput
+  }
+
+  export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type JaxLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserCountOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserMaxOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserMinOrderByAggregateInput = {
+    id?: SortOrder
+    email?: SortOrder
+    password?: SortOrder
+    name?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -9848,6 +12623,11 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type UserNullableRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     reference?: SortOrder
@@ -9867,6 +12647,8 @@ export namespace Prisma {
     note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdById?: SortOrder
+    confirmedById?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -9893,6 +12675,8 @@ export namespace Prisma {
     note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdById?: SortOrder
+    confirmedById?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
@@ -9914,6 +12698,8 @@ export namespace Prisma {
     note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    createdById?: SortOrder
+    confirmedById?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -9996,6 +12782,7 @@ export namespace Prisma {
     brandId?: SortOrder
     designId?: SortOrder
     status?: SortOrder
+    designStatus?: SortOrder
     productionListId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10015,6 +12802,7 @@ export namespace Prisma {
     brandId?: SortOrder
     designId?: SortOrder
     status?: SortOrder
+    designStatus?: SortOrder
     productionListId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10030,6 +12818,7 @@ export namespace Prisma {
     brandId?: SortOrder
     designId?: SortOrder
     status?: SortOrder
+    designStatus?: SortOrder
     productionListId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10037,6 +12826,39 @@ export namespace Prisma {
 
   export type OrderItemSumOrderByAggregateInput = {
     price?: SortOrder
+  }
+
+  export type JaxLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    requestBody?: SortOrder
+    responseBody?: SortOrder
+    status?: SortOrder
+    trackingId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type JaxLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    requestBody?: SortOrder
+    responseBody?: SortOrder
+    status?: SortOrder
+    trackingId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type JaxLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    requestBody?: SortOrder
+    responseBody?: SortOrder
+    status?: SortOrder
+    trackingId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProductCountOrderByAggregateInput = {
@@ -10221,6 +13043,144 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type OrderCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput> | OrderCreateWithoutCreatedByInput[] | OrderUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedByInput | OrderCreateOrConnectWithoutCreatedByInput[]
+    createMany?: OrderCreateManyCreatedByInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderCreateNestedManyWithoutConfirmedByInput = {
+    create?: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput> | OrderCreateWithoutConfirmedByInput[] | OrderUncheckedCreateWithoutConfirmedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmedByInput | OrderCreateOrConnectWithoutConfirmedByInput[]
+    createMany?: OrderCreateManyConfirmedByInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type JaxLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput> | JaxLogCreateWithoutUserInput[] | JaxLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutUserInput | JaxLogCreateOrConnectWithoutUserInput[]
+    createMany?: JaxLogCreateManyUserInputEnvelope
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput> | OrderCreateWithoutCreatedByInput[] | OrderUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedByInput | OrderCreateOrConnectWithoutCreatedByInput[]
+    createMany?: OrderCreateManyCreatedByInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutConfirmedByInput = {
+    create?: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput> | OrderCreateWithoutConfirmedByInput[] | OrderUncheckedCreateWithoutConfirmedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmedByInput | OrderCreateOrConnectWithoutConfirmedByInput[]
+    createMany?: OrderCreateManyConfirmedByInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type JaxLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput> | JaxLogCreateWithoutUserInput[] | JaxLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutUserInput | JaxLogCreateOrConnectWithoutUserInput[]
+    createMany?: JaxLogCreateManyUserInputEnvelope
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+  }
+
+  export type OrderUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput> | OrderCreateWithoutCreatedByInput[] | OrderUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedByInput | OrderCreateOrConnectWithoutCreatedByInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutCreatedByInput | OrderUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: OrderCreateManyCreatedByInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutCreatedByInput | OrderUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutCreatedByInput | OrderUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUpdateManyWithoutConfirmedByNestedInput = {
+    create?: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput> | OrderCreateWithoutConfirmedByInput[] | OrderUncheckedCreateWithoutConfirmedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmedByInput | OrderCreateOrConnectWithoutConfirmedByInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutConfirmedByInput | OrderUpsertWithWhereUniqueWithoutConfirmedByInput[]
+    createMany?: OrderCreateManyConfirmedByInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutConfirmedByInput | OrderUpdateWithWhereUniqueWithoutConfirmedByInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutConfirmedByInput | OrderUpdateManyWithWhereWithoutConfirmedByInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type JaxLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput> | JaxLogCreateWithoutUserInput[] | JaxLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutUserInput | JaxLogCreateOrConnectWithoutUserInput[]
+    upsert?: JaxLogUpsertWithWhereUniqueWithoutUserInput | JaxLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: JaxLogCreateManyUserInputEnvelope
+    set?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    disconnect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    delete?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    update?: JaxLogUpdateWithWhereUniqueWithoutUserInput | JaxLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: JaxLogUpdateManyWithWhereWithoutUserInput | JaxLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput> | OrderCreateWithoutCreatedByInput[] | OrderUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutCreatedByInput | OrderCreateOrConnectWithoutCreatedByInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutCreatedByInput | OrderUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: OrderCreateManyCreatedByInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutCreatedByInput | OrderUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutCreatedByInput | OrderUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutConfirmedByNestedInput = {
+    create?: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput> | OrderCreateWithoutConfirmedByInput[] | OrderUncheckedCreateWithoutConfirmedByInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutConfirmedByInput | OrderCreateOrConnectWithoutConfirmedByInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutConfirmedByInput | OrderUpsertWithWhereUniqueWithoutConfirmedByInput[]
+    createMany?: OrderCreateManyConfirmedByInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutConfirmedByInput | OrderUpdateWithWhereUniqueWithoutConfirmedByInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutConfirmedByInput | OrderUpdateManyWithWhereWithoutConfirmedByInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type JaxLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput> | JaxLogCreateWithoutUserInput[] | JaxLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutUserInput | JaxLogCreateOrConnectWithoutUserInput[]
+    upsert?: JaxLogUpsertWithWhereUniqueWithoutUserInput | JaxLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: JaxLogCreateManyUserInputEnvelope
+    set?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    disconnect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    delete?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    update?: JaxLogUpdateWithWhereUniqueWithoutUserInput | JaxLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: JaxLogUpdateManyWithWhereWithoutUserInput | JaxLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutCreatedOrdersInput = {
+    create?: XOR<UserCreateWithoutCreatedOrdersInput, UserUncheckedCreateWithoutCreatedOrdersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedOrdersInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutConfirmedOrdersInput = {
+    create?: XOR<UserCreateWithoutConfirmedOrdersInput, UserUncheckedCreateWithoutConfirmedOrdersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConfirmedOrdersInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type OrderItemCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10228,11 +13188,25 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
+  export type JaxLogCreateNestedManyWithoutOrderInput = {
+    create?: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput> | JaxLogCreateWithoutOrderInput[] | JaxLogUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutOrderInput | JaxLogCreateOrConnectWithoutOrderInput[]
+    createMany?: JaxLogCreateManyOrderInputEnvelope
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
     createMany?: OrderItemCreateManyOrderInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type JaxLogUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput> | JaxLogCreateWithoutOrderInput[] | JaxLogUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutOrderInput | JaxLogCreateOrConnectWithoutOrderInput[]
+    createMany?: JaxLogCreateManyOrderInputEnvelope
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -10255,6 +13229,26 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type UserUpdateOneWithoutCreatedOrdersNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedOrdersInput, UserUncheckedCreateWithoutCreatedOrdersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedOrdersInput
+    upsert?: UserUpsertWithoutCreatedOrdersInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedOrdersInput, UserUpdateWithoutCreatedOrdersInput>, UserUncheckedUpdateWithoutCreatedOrdersInput>
+  }
+
+  export type UserUpdateOneWithoutConfirmedOrdersNestedInput = {
+    create?: XOR<UserCreateWithoutConfirmedOrdersInput, UserUncheckedCreateWithoutConfirmedOrdersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConfirmedOrdersInput
+    upsert?: UserUpsertWithoutConfirmedOrdersInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutConfirmedOrdersInput, UserUpdateWithoutConfirmedOrdersInput>, UserUncheckedUpdateWithoutConfirmedOrdersInput>
+  }
+
   export type OrderItemUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10269,6 +13263,20 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type JaxLogUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput> | JaxLogCreateWithoutOrderInput[] | JaxLogUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutOrderInput | JaxLogCreateOrConnectWithoutOrderInput[]
+    upsert?: JaxLogUpsertWithWhereUniqueWithoutOrderInput | JaxLogUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: JaxLogCreateManyOrderInputEnvelope
+    set?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    disconnect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    delete?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    update?: JaxLogUpdateWithWhereUniqueWithoutOrderInput | JaxLogUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: JaxLogUpdateManyWithWhereWithoutOrderInput | JaxLogUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10281,6 +13289,20 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutOrderInput | OrderItemUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutOrderInput | OrderItemUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type JaxLogUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput> | JaxLogCreateWithoutOrderInput[] | JaxLogUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: JaxLogCreateOrConnectWithoutOrderInput | JaxLogCreateOrConnectWithoutOrderInput[]
+    upsert?: JaxLogUpsertWithWhereUniqueWithoutOrderInput | JaxLogUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: JaxLogCreateManyOrderInputEnvelope
+    set?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    disconnect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    delete?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    connect?: JaxLogWhereUniqueInput | JaxLogWhereUniqueInput[]
+    update?: JaxLogUpdateWithWhereUniqueWithoutOrderInput | JaxLogUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: JaxLogUpdateManyWithWhereWithoutOrderInput | JaxLogUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
   }
 
   export type ProductionListCreateNestedOneWithoutItemsInput = {
@@ -10397,6 +13419,36 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutParentItemInput | OrderItemUpdateWithWhereUniqueWithoutParentItemInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutParentItemInput | OrderItemUpdateManyWithWhereWithoutParentItemInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type OrderCreateNestedOneWithoutJaxLogsInput = {
+    create?: XOR<OrderCreateWithoutJaxLogsInput, OrderUncheckedCreateWithoutJaxLogsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutJaxLogsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutJaxLogsInput = {
+    create?: XOR<UserCreateWithoutJaxLogsInput, UserUncheckedCreateWithoutJaxLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutJaxLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutJaxLogsNestedInput = {
+    create?: XOR<OrderCreateWithoutJaxLogsInput, OrderUncheckedCreateWithoutJaxLogsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutJaxLogsInput
+    upsert?: OrderUpsertWithoutJaxLogsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutJaxLogsInput, OrderUpdateWithoutJaxLogsInput>, OrderUncheckedUpdateWithoutJaxLogsInput>
+  }
+
+  export type UserUpdateOneWithoutJaxLogsNestedInput = {
+    create?: XOR<UserCreateWithoutJaxLogsInput, UserUncheckedCreateWithoutJaxLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutJaxLogsInput
+    upsert?: UserUpsertWithoutJaxLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutJaxLogsInput, UserUpdateWithoutJaxLogsInput>, UserUncheckedUpdateWithoutJaxLogsInput>
   }
 
   export type OrderItemCreateNestedManyWithoutProductionListInput = {
@@ -10623,6 +13675,7 @@ export namespace Prisma {
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -10641,6 +13694,7 @@ export namespace Prisma {
     parentItemId?: string | null
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10686,6 +13740,7 @@ export namespace Prisma {
     brandId?: StringFilter<"OrderItem"> | string
     designId?: StringFilter<"OrderItem"> | string
     status?: StringFilter<"OrderItem"> | string
+    designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
@@ -10697,6 +13752,7 @@ export namespace Prisma {
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -10715,6 +13771,7 @@ export namespace Prisma {
     parentItemId?: string | null
     brandId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10747,12 +13804,305 @@ export namespace Prisma {
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutDesignInput>
   }
 
+  export type OrderCreateWithoutCreatedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedBy?: UserCreateNestedOneWithoutConfirmedOrdersInput
+    items?: OrderItemCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedById?: string | null
+    items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutCreatedByInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type OrderCreateManyCreatedByInputEnvelope = {
+    data: OrderCreateManyCreatedByInput | OrderCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderCreateWithoutConfirmedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedOrdersInput
+    items?: OrderItemCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutConfirmedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutConfirmedByInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput>
+  }
+
+  export type OrderCreateManyConfirmedByInputEnvelope = {
+    data: OrderCreateManyConfirmedByInput | OrderCreateManyConfirmedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type JaxLogCreateWithoutUserInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutJaxLogsInput
+  }
+
+  export type JaxLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type JaxLogCreateOrConnectWithoutUserInput = {
+    where: JaxLogWhereUniqueInput
+    create: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type JaxLogCreateManyUserInputEnvelope = {
+    data: JaxLogCreateManyUserInput | JaxLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutCreatedByInput, OrderUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<OrderCreateWithoutCreatedByInput, OrderUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutCreatedByInput, OrderUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutCreatedByInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type OrderScalarWhereInput = {
+    AND?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    OR?: OrderScalarWhereInput[]
+    NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
+    id?: StringFilter<"Order"> | string
+    reference?: IntNullableFilter<"Order"> | number | null
+    customerName?: StringFilter<"Order"> | string
+    customerPhone?: StringFilter<"Order"> | string
+    customerAddress?: StringFilter<"Order"> | string
+    customerPostalCode?: StringNullableFilter<"Order"> | string | null
+    customerGovernorate?: StringNullableFilter<"Order"> | string | null
+    customerDelegation?: StringNullableFilter<"Order"> | string | null
+    status?: StringFilter<"Order"> | string
+    totalAmount?: FloatFilter<"Order"> | number
+    parcelNumber?: StringNullableFilter<"Order"> | string | null
+    jaxTrackingId?: StringNullableFilter<"Order"> | string | null
+    jaxReceiptUrl?: StringNullableFilter<"Order"> | string | null
+    isFreeDelivery?: BoolFilter<"Order"> | boolean
+    isExchange?: BoolFilter<"Order"> | boolean
+    note?: StringNullableFilter<"Order"> | string | null
+    createdAt?: DateTimeFilter<"Order"> | Date | string
+    updatedAt?: DateTimeFilter<"Order"> | Date | string
+    createdById?: StringNullableFilter<"Order"> | string | null
+    confirmedById?: StringNullableFilter<"Order"> | string | null
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutConfirmedByInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutConfirmedByInput, OrderUncheckedUpdateWithoutConfirmedByInput>
+    create: XOR<OrderCreateWithoutConfirmedByInput, OrderUncheckedCreateWithoutConfirmedByInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutConfirmedByInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutConfirmedByInput, OrderUncheckedUpdateWithoutConfirmedByInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutConfirmedByInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutConfirmedByInput>
+  }
+
+  export type JaxLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: JaxLogWhereUniqueInput
+    update: XOR<JaxLogUpdateWithoutUserInput, JaxLogUncheckedUpdateWithoutUserInput>
+    create: XOR<JaxLogCreateWithoutUserInput, JaxLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type JaxLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: JaxLogWhereUniqueInput
+    data: XOR<JaxLogUpdateWithoutUserInput, JaxLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type JaxLogUpdateManyWithWhereWithoutUserInput = {
+    where: JaxLogScalarWhereInput
+    data: XOR<JaxLogUpdateManyMutationInput, JaxLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type JaxLogScalarWhereInput = {
+    AND?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
+    OR?: JaxLogScalarWhereInput[]
+    NOT?: JaxLogScalarWhereInput | JaxLogScalarWhereInput[]
+    id?: StringFilter<"JaxLog"> | string
+    orderId?: StringFilter<"JaxLog"> | string
+    requestBody?: StringFilter<"JaxLog"> | string
+    responseBody?: StringFilter<"JaxLog"> | string
+    status?: StringFilter<"JaxLog"> | string
+    trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    userId?: StringNullableFilter<"JaxLog"> | string | null
+    createdAt?: DateTimeFilter<"JaxLog"> | Date | string
+  }
+
+  export type UserCreateWithoutCreatedOrdersInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedOrders?: OrderCreateNestedManyWithoutConfirmedByInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedOrdersInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedOrders?: OrderUncheckedCreateNestedManyWithoutConfirmedByInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedOrdersInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedOrdersInput, UserUncheckedCreateWithoutCreatedOrdersInput>
+  }
+
+  export type UserCreateWithoutConfirmedOrdersInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderCreateNestedManyWithoutCreatedByInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutConfirmedOrdersInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedByInput
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutConfirmedOrdersInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutConfirmedOrdersInput, UserUncheckedCreateWithoutConfirmedOrdersInput>
+  }
+
   export type OrderItemCreateWithoutOrderInput = {
     id?: string
     size: string
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -10771,6 +14121,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10787,6 +14138,106 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type JaxLogCreateWithoutOrderInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    createdAt?: Date | string
+    user?: UserCreateNestedOneWithoutJaxLogsInput
+  }
+
+  export type JaxLogUncheckedCreateWithoutOrderInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type JaxLogCreateOrConnectWithoutOrderInput = {
+    where: JaxLogWhereUniqueInput
+    create: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput>
+  }
+
+  export type JaxLogCreateManyOrderInputEnvelope = {
+    data: JaxLogCreateManyOrderInput | JaxLogCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutCreatedOrdersInput = {
+    update: XOR<UserUpdateWithoutCreatedOrdersInput, UserUncheckedUpdateWithoutCreatedOrdersInput>
+    create: XOR<UserCreateWithoutCreatedOrdersInput, UserUncheckedCreateWithoutCreatedOrdersInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedOrdersInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedOrdersInput, UserUncheckedUpdateWithoutCreatedOrdersInput>
+  }
+
+  export type UserUpdateWithoutCreatedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedOrders?: OrderUpdateManyWithoutConfirmedByNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedOrders?: OrderUncheckedUpdateManyWithoutConfirmedByNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutConfirmedOrdersInput = {
+    update: XOR<UserUpdateWithoutConfirmedOrdersInput, UserUncheckedUpdateWithoutConfirmedOrdersInput>
+    create: XOR<UserCreateWithoutConfirmedOrdersInput, UserUncheckedCreateWithoutConfirmedOrdersInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutConfirmedOrdersInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutConfirmedOrdersInput, UserUncheckedUpdateWithoutConfirmedOrdersInput>
+  }
+
+  export type UserUpdateWithoutConfirmedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUpdateManyWithoutCreatedByNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutConfirmedOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type OrderItemUpsertWithWhereUniqueWithoutOrderInput = {
     where: OrderItemWhereUniqueInput
     update: XOR<OrderItemUpdateWithoutOrderInput, OrderItemUncheckedUpdateWithoutOrderInput>
@@ -10801,6 +14252,22 @@ export namespace Prisma {
   export type OrderItemUpdateManyWithWhereWithoutOrderInput = {
     where: OrderItemScalarWhereInput
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type JaxLogUpsertWithWhereUniqueWithoutOrderInput = {
+    where: JaxLogWhereUniqueInput
+    update: XOR<JaxLogUpdateWithoutOrderInput, JaxLogUncheckedUpdateWithoutOrderInput>
+    create: XOR<JaxLogCreateWithoutOrderInput, JaxLogUncheckedCreateWithoutOrderInput>
+  }
+
+  export type JaxLogUpdateWithWhereUniqueWithoutOrderInput = {
+    where: JaxLogWhereUniqueInput
+    data: XOR<JaxLogUpdateWithoutOrderInput, JaxLogUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type JaxLogUpdateManyWithWhereWithoutOrderInput = {
+    where: JaxLogScalarWhereInput
+    data: XOR<JaxLogUpdateManyMutationInput, JaxLogUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type ProductionListCreateWithoutItemsInput = {
@@ -10877,6 +14344,9 @@ export namespace Prisma {
     note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedOrdersInput
+    confirmedBy?: UserCreateNestedOneWithoutConfirmedOrdersInput
+    jaxLogs?: JaxLogCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutItemsInput = {
@@ -10898,6 +14368,9 @@ export namespace Prisma {
     note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    createdById?: string | null
+    confirmedById?: string | null
+    jaxLogs?: JaxLogUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutItemsInput = {
@@ -10911,6 +14384,7 @@ export namespace Prisma {
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -10930,6 +14404,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10946,6 +14421,7 @@ export namespace Prisma {
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     productionList?: ProductionListCreateNestedOneWithoutItemsInput
@@ -10964,6 +14440,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11083,6 +14560,9 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedOrdersNestedInput
+    confirmedBy?: UserUpdateOneWithoutConfirmedOrdersNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -11104,6 +14584,9 @@ export namespace Prisma {
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderItemUpsertWithoutSubItemsInput = {
@@ -11123,6 +14606,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -11142,6 +14626,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11163,12 +14648,189 @@ export namespace Prisma {
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutParentItemInput>
   }
 
+  export type OrderCreateWithoutJaxLogsInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedOrdersInput
+    confirmedBy?: UserCreateNestedOneWithoutConfirmedOrdersInput
+    items?: OrderItemCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutJaxLogsInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    confirmedById?: string | null
+    items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutJaxLogsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutJaxLogsInput, OrderUncheckedCreateWithoutJaxLogsInput>
+  }
+
+  export type UserCreateWithoutJaxLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderCreateNestedManyWithoutCreatedByInput
+    confirmedOrders?: OrderCreateNestedManyWithoutConfirmedByInput
+  }
+
+  export type UserUncheckedCreateWithoutJaxLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdOrders?: OrderUncheckedCreateNestedManyWithoutCreatedByInput
+    confirmedOrders?: OrderUncheckedCreateNestedManyWithoutConfirmedByInput
+  }
+
+  export type UserCreateOrConnectWithoutJaxLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutJaxLogsInput, UserUncheckedCreateWithoutJaxLogsInput>
+  }
+
+  export type OrderUpsertWithoutJaxLogsInput = {
+    update: XOR<OrderUpdateWithoutJaxLogsInput, OrderUncheckedUpdateWithoutJaxLogsInput>
+    create: XOR<OrderCreateWithoutJaxLogsInput, OrderUncheckedCreateWithoutJaxLogsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutJaxLogsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutJaxLogsInput, OrderUncheckedUpdateWithoutJaxLogsInput>
+  }
+
+  export type OrderUpdateWithoutJaxLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedOrdersNestedInput
+    confirmedBy?: UserUpdateOneWithoutConfirmedOrdersNestedInput
+    items?: OrderItemUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutJaxLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type UserUpsertWithoutJaxLogsInput = {
+    update: XOR<UserUpdateWithoutJaxLogsInput, UserUncheckedUpdateWithoutJaxLogsInput>
+    create: XOR<UserCreateWithoutJaxLogsInput, UserUncheckedCreateWithoutJaxLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutJaxLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutJaxLogsInput, UserUncheckedUpdateWithoutJaxLogsInput>
+  }
+
+  export type UserUpdateWithoutJaxLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUpdateManyWithoutCreatedByNestedInput
+    confirmedOrders?: OrderUpdateManyWithoutConfirmedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutJaxLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdOrders?: OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+    confirmedOrders?: OrderUncheckedUpdateManyWithoutConfirmedByNestedInput
+  }
+
   export type OrderItemCreateWithoutProductionListInput = {
     id?: string
     size: string
     price?: number
     isPack?: boolean
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     design: DesignCreateNestedOneWithoutItemsInput
@@ -11188,6 +14850,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -11228,6 +14891,7 @@ export namespace Prisma {
     parentItemId?: string | null
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11239,6 +14903,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -11257,6 +14922,7 @@ export namespace Prisma {
     parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11272,6 +14938,7 @@ export namespace Prisma {
     parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11286,6 +14953,7 @@ export namespace Prisma {
     parentItemId?: string | null
     brandId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11297,6 +14965,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -11315,6 +14984,7 @@ export namespace Prisma {
     parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
     brandId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11330,9 +15000,234 @@ export namespace Prisma {
     parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
     brandId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyCreatedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedById?: string | null
+  }
+
+  export type OrderCreateManyConfirmedByInput = {
+    id?: string
+    reference?: number | null
+    customerName: string
+    customerPhone: string
+    customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
+    status?: string
+    totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+  }
+
+  export type JaxLogCreateManyUserInput = {
+    id?: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type OrderUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedBy?: UserUpdateOneWithoutConfirmedOrdersNestedInput
+    items?: OrderItemUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type OrderUpdateWithoutConfirmedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedOrdersNestedInput
+    items?: OrderItemUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutConfirmedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    jaxLogs?: JaxLogUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateManyWithoutConfirmedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reference?: NullableIntFieldUpdateOperationsInput | number | null
+    customerName?: StringFieldUpdateOperationsInput | string
+    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type JaxLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutJaxLogsNestedInput
+  }
+
+  export type JaxLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateManyOrderInput = {
@@ -11344,9 +15239,20 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type JaxLogCreateManyOrderInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
   }
 
   export type OrderItemUpdateWithoutOrderInput = {
@@ -11355,6 +15261,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -11373,6 +15280,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11388,9 +15296,40 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutJaxLogsNestedInput
+  }
+
+  export type JaxLogUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JaxLogUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateManyParentItemInput = {
@@ -11402,6 +15341,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     productionListId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11413,6 +15353,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     productionList?: ProductionListUpdateOneWithoutItemsNestedInput
@@ -11431,6 +15372,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11446,6 +15388,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11461,6 +15404,7 @@ export namespace Prisma {
     brandId: string
     designId: string
     status?: string
+    designStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11471,6 +15415,7 @@ export namespace Prisma {
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     design?: DesignUpdateOneRequiredWithoutItemsNestedInput
@@ -11490,6 +15435,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -11505,6 +15451,7 @@ export namespace Prisma {
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11522,6 +15469,10 @@ export namespace Prisma {
      * @deprecated Use DesignCountOutputTypeDefaultArgs instead
      */
     export type DesignCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DesignCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UserCountOutputTypeDefaultArgs instead
+     */
+    export type UserCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use OrderCountOutputTypeDefaultArgs instead
      */
@@ -11543,6 +15494,10 @@ export namespace Prisma {
      */
     export type DesignArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DesignDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use UserDefaultArgs instead
+     */
+    export type UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use OrderDefaultArgs instead
      */
     export type OrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrderDefaultArgs<ExtArgs>
@@ -11550,6 +15505,10 @@ export namespace Prisma {
      * @deprecated Use OrderItemDefaultArgs instead
      */
     export type OrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrderItemDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use JaxLogDefaultArgs instead
+     */
+    export type JaxLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = JaxLogDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ProductDefaultArgs instead
      */

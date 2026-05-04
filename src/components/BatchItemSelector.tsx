@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Package, CheckCircle2 } from "lucide-react";
-import { updateItemStatuses } from "@/lib/actions";
+import { Check, Package, CheckCircle2, AlertOctagon } from "lucide-react";
+import { updateItemStatuses, markItemDamaged } from "@/lib/actions";
 
 export default function BatchItemSelector({ 
   items, 
@@ -24,7 +24,13 @@ export default function BatchItemSelector({
     if (selectedIds.length === 0) return;
     setIsUpdating(true);
     try {
-      await updateItemStatuses(selectedIds, status);
+      if (status === "DAMAGED") {
+        for (const id of selectedIds) {
+          await markItemDamaged(id);
+        }
+      } else {
+        await updateItemStatuses(selectedIds, status);
+      }
       setSelectedIds([]);
     } finally {
       setIsUpdating(false);
@@ -39,12 +45,14 @@ export default function BatchItemSelector({
             {selectedIds.length} SELECTED
           </div>
           <button 
+            type="button"
             onClick={() => setSelectedIds(items.map(i => i.id))}
             className="text-[10px] font-black uppercase text-slate-500 hover:text-slate-900"
           >
             Select All
           </button>
           <button 
+            type="button"
             onClick={() => setSelectedIds([])}
             className="text-[10px] font-black uppercase text-slate-500 hover:text-slate-900"
           >
@@ -52,6 +60,14 @@ export default function BatchItemSelector({
           </button>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => handleBulkUpdate("DAMAGED")}
+            disabled={selectedIds.length === 0 || isUpdating}
+            className="bg-rose-50 text-rose-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white disabled:opacity-50 flex items-center gap-2 transition-all"
+          >
+            <AlertOctagon className="w-3.5 h-3.5" />
+            Mark Damaged
+          </button>
           <button
             onClick={() => handleBulkUpdate("WRAPPED")}
             disabled={selectedIds.length === 0 || isUpdating}
