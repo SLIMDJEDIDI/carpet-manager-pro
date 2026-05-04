@@ -83,11 +83,25 @@ export default async function ShippingPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg md:text-xl font-black text-slate-900 leading-none capitalize truncate max-w-[150px] md:max-w-none">{order.customerName || 'No Name'}</h3>
+                      <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-black">{order.totalAmount} DT</span>
+                      {order.isFreeDelivery && <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[8px] font-black uppercase">Free Delivery</span>}
+                      {order.isExchange && <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[8px] font-black uppercase">Exchange</span>}
                       {order.status === "PARTIALLY_SHIPPED" && (
                         <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest leading-none shadow-lg shadow-indigo-100">Partial</span>
                       )}
                     </div>
-                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase mt-1.5 tracking-widest truncate">REF #{order.reference || '??'} • {order.customerPhone || 'No Phone'}</p>
+                    <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase mt-1.5 tracking-widest truncate">
+                      REF #{order.reference || '??'} • {order.customerPhone || 'No Phone'}
+                    </p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase mt-1 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {order.customerGovernorate}, {order.customerDelegation} {order.customerPostalCode && `(${order.customerPostalCode})`} • {order.customerAddress}
+                    </p>
+                    {order.note && (
+                      <div className="mt-2 bg-amber-50 border border-amber-100 p-2 rounded-lg">
+                        <p className="text-[9px] font-bold text-amber-700 uppercase leading-tight">Note: {order.note}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

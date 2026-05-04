@@ -165,10 +165,10 @@ export default function OrderPartialShipManager({
                       </div>
                       <div>
                         <h4 className={`text-base font-black uppercase tracking-tighter ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
-                          {parent.brand?.name} • {parent.design?.name || 'Bundle'}
+                          {parent.brand?.name} • {parent.design?.name || 'Bundle'} • {parent.size}
                         </h4>
                         <p className={`text-[10px] font-bold uppercase tracking-widest ${allChildrenSelected ? "text-blue-100" : "text-slate-400"}`}>
-                          CODE: {parent.design?.code} • {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
+                          PACK CODE: {parent.design?.code} • {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
                         </p>
                       </div>
                     </div>
