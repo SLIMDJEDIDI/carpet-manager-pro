@@ -231,19 +231,30 @@ export default function OrderForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Phone Number</label>
-          <div className="relative group">
-            <input 
-              name="customerPhone"
-              type="text" 
-              required 
-              placeholder="e.g. 55 123 456"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              {isSearching ? <Loader2 className="w-5 h-5 text-slate-400 animate-spin" /> : <Phone className="w-5 h-5 text-slate-300" />}
+          <div className="relative group flex items-center gap-2">
+            <div className="relative flex-1 group">
+              <input 
+                name="customerPhone"
+                type="text" 
+                required 
+                placeholder="e.g. 55 123 456"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-2xl border-2 border-slate-200 focus:border-slate-900 focus:ring-0 h-16 bg-slate-50/50 font-bold text-slate-900 px-6 transition-all group-hover:border-slate-300"
+              />
+              <Phone className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
             </div>
+            {phone.length >= 8 && (
+              <a 
+                href={`https://wa.me/216${phone.replace(/\s+/g, '')}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="h-16 px-6 bg-emerald-600 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 font-black uppercase text-[10px] tracking-widest gap-2"
+              >
+                <span className="hidden sm:inline">WhatsApp</span>
+                <span className="sm:hidden">WA</span>
+              </a>
+            )}
           </div>
         </div>
 

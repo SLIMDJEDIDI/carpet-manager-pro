@@ -81,7 +81,17 @@ export default async function OrdersPage({
               <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{order.customerName}</h3>
               <p className="text-[10px] md:text-xs font-black text-slate-300 uppercase tracking-widest leading-none">REF #{order.reference}</p>
             </div>
-            <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
+            <div className="flex items-center gap-3">
+              <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
+              <a 
+                href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all border border-emerald-100"
+              >
+                WhatsApp
+              </a>
+            </div>
           </div>
           
           <div className="flex flex-col gap-1 items-end ml-auto md:ml-0">
