@@ -78,43 +78,46 @@ export async function createOrder(formData: FormData) {
       const brandId = formData.get(`brandId_${i}`) as string;
       const designId = formData.get(`designId_${i}`) as string;
       const productId = formData.get(`productId_${i}`) as string;
+      const quantity = parseInt(formData.get(`quantity_${i}`) as string || "1");
       
       if (!brandId || !designId || !productId) continue;
       const product = productMap.get(productId);
       if (!product) continue;
 
-      orderTotal += product.price;
+      for (let qCount = 0; qCount < quantity; qCount++) {
+        orderTotal += product.price;
 
-      // Create main item
-      const mainItem = await prisma.orderItem.create({
-        data: {
-          orderId: order.id, brandId, designId,
-          size: product.size, price: product.price,
-          isPack: product.isPack,
-          status: product.isPack ? "PACK_PARENT" : "PENDING",
-        }
-      });
+        // Create main item
+        const mainItem = await prisma.orderItem.create({
+          data: {
+            orderId: order.id, brandId, designId,
+            size: product.size, price: product.price,
+            isPack: product.isPack,
+            status: product.isPack ? "PACK_PARENT" : "PENDING",
+          }
+        });
 
-      // If it's a pack, create components in one batch if possible
-      if (product.isPack && product.components) {
-        try {
-          const components = JSON.parse(product.components);
-          const subItemsData = [];
-          for (const comp of components) {
-            const qty = comp.qty || 1;
-            for (let q = 0; q < qty; q++) {
-              subItemsData.push({
-                orderId: order.id, brandId, designId,
-                size: comp.size, price: 0, isPack: false,
-                parentItemId: mainItem.id, status: "PENDING",
-              });
+        // If it's a pack, create components in one batch if possible
+        if (product.isPack && product.components) {
+          try {
+            const components = JSON.parse(product.components);
+            const subItemsData = [];
+            for (const comp of components) {
+              const qty = comp.qty || 1;
+              for (let q = 0; q < qty; q++) {
+                subItemsData.push({
+                  orderId: order.id, brandId, designId,
+                  size: comp.size, price: 0, isPack: false,
+                  parentItemId: mainItem.id, status: "PENDING",
+                });
+              }
             }
+            if (subItemsData.length > 0) {
+              await prisma.orderItem.createMany({ data: subItemsData });
+            }
+          } catch (e) {
+            console.error("Pack components error:", e);
           }
-          if (subItemsData.length > 0) {
-            await prisma.orderItem.createMany({ data: subItemsData });
-          }
-        } catch (e) {
-          console.error("Pack components error:", e);
         }
       }
     }
@@ -181,35 +184,38 @@ export async function updateOrder(orderId: string, formData: FormData) {
         const brandId = formData.get(`brandId_${i}`) as string;
         const designId = formData.get(`designId_${i}`) as string;
         const productId = formData.get(`productId_${i}`) as string;
+        const quantity = parseInt(formData.get(`quantity_${i}`) as string || "1");
         
         if (!brandId || !designId || !productId) continue;
 
         const product = productMap.get(productId);
         if (!product) continue;
 
-        orderTotal += product.price;
+        for (let qCount = 0; qCount < quantity; qCount++) {
+          orderTotal += product.price;
 
-        const mainItem = await prisma.orderItem.create({
-          data: {
-            orderId, brandId, designId,
-            size: product.size, price: product.price,
-            isPack: product.isPack,
-            status: product.isPack ? "PACK_PARENT" : "PENDING"
-          }
-        });
+          const mainItem = await prisma.orderItem.create({
+            data: {
+              orderId, brandId, designId,
+              size: product.size, price: product.price,
+              isPack: product.isPack,
+              status: product.isPack ? "PACK_PARENT" : "PENDING"
+            }
+          });
 
-        if (product.isPack && product.components) {
-          const components = JSON.parse(product.components);
-          for (const comp of components) {
-            const qty = comp.qty || 1;
-            for (let q = 0; q < qty; q++) {
-              await prisma.orderItem.create({
-                data: {
-                  orderId, brandId, designId,
-                  size: comp.size, price: 0, isPack: false,
-                  parentItemId: mainItem.id, status: "PENDING",
-                }
-              });
+          if (product.isPack && product.components) {
+            const components = JSON.parse(product.components);
+            for (const comp of components) {
+              const qty = comp.qty || 1;
+              for (let q = 0; q < qty; q++) {
+                await prisma.orderItem.create({
+                  data: {
+                    orderId, brandId, designId,
+                    size: comp.size, price: 0, isPack: false,
+                    parentItemId: mainItem.id, status: "PENDING",
+                  }
+                });
+              }
             }
           }
         }

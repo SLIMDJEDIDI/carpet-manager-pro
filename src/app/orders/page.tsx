@@ -169,26 +169,49 @@ export default async function OrdersPage({
       {/* Middle Area: Items (Horizontal Scroll or Compact Grid) */}
       <div className="px-4 py-2 bg-white">
         <div className="flex flex-wrap gap-2">
-          {order.items.map((item: any) => (
-            <div key={item.id} className="inline-flex items-center gap-2 bg-slate-50 p-1.5 pr-3 rounded-xl border border-slate-100 min-w-[140px] max-w-[200px]">
-              <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 overflow-hidden flex-shrink-0">
-                {item.design.imageUrl ? (
-                  <img src={item.design.imageUrl} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 text-[6px]">N/A</div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-black text-black truncate uppercase text-[9px] tracking-tighter leading-none">{item.design.code}</p>
-                <div className="flex items-center justify-between mt-1">
-                  <p className="text-[8px] font-bold text-slate-500">{item.size}</p>
-                  <span className={`text-[6px] font-black px-1 rounded-full uppercase ${getItemStatusColor(item.status)}`}>
-                    {item.status.split('_')[0]}
-                  </span>
+          {(() => {
+            const groupedItems: any[] = [];
+            order.items.forEach((item: any) => {
+              // We only group non-pack-parent items for the UI summary, 
+              // or group everything by Design + Size + Status
+              const key = `${item.design.code}-${item.size}-${item.status}`;
+              const existing = groupedItems.find(g => g.key === key);
+              if (existing) {
+                existing.quantity += 1;
+              } else {
+                groupedItems.push({ ...item, key, quantity: 1 });
+              }
+            });
+
+            return groupedItems.map((item) => (
+              <div key={item.key} className="inline-flex items-center gap-2 bg-slate-50 p-1.5 pr-3 rounded-xl border border-slate-100 min-w-[140px] max-w-[200px]">
+                <div className="w-8 h-8 bg-white rounded-lg border border-slate-200 overflow-hidden flex-shrink-0 relative">
+                  {item.design.imageUrl ? (
+                    <img src={item.design.imageUrl} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300 text-[6px]">N/A</div>
+                  )}
+                  {item.quantity > 1 && (
+                    <div className="absolute top-0 right-0 bg-slate-900 text-white text-[7px] font-black px-1 rounded-bl-lg">
+                      x{item.quantity}
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-black text-black truncate uppercase text-[9px] tracking-tighter leading-none">
+                    {item.design.code}
+                    {item.quantity > 1 && <span className="ml-1 text-emerald-600">x{item.quantity}</span>}
+                  </p>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-[8px] font-bold text-slate-500">{item.size}</p>
+                    <span className={`text-[6px] font-black px-1 rounded-full uppercase ${getItemStatusColor(item.status)}`}>
+                      {item.status.split('_')[0]}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       </div>
 

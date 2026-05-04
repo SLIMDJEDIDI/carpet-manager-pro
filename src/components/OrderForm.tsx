@@ -12,6 +12,7 @@ interface Item {
   productId: string;
   size: string;
   price: number;
+  quantity: number;
   status?: string;
 }
 
@@ -80,7 +81,8 @@ export default function OrderForm({
     designId: "",
     productId: "",
     size: "",
-    price: 0
+    price: 0,
+    quantity: 1
   }]));
 
   const [isSearching, setIsSearching] = useState(false);
@@ -165,12 +167,13 @@ export default function OrderForm({
 
   const addItem = () => {
     setItems(prev => [...prev, { 
-      id: 'new-' + Date.now(), 
+      id: Date.now(), 
       brandId: "", 
       designId: "", 
       productId: "", 
       size: "", 
-      price: 0 
+      price: 0,
+      quantity: 1
     }]);
   };
 
@@ -179,7 +182,7 @@ export default function OrderForm({
   };
 
   const totalPrice = items.length > 0 
-    ? items.reduce((sum, item) => sum + (item.price || 0), 0) + (isFreeDelivery || isExchange ? 0 : 8) 
+    ? items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0) + (isFreeDelivery || isExchange ? 0 : 8) 
     : 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -375,7 +378,7 @@ export default function OrderForm({
             <div key={item.id} className="group relative bg-slate-50/50 rounded-[2rem] border-2 border-slate-100 p-8 transition-all hover:bg-white hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 animate-in fade-in slide-in-from-top-4">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Brand Selection */}
-                <div className="lg:col-span-3 space-y-2">
+                <div className="lg:col-span-2 space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Brand</label>
                   <select 
                     name={`brandId_${index}`} 
@@ -392,7 +395,7 @@ export default function OrderForm({
                 </div>
 
                 {/* Design Selection */}
-                <div className="lg:col-span-4 space-y-2">
+                <div className="lg:col-span-3 space-y-2">
                   <div className="flex items-center justify-between px-1">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Design</label>
                     <div className="flex items-center gap-2">
@@ -500,12 +503,42 @@ export default function OrderForm({
                   <input type="hidden" name={`size_${index}`} value={item.size} />
                 </div>
 
+                {/* Quantity Selection */}
+                <div className="lg:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Quantity</label>
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => updateItem(item.id, "quantity", Math.max(1, (item.quantity || 1) - 1))}
+                      className="h-14 w-12 flex items-center justify-center border-2 border-r-0 border-slate-200 bg-white rounded-l-xl hover:bg-slate-50 text-slate-500 font-bold transition-all"
+                    >
+                      -
+                    </button>
+                    <input 
+                      type="number"
+                      name={`quantity_${index}`}
+                      required
+                      min="1"
+                      value={item.quantity || 1}
+                      onChange={(e) => updateItem(item.id, "quantity", parseInt(e.target.value) || 1)}
+                      className="w-full h-14 border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 bg-white font-black text-center text-slate-900 px-2 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => updateItem(item.id, "quantity", (item.quantity || 1) + 1)}
+                      className="h-14 w-12 flex items-center justify-center border-2 border-l-0 border-slate-200 bg-white rounded-r-xl hover:bg-slate-50 text-slate-500 font-bold transition-all"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
                 {/* Price Display */}
                 <div className="lg:col-span-2 flex items-center gap-4">
                   <div className="flex-1 space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Price</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Total</label>
                     <div className="h-14 flex items-center justify-center bg-emerald-50 rounded-xl font-black text-emerald-600 border-2 border-emerald-100 text-lg">
-                      {item.price || 0} <span className="ml-1 text-[10px] text-slate-900 uppercase">DT</span>
+                      {(item.price || 0) * (item.quantity || 1)} <span className="ml-1 text-[10px] text-slate-900 uppercase">DT</span>
                     </div>
                   </div>
                   {items.length > 1 && (
