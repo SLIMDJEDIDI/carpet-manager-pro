@@ -83,28 +83,23 @@ export default async function OrdersPage({
             </div>
             <div className="flex items-center gap-2">
               <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
-              <div className="flex items-center gap-0.5 bg-slate-50 p-0.5 rounded-xl border border-slate-100 shadow-inner">
-                <a 
-                  href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  title="WhatsApp Chat & Call"
-                  className="flex items-center gap-1.5 bg-[#25D366] text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#128C7E] hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 group"
-                >
-                  <div className="flex items-center -space-x-1">
-                    <MessageSquare className="w-3 h-3 group-hover:rotate-12 transition-transform" />
-                    <Phone className="w-2.5 h-2.5 translate-y-0.5 group-hover:-rotate-12 transition-transform" />
+              <a 
+                href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="WhatsApp Chat & Call"
+                className="flex items-center gap-2 bg-[#25D366] text-white px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#128C7E] hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 group shadow-sm"
+              >
+                <div className="flex items-center gap-1.5">
+                  <div className="relative">
+                    <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm group-hover:rotate-12 transition-transform">
+                      <Phone className="w-1.5 h-1.5 text-[#25D366] fill-[#25D366]" />
+                    </div>
                   </div>
                   WhatsApp
-                </a>
-                <a 
-                  href={`tel:+216${order.customerPhone.replace(/\s+/g, '')}`}
-                  title="Direct GSM Call"
-                  className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
-                >
-                  <Phone className="w-4 h-4" />
-                </a>
-              </div>
+                </div>
+              </a>
             </div>
           </div>
           

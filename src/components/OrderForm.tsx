@@ -245,28 +245,22 @@ export default function OrderForm({
               <Phone className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
             </div>
             {phone.length >= 8 && (
-              <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border-2 border-slate-200 shadow-sm">
-                <a 
-                  href={`https://wa.me/216${phone.replace(/\s+/g, '')}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="h-14 px-6 bg-[#25D366] text-white rounded-xl flex items-center justify-center hover:bg-[#128C7E] transition-all shadow-lg shadow-emerald-100 font-black uppercase text-[10px] tracking-[0.2em] gap-3 group"
-                >
-                  <div className="flex items-center -space-x-1">
-                    <MessageSquare className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                    <Phone className="w-3 h-3 translate-y-0.5 group-hover:-rotate-12 transition-transform" />
+              <a 
+                href={`https://wa.me/216${phone.replace(/\s+/g, '')}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="WhatsApp Chat & Call"
+                className="h-16 px-8 bg-[#25D366] text-white rounded-2xl flex items-center justify-center hover:bg-[#128C7E] transition-all shadow-lg shadow-emerald-100 font-black uppercase text-[10px] tracking-[0.2em] gap-4 group"
+              >
+                <div className="relative">
+                  <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm group-hover:rotate-12 transition-transform">
+                    <Phone className="w-2.5 h-2.5 text-[#25D366] fill-[#25D366]" />
                   </div>
-                  <span className="hidden sm:inline">WhatsApp Contact</span>
-                  <span className="sm:hidden">WhatsApp</span>
-                </a>
-                <a 
-                  href={`tel:+216${phone.replace(/\s+/g, '')}`}
-                  className="h-14 w-14 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-50 rounded-xl transition-all"
-                  title="Direct GSM Call"
-                >
-                  <Phone className="w-6 h-6" />
-                </a>
-              </div>
+                </div>
+                <span className="hidden sm:inline">WhatsApp Contact</span>
+                <span className="sm:hidden">WhatsApp</span>
+              </a>
             )}
           </div>
         </div>
