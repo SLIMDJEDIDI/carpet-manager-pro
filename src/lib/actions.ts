@@ -380,6 +380,32 @@ export async function shipOrder(formData: FormData) {
   } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+export async function deleteOrder(formData: FormData) {
+  const id = formData.get("id") as string;
+  try {
+    await prisma.order.delete({ where: { id } });
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}
+
+export async function markItemWrapped(formData: FormData) {
+  const itemId = formData.get("itemId") as string;
+  try {
+    await prisma.orderItem.update({
+      where: { id: itemId },
+      data: { status: "WRAPPED" }
+    });
+    revalidatePath("/shipping");
+    revalidatePath("/production");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message };
+  }
+}
+
 export async function archiveDispatch(formData: FormData) {
   const orderId = formData.get("orderId") as string;
   try {
