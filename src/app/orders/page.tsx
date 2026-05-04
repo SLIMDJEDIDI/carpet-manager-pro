@@ -71,95 +71,111 @@ export default async function OrdersPage({
 
   const renderOrderCard = (order: any, isArchive: boolean) => (
     <div key={order.id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:border-slate-900 transition-all">
-      <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <div className="bg-slate-50 p-4 rounded-[2rem] border-2 border-slate-100 group-hover:border-slate-900 transition-all">
-            <ShoppingBag className="w-8 h-8 text-slate-900" />
+      <div className="p-6 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
+        
+        {/* SECTION 1: CUSTOMER & CONTACT */}
+        <div className="flex items-center gap-6 flex-1 min-w-0">
+          <div className="bg-slate-50 p-5 rounded-[2.2rem] border-2 border-slate-100 group-hover:border-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all shrink-0">
+            <ShoppingBag className="w-10 h-10" />
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{order.customerName}</h3>
-              <p className="text-[10px] md:text-xs font-black text-slate-300 uppercase tracking-widest leading-none">REF #{order.reference}</p>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+              <h3 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none truncate max-w-[200px] md:max-w-[350px]">{order.customerName}</h3>
+              <p className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest leading-none">REF #{order.reference}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
+            
+            <div className="flex items-center gap-3">
+              <p className="font-black text-slate-500 text-xs tracking-tight">{order.customerPhone}</p>
               <a 
                 href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="WhatsApp Chat & Call"
-                className="flex items-center gap-2 bg-[#25D366] text-white px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#128C7E] hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 group shadow-sm"
+                className="flex items-center gap-2 bg-[#25D366] text-white px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] hover:bg-[#128C7E] hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 group/wa shadow-sm"
               >
-                <div className="flex items-center gap-1.5">
-                  <div className="relative">
-                    <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm group-hover:rotate-12 transition-transform">
-                      <Phone className="w-1.5 h-1.5 text-[#25D366] fill-[#25D366]" />
-                    </div>
+                <div className="relative">
+                  <MessageSquare className="w-3.5 h-3.5 group-hover/wa:scale-110 transition-transform" />
+                  <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                    <Phone className="w-1.5 h-1.5 text-[#25D366] fill-[#25D366]" />
                   </div>
-                  WhatsApp
                 </div>
+                WhatsApp
               </a>
             </div>
           </div>
-          
-          <div className="flex flex-col gap-1 items-end ml-auto md:ml-0">
-            <div className="flex items-center gap-2">
-              {order.status === "PENDING" && (
-                <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
-              )}
-              <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
-                {order.status === "PENDING" ? "RECEIVED" : order.status}
-              </span>
-            </div>
-            {order.status === "CONFIRMED" && (
-              <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest text-right">
-                order in production list
-              </p>
-            )}
-          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-3">
-            {order.items.slice(0, 3).map((item: any, idx: number) => (
-              <div key={idx} className="w-10 h-10 bg-white border-2 border-white rounded-full overflow-hidden shadow-md">
-                {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
-              </div>
-            ))}
-            {order.items.length > 3 && (
-              <div className="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-full border-2 border-white shadow-md">
-                <span className="text-[9px] font-black text-white">+{order.items.length - 3}</span>
-              </div>
+        {/* SECTION 2: STATUS & NOTES */}
+        <div className="flex flex-col md:items-end gap-4 shrink-0">
+          <div className="flex items-center gap-3">
+            {order.status === "PENDING" && (
+              <ConfirmOrderButton orderId={order.id} action={confirmOrder} />
             )}
+            <div className="flex flex-col items-end">
+              <span className={`text-[10px] font-black px-4 py-1.5 rounded-xl uppercase tracking-[0.2em] flex items-center gap-2 shadow-sm ${getStatusColor(order.status)}`}>
+                {order.status === "PENDING" ? "RECEIVED" : order.status}
+              </span>
+              {order.status === "CONFIRMED" && (
+                <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1">
+                  order in production list
+                </p>
+              )}
+            </div>
           </div>
-          <div className="bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-            <p className="text-xl font-black text-slate-900 tracking-tighter leading-none">{order.totalAmount} <span className="text-[10px] uppercase text-slate-400">DT</span></p>
+          
+          {order.note && (
+            <div className="bg-amber-50 px-4 py-2.5 rounded-2xl border border-amber-100 flex items-start gap-3 max-w-[300px]">
+              <MessageSquare className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+              <p className="text-[10px] font-bold text-amber-800 uppercase tracking-tight italic leading-relaxed">"{order.note}"</p>
+            </div>
+          )}
+        </div>
+
+        {/* SECTION 3: DESIGN PREVIEW & PRICE & EDIT */}
+        <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-6 md:pt-0">
+          <div className="flex flex-col items-end gap-3">
+             <div className="flex -space-x-4">
+              {order.items.slice(0, 4).map((item: any, idx: number) => (
+                <div key={idx} className="w-12 h-12 bg-white border-4 border-white rounded-[1.2rem] overflow-hidden shadow-xl shadow-slate-200 relative group/img z-[1]">
+                  {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover transition-transform group-hover/img:scale-110" />}
+                </div>
+              ))}
+              {order.items.length > 4 && (
+                <div className="w-12 h-12 bg-slate-900 flex items-center justify-center rounded-[1.2rem] border-4 border-white shadow-xl shadow-slate-200 relative z-[5]">
+                  <span className="text-[10px] font-black text-white">+{order.items.length - 4}</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2 bg-slate-50 px-5 py-2.5 rounded-2xl border border-slate-100 shadow-inner">
+              <p className="text-2xl font-black text-slate-900 tracking-tighter leading-none">{order.totalAmount} <span className="text-xs uppercase text-slate-400 tracking-widest">DT</span></p>
+            </div>
           </div>
+
           <Link 
-            href={`/orders/${order.id}`}
-            className="h-14 w-14 bg-slate-900 text-white rounded-[1.5rem] flex items-center justify-center group-hover:bg-black transition-all shadow-xl shadow-slate-200"
+            href={`/orders/edit/${order.id}`}
+            className="h-16 w-16 bg-slate-50 text-slate-400 rounded-[1.8rem] flex flex-col items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-xl shadow-slate-100 group/edit"
           >
-            <ChevronRight className="w-6 h-6" />
+            <Edit3 className="w-6 h-6 group-hover/edit:rotate-12 transition-transform" />
+            <span className="text-[7px] font-black uppercase mt-1">Edit</span>
           </Link>
         </div>
       </div>
       
-      <div className="px-6 pb-6 md:px-8 md:pb-8 flex flex-wrap gap-4 items-center">
-        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-          <MapPin className="w-3.5 h-3.5 text-slate-400" />
-          <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest truncate max-w-[150px]">{order.customerGovernorate || "Tunis"}</p>
+      {/* FOOTER: METADATA */}
+      <div className="px-6 pb-6 md:px-10 md:pb-10 flex flex-wrap gap-4 items-center">
+        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 text-slate-500">
+          <MapPin className="w-4 h-4" />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em]">{order.customerGovernorate || "Tunis"}</p>
         </div>
-        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-          <Package className="w-3.5 h-3.5 text-slate-400" />
-          <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{order.items.length} Articles</p>
+        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 text-slate-500">
+          <Package className="w-4 h-4" />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em]">{order.items.length} Production Units</p>
         </div>
-        {order.note && (
-           <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100">
-            <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
-            <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest italic truncate max-w-[300px]">"{order.note}"</p>
-          </div>
-        )}
+        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 text-slate-500">
+          <Clock className="w-4 h-4" />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em]">{new Date(order.createdAt).toLocaleDateString()}</p>
+        </div>
       </div>
     </div>
   );
