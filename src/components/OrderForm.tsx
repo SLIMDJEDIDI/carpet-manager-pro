@@ -429,18 +429,39 @@ export default function OrderForm({
                       onChange={(e) => {
                         setDesignSearch(prev => ({ ...prev, [item.id]: e.target.value }));
                         setShowDesignList(prev => ({ ...prev, [item.id]: true }));
+                        if (e.target.value === "") {
+                          updateItem(item.id, "designId", "");
+                        }
                       }}
-                      onFocus={() => handleDesignFocus(item.id)}
-                      className={`w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 ${selectedDesign ? 'pl-20' : 'pl-12'} pr-4 transition-all`}
+                      onFocus={() => {
+                        handleDesignFocus(item.id);
+                        // Optional: Clear search on focus to show full list if they want to change
+                        // setDesignSearch(prev => ({ ...prev, [item.id]: "" }));
+                      }}
+                      className={`w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 ${selectedDesign ? 'pl-20' : 'pl-12'} pr-12 transition-all`}
                     />
                     {selectedDesign ? (
-                      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-14 h-10 bg-slate-100 rounded-lg border-2 border-emerald-500 overflow-hidden shadow-sm">
-                        {selectedDesign.imageUrl ? (
-                          <img src={selectedDesign.imageUrl} className="w-full h-full object-cover" alt={selectedDesign.code} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-300 text-[8px]">N/A</div>
-                        )}
-                      </div>
+                      <>
+                        <div className="absolute left-2 top-1/2 -translate-y-1/2 w-14 h-10 bg-slate-100 rounded-lg border-2 border-emerald-500 overflow-hidden shadow-sm">
+                          {selectedDesign.imageUrl ? (
+                            <img src={selectedDesign.imageUrl} className="w-full h-full object-cover" alt={selectedDesign.code} />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300 text-[8px]">N/A</div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateItem(item.id, "designId", "");
+                            setDesignSearch(prev => ({ ...prev, [item.id]: "" }));
+                            setShowDesignList(prev => ({ ...prev, [item.id]: true }));
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-rose-500 transition-all z-10"
+                          title="Clear Selection"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
                     ) : (
                       <Palette className="w-5 h-5 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2" />
                     )}
