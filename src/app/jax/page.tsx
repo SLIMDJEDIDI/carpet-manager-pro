@@ -3,6 +3,7 @@ import { Truck, Printer, Search, Package, MapPin, Calendar, ExternalLink, CheckC
 import Link from "next/link";
 import { archiveDispatch } from "@/lib/actions";
 import CopyButton from "@/components/CopyButton";
+import WorkflowGuide from "@/components/WorkflowGuide";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +37,16 @@ export default async function JaxManagementPage({
 
   return (
     <div className="space-y-6 md:space-y-10">
+      <WorkflowGuide 
+        step="JAX Dispatch"
+        purpose="Print official shipping labels and notify pickup."
+        instruction="Download the official JAX PDF labels for all parcels. Once sticked, mark the parcel as 'Dispatched' to move it to the archive."
+        nextStep="Accounting & Payouts"
+        nextHref="/accounting"
+      />
+      
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-6">
         <div className="border-l-8 border-indigo-600 pl-4 md:pl-6">
           <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">
             JAX Dispatch

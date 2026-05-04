@@ -111,7 +111,7 @@ export default async function Dashboard({
     }),
     sent: await prisma.order.count({ where: { status: "SHIPPED", updatedAt: dateFilter } }),
     revenue: await prisma.order.aggregate({
-      where: { status: { in: ["SHIPPED", "DELIVERED"] }, updatedAt: dateFilter },
+      where: { createdAt: dateFilter },
       _sum: { totalAmount: true }
     }).then(res => res._sum.totalAmount || 0),
   };

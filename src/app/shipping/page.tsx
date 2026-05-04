@@ -4,6 +4,7 @@ import PrintLabel from "@/components/PrintLabel";
 import BulkJaxShipping from "@/components/BulkJaxShipping";
 import SingleShipButton from "@/components/SingleShipButton";
 import { shipOrder, markItemWrapped } from "@/lib/actions";
+import WorkflowGuide from "@/components/WorkflowGuide";
 
 export const dynamic = "force-dynamic";
 
@@ -35,10 +36,18 @@ export default async function ShippingPage() {
 
   return (
     <div className="space-y-6 md:space-y-8">
+      <WorkflowGuide 
+        step="Shipping & Packaging"
+        purpose="Group articles into parcels and print shipping labels."
+        instruction="Mark items as 'Wrapped' when they are ready. Once all items in an order are wrapped, you can generate the JAX shipping request."
+        nextStep="JAX Dispatch"
+        nextHref="/jax"
+      />
+
       <div className="flex items-center justify-between">
-        <div className="border-l-8 border-blue-500 pl-4 md:pl-6">
+        <div className="border-l-8 border-blue-600 pl-4 md:pl-6">
           <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight uppercase leading-tight">Shipping Desk</h1>
-          <p className="text-slate-500 font-bold text-xs md:text-sm mt-1">One parcel for multiple articles per customer.</p>
+          <p className="text-slate-500 font-bold text-xs md:text-sm mt-1">Operational Tunnel: Grouping & Dispatching.</p>
         </div>
       </div>
 
