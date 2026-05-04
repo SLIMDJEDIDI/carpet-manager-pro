@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Palette, CheckCircle2, Clock, AlertCircle, Hash, Layers } from "lucide-react";
 import MarkBatchReadyButton from "@/components/MarkBatchReadyButton";
+import WorkflowGuide from "@/components/WorkflowGuide";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,16 @@ export default async function DesignerHubPage() {
 
   return (
     <div className="space-y-8">
+      <WorkflowGuide 
+        step="Designer Hub"
+        purpose="Prepare carpet designs grouped by same design and same size."
+        instruction="Designers prepare carpet designs here. Items are grouped by same design and same size to avoid repeated work. Once all required designs are ready, the order can move to production."
+        prevStep="Production Management"
+        prevHref="/production"
+        nextStep="Production Queue (Batches)"
+        nextHref="/production"
+      />
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">
