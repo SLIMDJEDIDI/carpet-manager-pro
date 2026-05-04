@@ -77,9 +77,10 @@ model OrderItem {
   parentItemId     String?
   brandId          String
   designId         String
-  status           String          @default("PENDING") // PENDING, IN_PRODUCTION, DAMAGED, WRAPPED
+  status           String          @default("PENDING") // PENDING, IN_PRODUCTION, DAMAGED, WRAPPED, SHIPPED
   designStatus     String          @default("PENDING") // PENDING, READY
   productionListId String?
+  jaxLogId         String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   
@@ -89,6 +90,7 @@ model OrderItem {
   order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   parentItem       OrderItem?      @relation("PackItems", fields: [parentItemId], references: [id])
   subItems         OrderItem[]     @relation("PackItems")
+  jaxLog           JaxLog?         @relation(fields: [jaxLogId], references: [id])
 }
 
 model JaxLog {
@@ -98,11 +100,13 @@ model JaxLog {
   responseBody  String   @db.Text
   status        String   // SUCCESS, ERROR
   trackingId    String?
+  receiptUrl    String?
   userId        String?
   createdAt     DateTime @default(now())
 
   order         Order    @relation(fields: [orderId], references: [id])
   user          User?    @relation(fields: [userId], references: [id])
+  items         OrderItem[]
 }
 
 model Product {

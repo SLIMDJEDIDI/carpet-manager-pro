@@ -1709,6 +1709,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type JaxLogCountOutputType
+   */
+
+  export type JaxLogCountOutputType = {
+    items: number
+  }
+
+  export type JaxLogCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | JaxLogCountOutputTypeCountItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * JaxLogCountOutputType without action
+   */
+  export type JaxLogCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLogCountOutputType
+     */
+    select?: JaxLogCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * JaxLogCountOutputType without action
+   */
+  export type JaxLogCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderItemWhereInput
+  }
+
+
+  /**
    * Count Type ProductionListCountOutputType
    */
 
@@ -5904,6 +5935,7 @@ export namespace Prisma {
     status: string | null
     designStatus: string | null
     productionListId: string | null
+    jaxLogId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5920,6 +5952,7 @@ export namespace Prisma {
     status: string | null
     designStatus: string | null
     productionListId: string | null
+    jaxLogId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5936,6 +5969,7 @@ export namespace Prisma {
     status: number
     designStatus: number
     productionListId: number
+    jaxLogId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5962,6 +5996,7 @@ export namespace Prisma {
     status?: true
     designStatus?: true
     productionListId?: true
+    jaxLogId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5978,6 +6013,7 @@ export namespace Prisma {
     status?: true
     designStatus?: true
     productionListId?: true
+    jaxLogId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5994,6 +6030,7 @@ export namespace Prisma {
     status?: true
     designStatus?: true
     productionListId?: true
+    jaxLogId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6097,6 +6134,7 @@ export namespace Prisma {
     status: string
     designStatus: string
     productionListId: string | null
+    jaxLogId: string | null
     createdAt: Date
     updatedAt: Date
     _count: OrderItemCountAggregateOutputType | null
@@ -6132,6 +6170,7 @@ export namespace Prisma {
     status?: boolean
     designStatus?: boolean
     productionListId?: boolean
+    jaxLogId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     productionList?: boolean | OrderItem$productionListArgs<ExtArgs>
@@ -6140,6 +6179,7 @@ export namespace Prisma {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     parentItem?: boolean | OrderItem$parentItemArgs<ExtArgs>
     subItems?: boolean | OrderItem$subItemsArgs<ExtArgs>
+    jaxLog?: boolean | OrderItem$jaxLogArgs<ExtArgs>
     _count?: boolean | OrderItemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
 
@@ -6155,6 +6195,7 @@ export namespace Prisma {
     status?: boolean
     designStatus?: boolean
     productionListId?: boolean
+    jaxLogId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     productionList?: boolean | OrderItem$productionListArgs<ExtArgs>
@@ -6162,6 +6203,7 @@ export namespace Prisma {
     brand?: boolean | BrandDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     parentItem?: boolean | OrderItem$parentItemArgs<ExtArgs>
+    jaxLog?: boolean | OrderItem$jaxLogArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
 
   export type OrderItemSelectScalar = {
@@ -6176,6 +6218,7 @@ export namespace Prisma {
     status?: boolean
     designStatus?: boolean
     productionListId?: boolean
+    jaxLogId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -6187,6 +6230,7 @@ export namespace Prisma {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     parentItem?: boolean | OrderItem$parentItemArgs<ExtArgs>
     subItems?: boolean | OrderItem$subItemsArgs<ExtArgs>
+    jaxLog?: boolean | OrderItem$jaxLogArgs<ExtArgs>
     _count?: boolean | OrderItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6195,6 +6239,7 @@ export namespace Prisma {
     brand?: boolean | BrandDefaultArgs<ExtArgs>
     order?: boolean | OrderDefaultArgs<ExtArgs>
     parentItem?: boolean | OrderItem$parentItemArgs<ExtArgs>
+    jaxLog?: boolean | OrderItem$jaxLogArgs<ExtArgs>
   }
 
   export type $OrderItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6206,6 +6251,7 @@ export namespace Prisma {
       order: Prisma.$OrderPayload<ExtArgs>
       parentItem: Prisma.$OrderItemPayload<ExtArgs> | null
       subItems: Prisma.$OrderItemPayload<ExtArgs>[]
+      jaxLog: Prisma.$JaxLogPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6219,6 +6265,7 @@ export namespace Prisma {
       status: string
       designStatus: string
       productionListId: string | null
+      jaxLogId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["orderItem"]>
@@ -6591,6 +6638,7 @@ export namespace Prisma {
     order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     parentItem<T extends OrderItem$parentItemArgs<ExtArgs> = {}>(args?: Subset<T, OrderItem$parentItemArgs<ExtArgs>>): Prisma__OrderItemClient<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subItems<T extends OrderItem$subItemsArgs<ExtArgs> = {}>(args?: Subset<T, OrderItem$subItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany"> | Null>
+    jaxLog<T extends OrderItem$jaxLogArgs<ExtArgs> = {}>(args?: Subset<T, OrderItem$jaxLogArgs<ExtArgs>>): Prisma__JaxLogClient<$Result.GetResult<Prisma.$JaxLogPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6631,6 +6679,7 @@ export namespace Prisma {
     readonly status: FieldRef<"OrderItem", 'String'>
     readonly designStatus: FieldRef<"OrderItem", 'String'>
     readonly productionListId: FieldRef<"OrderItem", 'String'>
+    readonly jaxLogId: FieldRef<"OrderItem", 'String'>
     readonly createdAt: FieldRef<"OrderItem", 'DateTime'>
     readonly updatedAt: FieldRef<"OrderItem", 'DateTime'>
   }
@@ -7001,6 +7050,21 @@ export namespace Prisma {
   }
 
   /**
+   * OrderItem.jaxLog
+   */
+  export type OrderItem$jaxLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JaxLog
+     */
+    select?: JaxLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: JaxLogInclude<ExtArgs> | null
+    where?: JaxLogWhereInput
+  }
+
+  /**
    * OrderItem without action
    */
   export type OrderItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7032,6 +7096,7 @@ export namespace Prisma {
     responseBody: string | null
     status: string | null
     trackingId: string | null
+    receiptUrl: string | null
     userId: string | null
     createdAt: Date | null
   }
@@ -7043,6 +7108,7 @@ export namespace Prisma {
     responseBody: string | null
     status: string | null
     trackingId: string | null
+    receiptUrl: string | null
     userId: string | null
     createdAt: Date | null
   }
@@ -7054,6 +7120,7 @@ export namespace Prisma {
     responseBody: number
     status: number
     trackingId: number
+    receiptUrl: number
     userId: number
     createdAt: number
     _all: number
@@ -7067,6 +7134,7 @@ export namespace Prisma {
     responseBody?: true
     status?: true
     trackingId?: true
+    receiptUrl?: true
     userId?: true
     createdAt?: true
   }
@@ -7078,6 +7146,7 @@ export namespace Prisma {
     responseBody?: true
     status?: true
     trackingId?: true
+    receiptUrl?: true
     userId?: true
     createdAt?: true
   }
@@ -7089,6 +7158,7 @@ export namespace Prisma {
     responseBody?: true
     status?: true
     trackingId?: true
+    receiptUrl?: true
     userId?: true
     createdAt?: true
     _all?: true
@@ -7173,6 +7243,7 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId: string | null
+    receiptUrl: string | null
     userId: string | null
     createdAt: Date
     _count: JaxLogCountAggregateOutputType | null
@@ -7201,10 +7272,13 @@ export namespace Prisma {
     responseBody?: boolean
     status?: boolean
     trackingId?: boolean
+    receiptUrl?: boolean
     userId?: boolean
     createdAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     user?: boolean | JaxLog$userArgs<ExtArgs>
+    items?: boolean | JaxLog$itemsArgs<ExtArgs>
+    _count?: boolean | JaxLogCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jaxLog"]>
 
   export type JaxLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -7214,6 +7288,7 @@ export namespace Prisma {
     responseBody?: boolean
     status?: boolean
     trackingId?: boolean
+    receiptUrl?: boolean
     userId?: boolean
     createdAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -7227,6 +7302,7 @@ export namespace Prisma {
     responseBody?: boolean
     status?: boolean
     trackingId?: boolean
+    receiptUrl?: boolean
     userId?: boolean
     createdAt?: boolean
   }
@@ -7234,6 +7310,8 @@ export namespace Prisma {
   export type JaxLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     user?: boolean | JaxLog$userArgs<ExtArgs>
+    items?: boolean | JaxLog$itemsArgs<ExtArgs>
+    _count?: boolean | JaxLogCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type JaxLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -7245,6 +7323,7 @@ export namespace Prisma {
     objects: {
       order: Prisma.$OrderPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs> | null
+      items: Prisma.$OrderItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7253,6 +7332,7 @@ export namespace Prisma {
       responseBody: string
       status: string
       trackingId: string | null
+      receiptUrl: string | null
       userId: string | null
       createdAt: Date
     }, ExtArgs["result"]["jaxLog"]>
@@ -7621,6 +7701,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     user<T extends JaxLog$userArgs<ExtArgs> = {}>(args?: Subset<T, JaxLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    items<T extends JaxLog$itemsArgs<ExtArgs> = {}>(args?: Subset<T, JaxLog$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7656,6 +7737,7 @@ export namespace Prisma {
     readonly responseBody: FieldRef<"JaxLog", 'String'>
     readonly status: FieldRef<"JaxLog", 'String'>
     readonly trackingId: FieldRef<"JaxLog", 'String'>
+    readonly receiptUrl: FieldRef<"JaxLog", 'String'>
     readonly userId: FieldRef<"JaxLog", 'String'>
     readonly createdAt: FieldRef<"JaxLog", 'DateTime'>
   }
@@ -7988,6 +8070,26 @@ export namespace Prisma {
      */
     include?: UserInclude<ExtArgs> | null
     where?: UserWhereInput
+  }
+
+  /**
+   * JaxLog.items
+   */
+  export type JaxLog$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderItem
+     */
+    select?: OrderItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderItemInclude<ExtArgs> | null
+    where?: OrderItemWhereInput
+    orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
+    cursor?: OrderItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
   }
 
   /**
@@ -10852,6 +10954,7 @@ export namespace Prisma {
     status: 'status',
     designStatus: 'designStatus',
     productionListId: 'productionListId',
+    jaxLogId: 'jaxLogId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -10866,6 +10969,7 @@ export namespace Prisma {
     responseBody: 'responseBody',
     status: 'status',
     trackingId: 'trackingId',
+    receiptUrl: 'receiptUrl',
     userId: 'userId',
     createdAt: 'createdAt'
   };
@@ -11330,6 +11434,7 @@ export namespace Prisma {
     status?: StringFilter<"OrderItem"> | string
     designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
+    jaxLogId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
     productionList?: XOR<ProductionListNullableRelationFilter, ProductionListWhereInput> | null
@@ -11338,6 +11443,7 @@ export namespace Prisma {
     order?: XOR<OrderRelationFilter, OrderWhereInput>
     parentItem?: XOR<OrderItemNullableRelationFilter, OrderItemWhereInput> | null
     subItems?: OrderItemListRelationFilter
+    jaxLog?: XOR<JaxLogNullableRelationFilter, JaxLogWhereInput> | null
   }
 
   export type OrderItemOrderByWithRelationInput = {
@@ -11352,6 +11458,7 @@ export namespace Prisma {
     status?: SortOrder
     designStatus?: SortOrder
     productionListId?: SortOrderInput | SortOrder
+    jaxLogId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     productionList?: ProductionListOrderByWithRelationInput
@@ -11360,6 +11467,7 @@ export namespace Prisma {
     order?: OrderOrderByWithRelationInput
     parentItem?: OrderItemOrderByWithRelationInput
     subItems?: OrderItemOrderByRelationAggregateInput
+    jaxLog?: JaxLogOrderByWithRelationInput
   }
 
   export type OrderItemWhereUniqueInput = Prisma.AtLeast<{
@@ -11377,6 +11485,7 @@ export namespace Prisma {
     status?: StringFilter<"OrderItem"> | string
     designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
+    jaxLogId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
     productionList?: XOR<ProductionListNullableRelationFilter, ProductionListWhereInput> | null
@@ -11385,6 +11494,7 @@ export namespace Prisma {
     order?: XOR<OrderRelationFilter, OrderWhereInput>
     parentItem?: XOR<OrderItemNullableRelationFilter, OrderItemWhereInput> | null
     subItems?: OrderItemListRelationFilter
+    jaxLog?: XOR<JaxLogNullableRelationFilter, JaxLogWhereInput> | null
   }, "id">
 
   export type OrderItemOrderByWithAggregationInput = {
@@ -11399,6 +11509,7 @@ export namespace Prisma {
     status?: SortOrder
     designStatus?: SortOrder
     productionListId?: SortOrderInput | SortOrder
+    jaxLogId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderItemCountOrderByAggregateInput
@@ -11423,6 +11534,7 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"OrderItem"> | string
     designStatus?: StringWithAggregatesFilter<"OrderItem"> | string
     productionListId?: StringNullableWithAggregatesFilter<"OrderItem"> | string | null
+    jaxLogId?: StringNullableWithAggregatesFilter<"OrderItem"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
   }
@@ -11437,10 +11549,12 @@ export namespace Prisma {
     responseBody?: StringFilter<"JaxLog"> | string
     status?: StringFilter<"JaxLog"> | string
     trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    receiptUrl?: StringNullableFilter<"JaxLog"> | string | null
     userId?: StringNullableFilter<"JaxLog"> | string | null
     createdAt?: DateTimeFilter<"JaxLog"> | Date | string
     order?: XOR<OrderRelationFilter, OrderWhereInput>
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    items?: OrderItemListRelationFilter
   }
 
   export type JaxLogOrderByWithRelationInput = {
@@ -11450,10 +11564,12 @@ export namespace Prisma {
     responseBody?: SortOrder
     status?: SortOrder
     trackingId?: SortOrderInput | SortOrder
+    receiptUrl?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     order?: OrderOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
+    items?: OrderItemOrderByRelationAggregateInput
   }
 
   export type JaxLogWhereUniqueInput = Prisma.AtLeast<{
@@ -11466,10 +11582,12 @@ export namespace Prisma {
     responseBody?: StringFilter<"JaxLog"> | string
     status?: StringFilter<"JaxLog"> | string
     trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    receiptUrl?: StringNullableFilter<"JaxLog"> | string | null
     userId?: StringNullableFilter<"JaxLog"> | string | null
     createdAt?: DateTimeFilter<"JaxLog"> | Date | string
     order?: XOR<OrderRelationFilter, OrderWhereInput>
     user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    items?: OrderItemListRelationFilter
   }, "id">
 
   export type JaxLogOrderByWithAggregationInput = {
@@ -11479,6 +11597,7 @@ export namespace Prisma {
     responseBody?: SortOrder
     status?: SortOrder
     trackingId?: SortOrderInput | SortOrder
+    receiptUrl?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: JaxLogCountOrderByAggregateInput
@@ -11496,6 +11615,7 @@ export namespace Prisma {
     responseBody?: StringWithAggregatesFilter<"JaxLog"> | string
     status?: StringWithAggregatesFilter<"JaxLog"> | string
     trackingId?: StringNullableWithAggregatesFilter<"JaxLog"> | string | null
+    receiptUrl?: StringNullableWithAggregatesFilter<"JaxLog"> | string | null
     userId?: StringNullableWithAggregatesFilter<"JaxLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"JaxLog"> | Date | string
   }
@@ -12041,6 +12161,7 @@ export namespace Prisma {
     order: OrderCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateInput = {
@@ -12055,6 +12176,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -12075,6 +12197,7 @@ export namespace Prisma {
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateInput = {
@@ -12089,6 +12212,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -12106,6 +12230,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12133,6 +12258,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12143,9 +12269,11 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     createdAt?: Date | string
     order: OrderCreateNestedOneWithoutJaxLogsInput
     user?: UserCreateNestedOneWithoutJaxLogsInput
+    items?: OrderItemCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogUncheckedCreateInput = {
@@ -12155,8 +12283,10 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     userId?: string | null
     createdAt?: Date | string
+    items?: OrderItemUncheckedCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogUpdateInput = {
@@ -12165,9 +12295,11 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutJaxLogsNestedInput
     user?: UserUpdateOneWithoutJaxLogsNestedInput
+    items?: OrderItemUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogUncheckedUpdateInput = {
@@ -12177,8 +12309,10 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: OrderItemUncheckedUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogCreateManyInput = {
@@ -12188,6 +12322,7 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -12198,6 +12333,7 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12208,6 +12344,7 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12772,6 +12909,11 @@ export namespace Prisma {
     isNot?: OrderItemWhereInput | null
   }
 
+  export type JaxLogNullableRelationFilter = {
+    is?: JaxLogWhereInput | null
+    isNot?: JaxLogWhereInput | null
+  }
+
   export type OrderItemCountOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
@@ -12784,6 +12926,7 @@ export namespace Prisma {
     status?: SortOrder
     designStatus?: SortOrder
     productionListId?: SortOrder
+    jaxLogId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12804,6 +12947,7 @@ export namespace Prisma {
     status?: SortOrder
     designStatus?: SortOrder
     productionListId?: SortOrder
+    jaxLogId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12820,6 +12964,7 @@ export namespace Prisma {
     status?: SortOrder
     designStatus?: SortOrder
     productionListId?: SortOrder
+    jaxLogId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12835,6 +12980,7 @@ export namespace Prisma {
     responseBody?: SortOrder
     status?: SortOrder
     trackingId?: SortOrder
+    receiptUrl?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -12846,6 +12992,7 @@ export namespace Prisma {
     responseBody?: SortOrder
     status?: SortOrder
     trackingId?: SortOrder
+    receiptUrl?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -12857,6 +13004,7 @@ export namespace Prisma {
     responseBody?: SortOrder
     status?: SortOrder
     trackingId?: SortOrder
+    receiptUrl?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -13342,6 +13490,12 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
+  export type JaxLogCreateNestedOneWithoutItemsInput = {
+    create?: XOR<JaxLogCreateWithoutItemsInput, JaxLogUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: JaxLogCreateOrConnectWithoutItemsInput
+    connect?: JaxLogWhereUniqueInput
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutParentItemInput = {
     create?: XOR<OrderItemCreateWithoutParentItemInput, OrderItemUncheckedCreateWithoutParentItemInput> | OrderItemCreateWithoutParentItemInput[] | OrderItemUncheckedCreateWithoutParentItemInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutParentItemInput | OrderItemCreateOrConnectWithoutParentItemInput[]
@@ -13407,6 +13561,16 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type JaxLogUpdateOneWithoutItemsNestedInput = {
+    create?: XOR<JaxLogCreateWithoutItemsInput, JaxLogUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: JaxLogCreateOrConnectWithoutItemsInput
+    upsert?: JaxLogUpsertWithoutItemsInput
+    disconnect?: JaxLogWhereInput | boolean
+    delete?: JaxLogWhereInput | boolean
+    connect?: JaxLogWhereUniqueInput
+    update?: XOR<XOR<JaxLogUpdateToOneWithWhereWithoutItemsInput, JaxLogUpdateWithoutItemsInput>, JaxLogUncheckedUpdateWithoutItemsInput>
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutParentItemNestedInput = {
     create?: XOR<OrderItemCreateWithoutParentItemInput, OrderItemUncheckedCreateWithoutParentItemInput> | OrderItemCreateWithoutParentItemInput[] | OrderItemUncheckedCreateWithoutParentItemInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutParentItemInput | OrderItemCreateOrConnectWithoutParentItemInput[]
@@ -13433,6 +13597,20 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type OrderItemCreateNestedManyWithoutJaxLogInput = {
+    create?: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput> | OrderItemCreateWithoutJaxLogInput[] | OrderItemUncheckedCreateWithoutJaxLogInput[]
+    connectOrCreate?: OrderItemCreateOrConnectWithoutJaxLogInput | OrderItemCreateOrConnectWithoutJaxLogInput[]
+    createMany?: OrderItemCreateManyJaxLogInputEnvelope
+    connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type OrderItemUncheckedCreateNestedManyWithoutJaxLogInput = {
+    create?: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput> | OrderItemCreateWithoutJaxLogInput[] | OrderItemUncheckedCreateWithoutJaxLogInput[]
+    connectOrCreate?: OrderItemCreateOrConnectWithoutJaxLogInput | OrderItemCreateOrConnectWithoutJaxLogInput[]
+    createMany?: OrderItemCreateManyJaxLogInputEnvelope
+    connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
   export type OrderUpdateOneRequiredWithoutJaxLogsNestedInput = {
     create?: XOR<OrderCreateWithoutJaxLogsInput, OrderUncheckedCreateWithoutJaxLogsInput>
     connectOrCreate?: OrderCreateOrConnectWithoutJaxLogsInput
@@ -13449,6 +13627,34 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutJaxLogsInput, UserUpdateWithoutJaxLogsInput>, UserUncheckedUpdateWithoutJaxLogsInput>
+  }
+
+  export type OrderItemUpdateManyWithoutJaxLogNestedInput = {
+    create?: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput> | OrderItemCreateWithoutJaxLogInput[] | OrderItemUncheckedCreateWithoutJaxLogInput[]
+    connectOrCreate?: OrderItemCreateOrConnectWithoutJaxLogInput | OrderItemCreateOrConnectWithoutJaxLogInput[]
+    upsert?: OrderItemUpsertWithWhereUniqueWithoutJaxLogInput | OrderItemUpsertWithWhereUniqueWithoutJaxLogInput[]
+    createMany?: OrderItemCreateManyJaxLogInputEnvelope
+    set?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    disconnect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    delete?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    update?: OrderItemUpdateWithWhereUniqueWithoutJaxLogInput | OrderItemUpdateWithWhereUniqueWithoutJaxLogInput[]
+    updateMany?: OrderItemUpdateManyWithWhereWithoutJaxLogInput | OrderItemUpdateManyWithWhereWithoutJaxLogInput[]
+    deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type OrderItemUncheckedUpdateManyWithoutJaxLogNestedInput = {
+    create?: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput> | OrderItemCreateWithoutJaxLogInput[] | OrderItemUncheckedCreateWithoutJaxLogInput[]
+    connectOrCreate?: OrderItemCreateOrConnectWithoutJaxLogInput | OrderItemCreateOrConnectWithoutJaxLogInput[]
+    upsert?: OrderItemUpsertWithWhereUniqueWithoutJaxLogInput | OrderItemUpsertWithWhereUniqueWithoutJaxLogInput[]
+    createMany?: OrderItemCreateManyJaxLogInputEnvelope
+    set?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    disconnect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    delete?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+    update?: OrderItemUpdateWithWhereUniqueWithoutJaxLogInput | OrderItemUpdateWithWhereUniqueWithoutJaxLogInput[]
+    updateMany?: OrderItemUpdateManyWithWhereWithoutJaxLogInput | OrderItemUpdateManyWithWhereWithoutJaxLogInput[]
+    deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
   export type OrderItemCreateNestedManyWithoutProductionListInput = {
@@ -13683,6 +13889,7 @@ export namespace Prisma {
     order: OrderCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutBrandInput = {
@@ -13696,6 +13903,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -13742,6 +13950,7 @@ export namespace Prisma {
     status?: StringFilter<"OrderItem"> | string
     designStatus?: StringFilter<"OrderItem"> | string
     productionListId?: StringNullableFilter<"OrderItem"> | string | null
+    jaxLogId?: StringNullableFilter<"OrderItem"> | string | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
   }
@@ -13760,6 +13969,7 @@ export namespace Prisma {
     order: OrderCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutDesignInput = {
@@ -13773,6 +13983,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -13926,8 +14137,10 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     createdAt?: Date | string
     order: OrderCreateNestedOneWithoutJaxLogsInput
+    items?: OrderItemCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogUncheckedCreateWithoutUserInput = {
@@ -13937,7 +14150,9 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     createdAt?: Date | string
+    items?: OrderItemUncheckedCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogCreateOrConnectWithoutUserInput = {
@@ -14034,6 +14249,7 @@ export namespace Prisma {
     responseBody?: StringFilter<"JaxLog"> | string
     status?: StringFilter<"JaxLog"> | string
     trackingId?: StringNullableFilter<"JaxLog"> | string | null
+    receiptUrl?: StringNullableFilter<"JaxLog"> | string | null
     userId?: StringNullableFilter<"JaxLog"> | string | null
     createdAt?: DateTimeFilter<"JaxLog"> | Date | string
   }
@@ -14110,6 +14326,7 @@ export namespace Prisma {
     brand: BrandCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutOrderInput = {
@@ -14123,6 +14340,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -14144,8 +14362,10 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     createdAt?: Date | string
     user?: UserCreateNestedOneWithoutJaxLogsInput
+    items?: OrderItemCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogUncheckedCreateWithoutOrderInput = {
@@ -14154,8 +14374,10 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     userId?: string | null
     createdAt?: Date | string
+    items?: OrderItemUncheckedCreateNestedManyWithoutJaxLogInput
   }
 
   export type JaxLogCreateOrConnectWithoutOrderInput = {
@@ -14392,6 +14614,7 @@ export namespace Prisma {
     brand: BrandCreateNestedOneWithoutItemsInput
     order: OrderCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutSubItemsInput = {
@@ -14406,6 +14629,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14429,6 +14653,7 @@ export namespace Prisma {
     brand: BrandCreateNestedOneWithoutItemsInput
     order: OrderCreateNestedOneWithoutItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutParentItemInput = {
@@ -14442,6 +14667,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -14455,6 +14681,35 @@ export namespace Prisma {
   export type OrderItemCreateManyParentItemInputEnvelope = {
     data: OrderItemCreateManyParentItemInput | OrderItemCreateManyParentItemInput[]
     skipDuplicates?: boolean
+  }
+
+  export type JaxLogCreateWithoutItemsInput = {
+    id?: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    receiptUrl?: string | null
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutJaxLogsInput
+    user?: UserCreateNestedOneWithoutJaxLogsInput
+  }
+
+  export type JaxLogUncheckedCreateWithoutItemsInput = {
+    id?: string
+    orderId: string
+    requestBody: string
+    responseBody: string
+    status: string
+    trackingId?: string | null
+    receiptUrl?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type JaxLogCreateOrConnectWithoutItemsInput = {
+    where: JaxLogWhereUniqueInput
+    create: XOR<JaxLogCreateWithoutItemsInput, JaxLogUncheckedCreateWithoutItemsInput>
   }
 
   export type ProductionListUpsertWithoutItemsInput = {
@@ -14614,6 +14869,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneRequiredWithoutItemsNestedInput
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutSubItemsInput = {
@@ -14628,6 +14884,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14646,6 +14903,41 @@ export namespace Prisma {
   export type OrderItemUpdateManyWithWhereWithoutParentItemInput = {
     where: OrderItemScalarWhereInput
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutParentItemInput>
+  }
+
+  export type JaxLogUpsertWithoutItemsInput = {
+    update: XOR<JaxLogUpdateWithoutItemsInput, JaxLogUncheckedUpdateWithoutItemsInput>
+    create: XOR<JaxLogCreateWithoutItemsInput, JaxLogUncheckedCreateWithoutItemsInput>
+    where?: JaxLogWhereInput
+  }
+
+  export type JaxLogUpdateToOneWithWhereWithoutItemsInput = {
+    where?: JaxLogWhereInput
+    data: XOR<JaxLogUpdateWithoutItemsInput, JaxLogUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type JaxLogUpdateWithoutItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutJaxLogsNestedInput
+    user?: UserUpdateOneWithoutJaxLogsNestedInput
+  }
+
+  export type JaxLogUncheckedUpdateWithoutItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    requestBody?: StringFieldUpdateOperationsInput | string
+    responseBody?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderCreateWithoutJaxLogsInput = {
@@ -14728,6 +15020,50 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutJaxLogsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutJaxLogsInput, UserUncheckedCreateWithoutJaxLogsInput>
+  }
+
+  export type OrderItemCreateWithoutJaxLogInput = {
+    id?: string
+    size: string
+    price?: number
+    isPack?: boolean
+    status?: string
+    designStatus?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    productionList?: ProductionListCreateNestedOneWithoutItemsInput
+    design: DesignCreateNestedOneWithoutItemsInput
+    brand: BrandCreateNestedOneWithoutItemsInput
+    order: OrderCreateNestedOneWithoutItemsInput
+    parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
+    subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+  }
+
+  export type OrderItemUncheckedCreateWithoutJaxLogInput = {
+    id?: string
+    orderId: string
+    size: string
+    price?: number
+    isPack?: boolean
+    parentItemId?: string | null
+    brandId: string
+    designId: string
+    status?: string
+    designStatus?: string
+    productionListId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
+  }
+
+  export type OrderItemCreateOrConnectWithoutJaxLogInput = {
+    where: OrderItemWhereUniqueInput
+    create: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput>
+  }
+
+  export type OrderItemCreateManyJaxLogInputEnvelope = {
+    data: OrderItemCreateManyJaxLogInput | OrderItemCreateManyJaxLogInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrderUpsertWithoutJaxLogsInput = {
@@ -14824,6 +15160,22 @@ export namespace Prisma {
     confirmedOrders?: OrderUncheckedUpdateManyWithoutConfirmedByNestedInput
   }
 
+  export type OrderItemUpsertWithWhereUniqueWithoutJaxLogInput = {
+    where: OrderItemWhereUniqueInput
+    update: XOR<OrderItemUpdateWithoutJaxLogInput, OrderItemUncheckedUpdateWithoutJaxLogInput>
+    create: XOR<OrderItemCreateWithoutJaxLogInput, OrderItemUncheckedCreateWithoutJaxLogInput>
+  }
+
+  export type OrderItemUpdateWithWhereUniqueWithoutJaxLogInput = {
+    where: OrderItemWhereUniqueInput
+    data: XOR<OrderItemUpdateWithoutJaxLogInput, OrderItemUncheckedUpdateWithoutJaxLogInput>
+  }
+
+  export type OrderItemUpdateManyWithWhereWithoutJaxLogInput = {
+    where: OrderItemScalarWhereInput
+    data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutJaxLogInput>
+  }
+
   export type OrderItemCreateWithoutProductionListInput = {
     id?: string
     size: string
@@ -14838,6 +15190,7 @@ export namespace Prisma {
     order: OrderCreateNestedOneWithoutItemsInput
     parentItem?: OrderItemCreateNestedOneWithoutSubItemsInput
     subItems?: OrderItemCreateNestedManyWithoutParentItemInput
+    jaxLog?: JaxLogCreateNestedOneWithoutItemsInput
   }
 
   export type OrderItemUncheckedCreateWithoutProductionListInput = {
@@ -14851,6 +15204,7 @@ export namespace Prisma {
     designId: string
     status?: string
     designStatus?: string
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     subItems?: OrderItemUncheckedCreateNestedManyWithoutParentItemInput
@@ -14893,6 +15247,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14911,6 +15266,7 @@ export namespace Prisma {
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutBrandInput = {
@@ -14924,6 +15280,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -14940,6 +15297,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14955,6 +15313,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14973,6 +15332,7 @@ export namespace Prisma {
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutDesignInput = {
@@ -14986,6 +15346,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -15002,6 +15363,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15057,6 +15419,7 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     createdAt?: Date | string
   }
 
@@ -15206,8 +15569,10 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutJaxLogsNestedInput
+    items?: OrderItemUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogUncheckedUpdateWithoutUserInput = {
@@ -15217,7 +15582,9 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: OrderItemUncheckedUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogUncheckedUpdateManyWithoutUserInput = {
@@ -15227,6 +15594,7 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -15241,6 +15609,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15251,6 +15620,7 @@ export namespace Prisma {
     responseBody: string
     status: string
     trackingId?: string | null
+    receiptUrl?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -15269,6 +15639,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutOrderInput = {
@@ -15282,6 +15653,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -15298,6 +15670,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15308,8 +15681,10 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutJaxLogsNestedInput
+    items?: OrderItemUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogUncheckedUpdateWithoutOrderInput = {
@@ -15318,8 +15693,10 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: OrderItemUncheckedUpdateManyWithoutJaxLogNestedInput
   }
 
   export type JaxLogUncheckedUpdateManyWithoutOrderInput = {
@@ -15328,6 +15705,7 @@ export namespace Prisma {
     responseBody?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     trackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15343,6 +15721,7 @@ export namespace Prisma {
     status?: string
     designStatus?: string
     productionListId?: string | null
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15361,6 +15740,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneRequiredWithoutItemsNestedInput
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutParentItemInput = {
@@ -15374,6 +15754,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
     productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -15385,6 +15766,73 @@ export namespace Prisma {
     size?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     isPack?: BoolFieldUpdateOperationsInput | boolean
+    brandId?: StringFieldUpdateOperationsInput | string
+    designId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
+    productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderItemCreateManyJaxLogInput = {
+    id?: string
+    orderId: string
+    size: string
+    price?: number
+    isPack?: boolean
+    parentItemId?: string | null
+    brandId: string
+    designId: string
+    status?: string
+    designStatus?: string
+    productionListId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderItemUpdateWithoutJaxLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    isPack?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    productionList?: ProductionListUpdateOneWithoutItemsNestedInput
+    design?: DesignUpdateOneRequiredWithoutItemsNestedInput
+    brand?: BrandUpdateOneRequiredWithoutItemsNestedInput
+    order?: OrderUpdateOneRequiredWithoutItemsNestedInput
+    parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
+    subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+  }
+
+  export type OrderItemUncheckedUpdateWithoutJaxLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    isPack?: BoolFieldUpdateOperationsInput | boolean
+    parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: StringFieldUpdateOperationsInput | string
+    designId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    designStatus?: StringFieldUpdateOperationsInput | string
+    productionListId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
+  }
+
+  export type OrderItemUncheckedUpdateManyWithoutJaxLogInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    isPack?: BoolFieldUpdateOperationsInput | boolean
+    parentItemId?: NullableStringFieldUpdateOperationsInput | string | null
     brandId?: StringFieldUpdateOperationsInput | string
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -15405,6 +15853,7 @@ export namespace Prisma {
     designId: string
     status?: string
     designStatus?: string
+    jaxLogId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15423,6 +15872,7 @@ export namespace Prisma {
     order?: OrderUpdateOneRequiredWithoutItemsNestedInput
     parentItem?: OrderItemUpdateOneWithoutSubItemsNestedInput
     subItems?: OrderItemUpdateManyWithoutParentItemNestedInput
+    jaxLog?: JaxLogUpdateOneWithoutItemsNestedInput
   }
 
   export type OrderItemUncheckedUpdateWithoutProductionListInput = {
@@ -15436,6 +15886,7 @@ export namespace Prisma {
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subItems?: OrderItemUncheckedUpdateManyWithoutParentItemNestedInput
@@ -15452,6 +15903,7 @@ export namespace Prisma {
     designId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     designStatus?: StringFieldUpdateOperationsInput | string
+    jaxLogId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15481,6 +15933,10 @@ export namespace Prisma {
      * @deprecated Use OrderItemCountOutputTypeDefaultArgs instead
      */
     export type OrderItemCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrderItemCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use JaxLogCountOutputTypeDefaultArgs instead
+     */
+    export type JaxLogCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = JaxLogCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ProductionListCountOutputTypeDefaultArgs instead
      */

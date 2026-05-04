@@ -30,25 +30,141 @@ async function checkAndSetOrderReady(orderId: string) {
       include: { items: true }
     });
     
-    if (!order || !["CONFIRMED", "ON_HOLD"].includes(order.status)) return;
+    if (!order || !["CONFIRMED", "ON_HOLD", "PARTIALLY_SHIPPED", "READY_TO_SHIP"].includes(order.status)) return;
 
     // Physical items only (exclude pack parents)
     const prodItems = order.items.filter(i => !i.isPack);
     if (prodItems.length === 0) return;
 
-    const allWrapped = prodItems.every(i => i.status === "WRAPPED");
+    // Ready to ship means everything is either WRAPPED or already SHIPPED
+    const allDone = prodItems.every(i => ["WRAPPED", "SHIPPED"].includes(i.status));
     const allDesignsReady = prodItems.every(i => i.designStatus === "READY");
     const noDamaged = prodItems.every(i => i.status !== "DAMAGED");
 
-    if (allWrapped && allDesignsReady && noDamaged) {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: "READY_TO_SHIP" }
-      });
-      await logActivity("ORDER_READY", `Order REF #${order.reference} automatically marked as READY_TO_SHIP`);
+    // Only auto-upgrade to READY_TO_SHIP if it was NOT already SHIPPED/PARTIALLY_SHIPPED
+    // or if it was partially shipped and now more items are wrapped.
+    if (allDone && allDesignsReady && noDamaged) {
+      if (order.status !== "SHIPPED" && order.status !== "DISPATCHED" && order.status !== "DELIVERED") {
+        const hasShippedItems = prodItems.some(i => i.status === "SHIPPED");
+        const newStatus = hasShippedItems ? "PARTIALLY_SHIPPED" : "READY_TO_SHIP";
+        
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { status: newStatus }
+        });
+      }
     }
   } catch (e) {
     console.error("Readiness trigger failed:", e);
+  }
+}
+
+export async function shipOrder(formData: FormData) {
+  const session = await getSession();
+  const orderId = formData.get("orderId") as string;
+  const itemIdsJson = formData.get("itemIds") as string;
+  
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { subItems: true } } }
+    });
+    if (!order) return { success: false, error: "Order not found" };
+
+    let itemsToShip: any[] = [];
+    if (itemIdsJson) {
+      const selectedIds = JSON.parse(itemIdsJson) as string[];
+      itemsToShip = order.items.filter(i => selectedIds.includes(i.id));
+      
+      // PACK INTEGRITY CHECK
+      for (const item of itemsToShip) {
+        if (item.parentItemId) {
+          const packParent = order.items.find(p => p.id === item.parentItemId);
+          const packChildren = order.items.filter(c => c.parentItemId === item.parentItemId);
+          const allChildrenSelected = packChildren.every(c => selectedIds.includes(c.id));
+          if (!allChildrenSelected) {
+            return { success: false, error: `Pack Integrity Violation: All items of pack '${packParent?.id}' must be shipped together.` };
+          }
+        }
+        if (item.isPack) {
+          const children = order.items.filter(c => c.parentItemId === item.id);
+          const allChildrenSelected = children.every(c => selectedIds.includes(c.id));
+          if (!allChildrenSelected) {
+            return { success: false, error: "Pack Integrity Violation: All sub-items must be included." };
+          }
+        }
+      }
+    } else {
+      // Legacy behavior: ship all ready items
+      itemsToShip = order.items.filter(i => !i.isPack && i.status === "WRAPPED");
+    }
+
+    if (itemsToShip.length === 0) return { success: false, error: "No items selected or ready for shipping." };
+
+    const allWrapped = itemsToShip.every(i => i.status === "WRAPPED");
+    if (!allWrapped) return { success: false, error: "Some selected items are not wrapped yet." };
+
+    const totalShipmentAmount = itemsToShip.reduce((sum, i) => sum + i.price, 0);
+
+    const jaxResponse = await createJaxReceipt({
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      customerAddress: order.customerAddress,
+      customerGovernorate: order.customerGovernorate || "",
+      customerDelegation: order.customerDelegation || "",
+      totalAmount: totalShipmentAmount,
+      reference: order.reference
+    });
+
+    const jaxLog = await prisma.jaxLog.create({
+      data: {
+        orderId: order.id,
+        userId: session?.user?.id || null,
+        requestBody: JSON.stringify({ items: itemsToShip.map(i => i.id), total: totalShipmentAmount }),
+        responseBody: JSON.stringify(jaxResponse),
+        status: jaxResponse.success ? "SUCCESS" : "ERROR",
+        trackingId: jaxResponse.trackingId || null,
+        receiptUrl: jaxResponse.receiptUrl || null
+      }
+    });
+
+    if (!jaxResponse.success) return { success: false, error: jaxResponse.error || "JAX API Error" };
+
+    // Update Items to SHIPPED
+    await prisma.orderItem.updateMany({
+      where: { id: { in: itemsToShip.map(i => i.id) } },
+      data: { status: "SHIPPED", jaxLogId: jaxLog.id }
+    });
+
+    // Determine New Order Status
+    const allOrderItems = await prisma.orderItem.findMany({ where: { orderId, isPack: false } });
+    const allShipped = allOrderItems.every(i => i.status === "SHIPPED");
+    
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { 
+        status: allShipped ? "SHIPPED" : "PARTIALLY_SHIPPED",
+        jaxTrackingId: jaxResponse.trackingId, // Store last tracking
+        jaxReceiptUrl: jaxResponse.receiptUrl  // Store last receipt
+      }
+    });
+
+    await logActivity(allShipped ? "ORDER_SHIPPED" : "PARTIAL_SHIPPING", 
+      `Order REF #${order.reference}: ${itemsToShip.length} items shipped. Status: ${allShipped ? 'SHIPPED' : 'PARTIALLY_SHIPPED'}`, 
+      { orderId, trackingId: jaxResponse.trackingId });
+
+    revalidatePath("/shipping");
+    revalidatePath("/orders");
+    revalidatePath("/jax");
+    
+    return { 
+      success: true, 
+      trackingId: jaxResponse.trackingId, 
+      receiptUrl: jaxResponse.receiptUrl 
+    };
+  } catch (e: any) { 
+    console.error(e);
+    return { success: false, error: e.message }; 
   }
 }
 
@@ -394,86 +510,34 @@ export async function createBatch(formData: FormData) {
   }
 }
 
-export async function shipOrder(formData: FormData) {
-  const session = await getSession();
-  const orderId = formData.get("orderId") as string;
+export async function archiveDispatch(formData: FormData) {
+  const dispatchId = formData.get("dispatchId") as string;
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { items: true }
+    const dispatch = await prisma.jaxLog.update({
+      where: { id: dispatchId },
+      data: { status: "DISPATCHED" },
+      include: { order: true, items: true }
     });
-    if (!order) return { success: false, error: "Order not found" };
 
-    // JAX SAFETY
-    if (order.jaxTrackingId) return { success: false, error: `Order #${order.reference} already has a JAX ID.` };
+    // Check if all items of the order are now shipped and all dispatches are archived
+    const allItems = await prisma.orderItem.findMany({
+      where: { orderId: dispatch.orderId, isPack: false }
+    });
+    const allShipped = allItems.every(i => i.status === "SHIPPED");
+    
+    const allLogs = await prisma.jaxLog.findMany({
+      where: { orderId: dispatch.orderId }
+    });
+    const allArchived = allLogs.every(l => l.status === "DISPATCHED" || l.status === "ERROR");
 
-    const prodItems = order.items.filter(i => !i.isPack);
-    const allWrapped = prodItems.every(i => i.status === "WRAPPED");
-    const allDesignsReady = prodItems.every(i => i.designStatus === "READY");
-    const noDamaged = prodItems.every(i => i.status !== "DAMAGED");
-
-    if (!allWrapped || !allDesignsReady || !noDamaged) {
-      return { success: false, error: "Order not ready: designs or production incomplete/damaged." };
+    if (allShipped && allArchived) {
+      await prisma.order.update({
+        where: { id: dispatch.orderId },
+        data: { status: "DISPATCHED" }
+      });
     }
 
-    const jaxResponse = await createJaxReceipt({
-      customerName: order.customerName,
-      customerPhone: order.customerPhone,
-      customerAddress: order.customerAddress,
-      customerGovernorate: order.customerGovernorate || "",
-      customerDelegation: order.customerDelegation || "",
-      totalAmount: order.totalAmount,
-      reference: order.reference
-    });
-
-    // LOG JAX TRANSACTION
-    await prisma.jaxLog.create({
-      data: {
-        orderId: order.id,
-        userId: session?.user?.id || null,
-        requestBody: JSON.stringify({ ...order, customerPhone: "HIDDEN" }),
-        responseBody: JSON.stringify(jaxResponse),
-        status: jaxResponse.success ? "SUCCESS" : "ERROR",
-        trackingId: jaxResponse.trackingId || null
-      }
-    });
-
-    if (!jaxResponse.success) return { success: false, error: jaxResponse.error || "JAX API Error" };
-
-    await prisma.$transaction([
-      prisma.order.update({ 
-        where: { id: orderId }, 
-        data: { 
-          status: "SHIPPED", 
-          jaxTrackingId: jaxResponse.trackingId,
-          jaxReceiptUrl: jaxResponse.receiptUrl,
-        } 
-      }),
-      prisma.orderItem.updateMany({
-        where: { orderId },
-        data: { status: "WRAPPED" }
-      })
-    ]);
-
-    await logActivity("JAX_SHIPPING_SUCCESS", `Order REF #${order.reference} shipped`, { orderId, trackingId: jaxResponse.trackingId });
-    revalidatePath("/shipping");
-    revalidatePath("/orders");
-    return { 
-      success: true, 
-      trackingId: jaxResponse.trackingId, 
-      receiptUrl: jaxResponse.receiptUrl 
-    };
-  } catch (e: any) { return { success: false, error: e.message }; }
-}
-
-export async function archiveDispatch(formData: FormData) {
-  const orderId = formData.get("orderId") as string;
-  try {
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: { status: "DISPATCHED" }
-    });
-    await logActivity("ORDER_DISPATCHED", `Order REF #${order.reference} archived`, { orderId });
+    await logActivity("PARCEL_DISPATCHED", `Parcel ${dispatch.trackingId} for Order REF #${dispatch.order.reference} archived`, { dispatchId });
     revalidatePath("/jax");
     revalidatePath("/history");
     return { success: true };

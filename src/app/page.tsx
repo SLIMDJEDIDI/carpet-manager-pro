@@ -110,22 +110,25 @@ export default async function Dashboard({
       } 
     }),
     sent: await prisma.order.count({ where: { status: "SHIPPED", updatedAt: dateFilter } }),
-    revenue: await prisma.order.aggregate({
-      where: { createdAt: dateFilter },
-      _sum: { totalAmount: true }
-    }).then(res => res._sum.totalAmount || 0),
+    revenue: await prisma.orderItem.aggregate({
+      where: { 
+        status: "SHIPPED",
+        updatedAt: dateFilter
+      },
+      _sum: { price: true }
+    }).then(res => res._sum.price || 0),
   };
 
   // 4. MONEY PREVIEW
   const money = {
-    expected: await prisma.order.aggregate({
+    expected: await prisma.orderItem.aggregate({
       where: { status: "SHIPPED" },
-      _sum: { totalAmount: true }
-    }).then(res => res._sum.totalAmount || 0),
-    received: await prisma.order.aggregate({
-      where: { status: "DELIVERED" },
-      _sum: { totalAmount: true }
-    }).then(res => res._sum.totalAmount || 0),
+      _sum: { price: true }
+    }).then(res => res._sum.price || 0),
+    received: await prisma.orderItem.aggregate({
+      where: { order: { status: "DELIVERED" } },
+      _sum: { price: true }
+    }).then(res => res._sum.price || 0),
     returns: await prisma.order.count({ where: { status: "RETURNED" } }),
   };
 

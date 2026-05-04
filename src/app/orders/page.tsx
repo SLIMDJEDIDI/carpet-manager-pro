@@ -16,13 +16,13 @@ export default async function OrdersPage({
   const page = parseInt(pageStr);
   const pageSize = 10;
 
-  const activeStatuses = ["PENDING", "CONFIRMED", "ON_HOLD"];
+  const activeStatuses = ["PENDING", "CONFIRMED", "ON_HOLD", "PARTIALLY_SHIPPED"];
   
   // STATS FETCHING FOR TOP SUMMARY
-  const [pendingCount, confirmedCount, onHoldCount, totalActiveCount] = await Promise.all([
+  const [pendingCount, confirmedCount, partialCount, totalActiveCount] = await Promise.all([
     prisma.order.count({ where: { status: "PENDING" } }),
     prisma.order.count({ where: { status: "CONFIRMED" } }),
-    prisma.order.count({ where: { status: "ON_HOLD" } }),
+    prisma.order.count({ where: { status: "PARTIALLY_SHIPPED" } }),
     prisma.order.count({ where: { status: { in: activeStatuses } } })
   ]);
 
@@ -80,8 +80,10 @@ export default async function OrdersPage({
     switch (status) {
       case "PENDING": return { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-200", icon: Clock, label: "RECEIVED" };
       case "CONFIRMED": return { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200", icon: CheckCircle2, label: "CONFIRMED" };
+      case "PARTIALLY_SHIPPED": return { bg: "bg-indigo-100", text: "text-indigo-700", border: "border-indigo-200", icon: Truck, label: "PARTIAL" };
       case "ON_HOLD": return { bg: "bg-rose-100", text: "text-rose-700", border: "border-rose-200", icon: AlertOctagon, label: "ON HOLD" };
       case "SHIPPED": return { bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-200", icon: Package, label: "SHIPPED" };
+      case "DISPATCHED": return { bg: "bg-indigo-900", text: "text-white", border: "border-indigo-800", icon: Printer, label: "DISPATCHED" };
       case "DELIVERED": return { bg: "bg-emerald-900", text: "text-white", border: "border-emerald-800", icon: CheckCircle2, label: "DELIVERED" };
       case "CANCELLED": return { bg: "bg-slate-100", text: "text-slate-500", border: "border-slate-200", icon: Archive, label: "CANCELLED" };
       case "RETURNED": return { bg: "bg-indigo-100", text: "text-indigo-700", border: "border-indigo-200", icon: RotateCcw, label: "RETURNED" };
@@ -111,6 +113,9 @@ export default async function OrdersPage({
               <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <h3 className="text-2xl md:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none truncate max-w-[250px] md:max-w-[450px]">{order.customerName}</h3>
                 <span className="bg-slate-900 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest leading-none">REF #{order.reference}</span>
+                {order.status === "PARTIALLY_SHIPPED" && (
+                  <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest leading-none shadow-lg shadow-indigo-100">Partial Dispatch</span>
+                )}
               </div>
               
               <div className="flex items-center gap-4">
@@ -119,6 +124,11 @@ export default async function OrdersPage({
                   {order.customerPhone}
                 </p>
                 <div className="w-px h-4 bg-slate-200"></div>
+                {order.status === "PARTIALLY_SHIPPED" && (
+                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mr-4">
+                    {order.items.filter((i:any) => i.status === "SHIPPED").length} / {order.items.filter((i:any) => !i.isPack).length} Articles Shipped
+                  </p>
+                )}
                 <a 
                   href={`https://wa.me/216${order.customerPhone.replace(/\s+/g, '')}`} 
                   target="_blank" 
@@ -235,7 +245,7 @@ export default async function OrdersPage({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <SummaryCard label="Pending Confirmation" value={pendingCount} color="border-amber-500 text-amber-600" icon={Clock} />
         <SummaryCard label="Operational Orders" value={confirmedCount} color="border-emerald-500 text-emerald-600" icon={Factory} />
-        <SummaryCard label="Orders On Hold" value={onHoldCount} color="border-rose-500 text-rose-600" icon={AlertOctagon} />
+        <SummaryCard label="Partially Shipped" value={partialCount} color="border-indigo-500 text-indigo-600" icon={Truck} />
         <SummaryCard label="Total Active Queue" value={totalActiveCount} color="border-slate-900 text-slate-900" icon={TrendingUp} />
       </div>
 

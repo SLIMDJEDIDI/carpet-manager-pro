@@ -35,26 +35,28 @@ export default async function AccountingPage({
   }
 
   // Fetch Stats
-  const [shippedOrders, deliveredOrders, returnedOrders, cancelledOrders, agents] = await Promise.all([
-    prisma.order.findMany({ 
-      where: { status: "SHIPPED", createdAt: dateFilter },
-      include: { items: true } 
+  const [shippedDispatches, deliveredOrders, returnedOrders, cancelledOrders, agents] = await Promise.all([
+    prisma.jaxLog.findMany({ 
+      where: { status: "SUCCESS", createdAt: dateFilter },
+      include: { items: true, order: true } 
     }),
     prisma.order.findMany({ where: { status: "DELIVERED", createdAt: dateFilter } }),
     prisma.order.findMany({ where: { status: "RETURNED", createdAt: dateFilter } }),
     prisma.order.findMany({ where: { status: "CANCELLED", createdAt: dateFilter } }),
-    prisma.user.findMany({ include: { createdOrders: true, confirmedOrders: true } })
+    prisma.user.findMany({ include: { createdOrders: { include: { items: true } }, confirmedOrders: true } })
   ]);
 
-  const totalCodShipped = shippedOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+  const totalCodShipped = shippedDispatches.reduce((sum, d) => 
+    sum + d.items.reduce((itemSum, i) => itemSum + i.price, 0), 0
+  );
   const totalCodDelivered = deliveredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
   
-  // Example delivery fee logic: 8 DT per order
-  const totalDeliveryFees = shippedOrders.length * 8;
+  // Delivery fee logic: 8 DT per parcel (JaxLog)
+  const totalDeliveryFees = shippedDispatches.length * 8;
   const netAmount = totalCodShipped - totalDeliveryFees;
 
   const stats = [
-    { label: "Total Shipped", value: shippedOrders.length, icon: Truck, color: "bg-blue-500" },
+    { label: "Total Parcels", value: shippedDispatches.length, icon: Truck, color: "bg-blue-500" },
     { label: "COD Shipped", value: `${totalCodShipped.toFixed(2)} DT`, icon: Wallet, color: "bg-emerald-500" },
     { label: "Delivered", value: deliveredOrders.length, icon: CheckCircle2, color: "bg-emerald-600" },
     { label: "Returned", value: returnedOrders.length, icon: RotateCcw, color: "bg-rose-500" },
@@ -130,7 +132,9 @@ export default async function AccountingPage({
                     <td className="px-4 py-4 text-sm font-bold text-slate-500">{agent.createdOrders.length}</td>
                     <td className="px-4 py-4 text-sm font-bold text-slate-500">{agent.confirmedOrders.length}</td>
                     <td className="px-4 py-4 text-sm font-black text-emerald-600">
-                      {agent.createdOrders.reduce((sum, o) => sum + o.totalAmount, 0).toFixed(2)} DT
+                      {agent.createdOrders.reduce((sum, o) => 
+                        sum + o.items.filter(i => i.status === "SHIPPED").reduce((isum, i) => isum + i.price, 0)
+                      , 0).toFixed(2)} DT
                     </td>
                   </tr>
                 ))}

@@ -181,6 +181,7 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   status: 'status',
   designStatus: 'designStatus',
   productionListId: 'productionListId',
+  jaxLogId: 'jaxLogId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -192,6 +193,7 @@ exports.Prisma.JaxLogScalarFieldEnum = {
   responseBody: 'responseBody',
   status: 'status',
   trackingId: 'trackingId',
+  receiptUrl: 'receiptUrl',
   userId: 'userId',
   createdAt: 'createdAt'
 };
