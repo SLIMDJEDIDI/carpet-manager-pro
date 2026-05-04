@@ -73,6 +73,15 @@ export default function BulkJaxShipping({
       }
     }
     
+    if (results.length > 0) {
+      const successCount = results.filter(r => r.success).length;
+      if (successCount === total) {
+        alert(`Successfully shipped all ${total} orders!`);
+      } else {
+        alert(`Processed batch: ${successCount} successful, ${total - successCount} failed.`);
+      }
+    }
+    
     setShipResults(results);
     setIsProcessing(false);
     setCurrentOrderName("");
