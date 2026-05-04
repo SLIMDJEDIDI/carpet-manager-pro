@@ -14,7 +14,7 @@ export default async function ShippingPage() {
       status: { in: ["CONFIRMED", "READY_TO_SHIP"] },
       items: { some: { status: "WRAPPED" } } 
     },
-    include: { items: { include: { design: true } } },
+    include: { items: { include: { design: true, brand: true } } },
     orderBy: { reference: 'desc' }
   });
 
@@ -72,7 +72,7 @@ export default async function ShippingPage() {
                     <SingleShipButton orderId={order.id} onShip={shipOrder} />
                   ) : (
                     <div className="bg-amber-50 text-amber-600 px-4 py-2.5 md:py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-amber-100 text-center">
-                      Waiting for {totalItems - wrappedCount} items
+                      Waiting for {(totalItems || 0) - (wrappedCount || 0)} items
                     </div>
                   )}
                   <PrintLabel order={order} />
@@ -87,11 +87,11 @@ export default async function ShippingPage() {
                     }`}>
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg md:rounded-xl border border-slate-200 flex-shrink-0 overflow-hidden">
-                          {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
+                          {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1 truncate">{item.design.code}</p>
-                          <p className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest truncate">{item.brand.name}</p>
+                          <p className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1 truncate">{item.design?.code || '???'}</p>
+                          <p className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest truncate">{item.brand?.name || '???'}</p>
                           <div className="inline-block bg-white px-2 py-0.5 rounded border border-slate-100 mt-1">
                             <p className="text-[10px] md:text-xs font-black text-slate-900 tracking-tight">{item.size}</p>
                           </div>

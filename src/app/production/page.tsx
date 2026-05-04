@@ -129,12 +129,12 @@ export default async function ProductionPage() {
                     <div key={item.id} className="p-3 md:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-3 md:gap-4">
                         <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-xl border-2 border-slate-200 flex-shrink-0 overflow-hidden shadow-sm p-1">
-                          {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
+                          {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
                         </div>
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className="text-[8px] md:text-[10px] font-black bg-slate-900 px-2 py-0.5 rounded text-white uppercase tracking-wider">{item.design.code}</span>
-                            <p className="font-black text-slate-900 uppercase text-xs md:text-sm tracking-tight truncate max-w-[120px] md:max-w-none">{item.design.name}</p>
+                            <span className="text-[8px] md:text-[10px] font-black bg-slate-900 px-2 py-0.5 rounded text-white uppercase tracking-wider">{item.design?.code || '???'}</span>
+                            <p className="font-black text-slate-900 uppercase text-xs md:text-sm tracking-tight truncate max-w-[120px] md:max-w-none">{item.design?.name || 'Unknown Design'}</p>
                             {item.designStatus === "READY" ? (
                               <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 uppercase tracking-tighter">Design Ready</span>
                             ) : (
@@ -231,11 +231,11 @@ export default async function ProductionPage() {
               <div key={item.id} className="bg-emerald-50/50 rounded-2xl border border-emerald-100 p-3 flex items-center justify-between group">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white rounded-lg border border-emerald-100 overflow-hidden p-0.5 shadow-sm">
-                    {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
+                    {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-contain" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <p className="text-[10px] font-black text-slate-900 leading-none">{item.design.code}</p>
+                      <p className="text-[10px] font-black text-slate-900 leading-none">{item.design?.code || '???'}</p>
                       {item.isPack && (
                          <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-600 text-white uppercase tracking-tighter">PACK x{item.count}</span>
                       )}
@@ -244,7 +244,7 @@ export default async function ProductionPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] font-black text-slate-900 capitalize">{item.order.customerName}</p>
+                  <p className="text-[9px] font-black text-slate-900 capitalize">{item.order?.customerName || 'No Name'}</p>
                   <p className="text-[7px] font-bold text-emerald-600 uppercase tracking-tighter mt-0.5">Wrapped</p>
                 </div>
               </div>
