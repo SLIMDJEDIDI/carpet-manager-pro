@@ -32,91 +32,65 @@ export default async function Dashboard({
 }) {
   const { range = "today" } = await searchParams;
 
+  // DATE HANDLING
   const now = new Date();
   let startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
+  let endDate = new Date();
+  endDate.setHours(23, 59, 59, 999);
 
   if (range === "yesterday") {
     startDate.setDate(startDate.getDate() - 1);
-    const endDate = new Date(startDate);
-    endDate.setHours(23, 59, 59, 999);
+    endDate.setDate(endDate.getDate() - 1);
   } else if (range === "week") {
     startDate.setDate(startDate.getDate() - 7);
   } else if (range === "month") {
     startDate.setMonth(startDate.getMonth() - 1);
   }
 
-  // DATA FETCHING
-  // 1. ACTION REQUIRED / URGENT
-  const onHoldOrders = await prisma.order.count({ where: { status: "ON_HOLD" } });
-  const damagedItems = await prisma.orderItem.count({ where: { status: "DAMAGED" } });
-  const jaxErrors = await prisma.jaxLog.count({ where: { status: "ERROR" } });
-  
-  const pendingConfirm = await prisma.order.count({ where: { status: "PENDING" } });
-  const waitingDesign = await prisma.order.count({ 
-    where: { 
-      status: "CONFIRMED",
-      items: { some: { designStatus: "PENDING", isPack: false } } 
-    } 
-  });
-  const readyToShipCount = await prisma.order.count({ where: { status: "READY_TO_SHIP" } });
+  const dateFilter = (range === "today" || range === "yesterday")
+    ? { gte: startDate, lte: endDate }
+    : { gte: startDate };
 
-  // 2. WORKFLOW TUNNEL
+  // DATA FETCHING — all independent queries in one parallel batch
+  const [
+    onHoldOrders, damagedItems, jaxErrors,
+    pendingConfirm, waitingDesign, readyToShipCount,
+    tReceived, tConfirmed, tDesign, tProduction, tWrapped, tShipped, tDelivered, tReturned,
+    sCreated, sConfirmed, sProduced, sSent, sRevenueResult
+  ] = await Promise.all([
+    prisma.order.count({ where: { status: "ON_HOLD" } }),
+    prisma.orderItem.count({ where: { status: "DAMAGED" } }),
+    prisma.jaxLog.count({ where: { status: "ERROR" } }),
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.count({ where: { status: "CONFIRMED", items: { some: { designStatus: "PENDING", isPack: false } } } }),
+    prisma.order.count({ where: { status: "READY_TO_SHIP" } }),
+    // Tunnel
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.count({ where: { status: "CONFIRMED" } }),
+    prisma.order.count({ where: { status: "CONFIRMED", items: { some: { designStatus: "PENDING", isPack: false } } } }),
+    prisma.order.count({ where: { status: { in: ["CONFIRMED", "ON_HOLD"] }, items: { some: { status: "IN_PRODUCTION" } } } }),
+    prisma.order.count({ where: { OR: [{ status: "READY_TO_SHIP" }, { status: "CONFIRMED", items: { some: { status: "WRAPPED" } } }] } }),
+    prisma.order.count({ where: { status: "SHIPPED" } }),
+    prisma.order.count({ where: { status: "DELIVERED" } }),
+    prisma.order.count({ where: { status: "RETURNED" } }),
+    // Snapshot
+    prisma.order.count({ where: { createdAt: dateFilter } }),
+    prisma.order.count({ where: { status: { in: ["CONFIRMED", "SHIPPED", "DELIVERED"] }, updatedAt: dateFilter } }),
+    prisma.order.count({ where: { items: { some: { status: "WRAPPED", updatedAt: dateFilter } } } }),
+    prisma.order.count({ where: { status: "SHIPPED", updatedAt: dateFilter } }),
+    prisma.orderItem.aggregate({ where: { status: "SHIPPED", updatedAt: dateFilter }, _sum: { price: true } })
+  ]);
+
+  // Build objects to keep downstream code unchanged
   const tunnelStats = {
-    received: await prisma.order.count({ where: { status: "PENDING" } }),
-    confirmed: await prisma.order.count({ where: { status: "CONFIRMED" } }),
-    design: await prisma.order.count({ 
-      where: { 
-        status: "CONFIRMED",
-        items: { some: { designStatus: "PENDING", isPack: false } } 
-      } 
-    }),
-    production: await prisma.order.count({ 
-      where: { 
-        status: { in: ["CONFIRMED", "ON_HOLD"] },
-        items: { some: { status: "IN_PRODUCTION" } } 
-      } 
-    }),
-    wrapped: await prisma.order.count({ 
-      where: { 
-        OR: [
-          { status: "READY_TO_SHIP" },
-          { 
-            status: "CONFIRMED",
-            items: { some: { status: "WRAPPED" } } 
-          }
-        ]
-      } 
-    }),
-    shipped: await prisma.order.count({ where: { status: "SHIPPED" } }),
-    delivered: await prisma.order.count({ where: { status: "DELIVERED" } }),
-    returned: await prisma.order.count({ where: { status: "RETURNED" } }),
+    received: tReceived, confirmed: tConfirmed, design: tDesign,
+    production: tProduction, wrapped: tWrapped, shipped: tShipped,
+    delivered: tDelivered, returned: tReturned
   };
-
-  // 3. TODAY'S SNAPSHOT (OR FILTERED)
-  const dateFilter = { gte: startDate };
-  if (range === "yesterday") {
-    const endDate = new Date(startDate);
-    endDate.setHours(23, 59, 59, 999);
-    (dateFilter as any).lte = endDate;
-  }
-
   const snapshot = {
-    created: await prisma.order.count({ where: { createdAt: dateFilter } }),
-    confirmed: await prisma.order.count({ where: { status: { in: ["CONFIRMED", "SHIPPED", "DELIVERED"] }, updatedAt: dateFilter } }),
-    produced: await prisma.order.count({ 
-      where: { 
-        items: { some: { status: "WRAPPED", updatedAt: dateFilter } } 
-      } 
-    }),
-    sent: await prisma.order.count({ where: { status: "SHIPPED", updatedAt: dateFilter } }),
-    revenue: await prisma.orderItem.aggregate({
-      where: { 
-        status: "SHIPPED",
-        updatedAt: dateFilter
-      },
-      _sum: { price: true }
-    }).then(res => res._sum.price || 0),
+    created: sCreated, confirmed: sConfirmed, produced: sProduced,
+    sent: sSent, revenue: sRevenueResult._sum.price || 0
   };
 
   // 4. MONEY PREVIEW

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare, AlertOctagon, TrendingUp, Filter, Factory, RotateCcw } from "lucide-react";
+import { Plus, ShoppingBag, Package, Edit3, Search, ChevronLeft, ChevronRight, MapPin, CheckCircle2, Clock, Phone, AlertCircle, Archive, MessageSquare, AlertOctagon, TrendingUp, Filter, Factory, RotateCcw, Truck } from "lucide-react";
 import Link from "next/link";
 import WorkflowGuide from "@/components/WorkflowGuide";
 import ConfirmOrderButton from "@/components/ConfirmOrderButton";
@@ -35,10 +35,8 @@ export default async function OrdersPage({
       ],
     },
     include: { items: { include: { design: true } } },
-    orderBy: [
-      { status: 'asc' }, // ON_HOLD usually comes before PENDING if alphabetically sorted, but we want priority
-      { createdAt: 'desc' }
-    ],
+    orderBy: { createdAt: 'desc' },
+    take: 50,
   });
 
   // Manual sort to put ON_HOLD at top
@@ -184,7 +182,7 @@ export default async function OrdersPage({
                <div className="flex -space-x-4">
                 {order.items.slice(0, 4).map((item: any, idx: number) => (
                   <div key={idx} className="w-14 h-14 bg-white border-4 border-white rounded-[1.4rem] overflow-hidden shadow-xl shadow-slate-200 relative group/img z-[1] hover:z-10 transition-all">
-                    {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover transition-transform group-hover/img:scale-110" />}
+                    {item.design.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover transition-transform group-hover/img:scale-110" loading="lazy" />}
                   </div>
                 ))}
                 {order.items.length > 4 && (

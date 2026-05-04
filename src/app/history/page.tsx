@@ -14,37 +14,22 @@ export default async function HistoryPage({
   const page = parseInt(pageParam || "1");
   const pageSize = 50;
 
-  if (!prisma.activityLog) {
-    console.error("prisma.activityLog is UNDEFINED. Available keys:", Object.keys(prisma).filter(k => !k.startsWith('$')));
-    return (
-      <div className="p-10 border-4 border-rose-600 bg-rose-50 text-rose-900 rounded-3xl">
-        <h1 className="text-2xl font-black uppercase">Database Error</h1>
-        <p className="font-bold mt-2">The History system (ActivityLog) is not yet initialized in the database client.</p>
-        <p className="text-sm mt-4 opacity-70">Please restart the development server or run `npx prisma generate` again.</p>
-      </div>
-    );
-  }
+  const whereClause = {
+    OR: [
+      { action: { contains: query } },
+      { details: { contains: query } },
+    ],
+  };
 
-  const logs = await prisma.activityLog.findMany({
-    where: {
-      OR: [
-        { action: { contains: query } },
-        { details: { contains: query } },
-      ],
-    },
-    orderBy: { createdAt: "desc" },
-    skip: (page - 1) * pageSize,
-    take: pageSize,
-  });
-
-  const totalLogs = await prisma.activityLog.count({
-    where: {
-      OR: [
-        { action: { contains: query } },
-        { details: { contains: query } },
-      ],
-    },
-  });
+  const [logs, totalLogs] = await Promise.all([
+    prisma.activityLog.findMany({
+      where: whereClause,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.activityLog.count({ where: whereClause }),
+  ]);
 
   const totalPages = Math.ceil(totalLogs / pageSize);
 

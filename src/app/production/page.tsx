@@ -155,7 +155,7 @@ export default async function ProductionPage() {
                         <p className="text-xs md:text-sm font-bold text-slate-900 truncate max-w-[150px]">{item.order?.customerName || "No Name"}</p>
                         <p className="text-[8px] md:text-[10px] text-slate-400 font-medium uppercase tracking-widest">REF #{item.order?.reference || "???"}</p>
                       </div>
-                      {item.order.note && (
+                      {item.order?.note && (
                         <div className="mt-2 sm:mt-0 p-2 bg-amber-50 rounded-xl border border-amber-100/50 flex items-start gap-2 max-w-md">
                           <MessageSquare className="w-3 h-3 text-amber-600 mt-0.5 shrink-0" />
                           <p className="text-[9px] font-bold text-amber-800 leading-tight italic">"{item.order.note}"</p>

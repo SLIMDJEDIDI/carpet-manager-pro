@@ -4,6 +4,7 @@ import { decrypt } from "@/lib/auth";
 const protectedRoutes = [
   "/",
   "/orders",
+  "/designer",
   "/production",
   "/shipping",
   "/jax",
