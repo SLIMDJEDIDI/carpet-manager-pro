@@ -374,7 +374,9 @@ export default function OrderForm({
         </div>
 
         <div className="space-y-6">
-          {items.map((item, index) => (
+          {items.map((item, index) => {
+            const selectedDesign = localDesigns.find(d => d.id === item.designId);
+            return (
             <div key={item.id} className="group relative bg-slate-50/50 rounded-[2rem] border-2 border-slate-100 p-8 transition-all hover:bg-white hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 animate-in fade-in slide-in-from-top-4">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Brand Selection */}
@@ -429,9 +431,19 @@ export default function OrderForm({
                         setShowDesignList(prev => ({ ...prev, [item.id]: true }));
                       }}
                       onFocus={() => handleDesignFocus(item.id)}
-                      className="w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 pl-12 pr-4 transition-all"
+                      className={`w-full rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-0 h-14 bg-white font-bold text-sm text-slate-900 ${selectedDesign ? 'pl-20' : 'pl-12'} pr-4 transition-all`}
                     />
-                    <Palette className="w-5 h-5 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2" />
+                    {selectedDesign ? (
+                      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-14 h-10 bg-slate-100 rounded-lg border-2 border-emerald-500 overflow-hidden shadow-sm">
+                        {selectedDesign.imageUrl ? (
+                          <img src={selectedDesign.imageUrl} className="w-full h-full object-cover" alt={selectedDesign.code} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-300 text-[8px]">N/A</div>
+                        )}
+                      </div>
+                    ) : (
+                      <Palette className="w-5 h-5 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2" />
+                    )}
                     
                     {showDesignList[item.id] && (
                       <div className="absolute top-full left-0 right-0 mt-3 bg-white border-2 border-slate-100 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto p-2">
@@ -440,15 +452,12 @@ export default function OrderForm({
                           href="/designs/new"
                           target="_blank"
                           onClick={() => setShowDesignList(prev => ({ ...prev, [item.id]: false }))}
-                          className="w-full flex items-center gap-4 p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all mb-2 sticky top-0 z-10 border border-emerald-100"
+                          className="w-full flex items-center gap-3 p-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all mb-2 sticky top-0 z-10 border border-emerald-500 text-white shadow-lg shadow-emerald-200"
                         >
-                          <div className="w-12 h-12 bg-white rounded-lg border border-emerald-200 flex items-center justify-center">
-                            <Plus className="w-6 h-6 text-emerald-600" />
+                          <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                            <Plus className="w-4 h-4 text-white" />
                           </div>
-                          <div>
-                            <p className="font-black text-emerald-600 text-xs uppercase tracking-tight leading-none mb-1">Add New Design</p>
-                            <p className="text-[10px] text-emerald-500 font-bold uppercase">Opens in new tab</p>
-                          </div>
+                          <p className="font-black text-[10px] uppercase tracking-wider">New Design</p>
                         </a>
 
                         {localDesigns
@@ -553,7 +562,8 @@ export default function OrderForm({
                 </div>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
 
         <div className="mt-8 flex justify-end">
