@@ -26,6 +26,8 @@ export async function createOrder(formData: FormData) {
   const customerPostalCode = formData.get("customerPostalCode") as string;
   const customerGovernorate = formData.get("customerGovernorate") as string;
   const customerDelegation = formData.get("customerDelegation") as string;
+  const isFreeDelivery = formData.get("isFreeDelivery") === "on";
+  const isExchange = formData.get("isExchange") === "on";
   const itemCountStr = formData.get("itemCount") as string;
   const itemCount = parseInt(itemCountStr || "0");
 
@@ -64,6 +66,7 @@ export async function createOrder(formData: FormData) {
       data: {
         customerName, customerPhone, customerAddress, 
         customerPostalCode, customerGovernorate, customerDelegation,
+        isFreeDelivery, isExchange,
         reference: nextReference, totalAmount: 0,
       },
     });
@@ -116,10 +119,11 @@ export async function createOrder(formData: FormData) {
       }
     }
 
-    // Update total amount (including 8 DT delivery cost)
+    // Update total amount (including 8 DT delivery cost if not free/exchange)
+    const deliveryFee = (isFreeDelivery || isExchange) ? 0 : 8;
     await prisma.order.update({
       where: { id: order.id },
-      data: { totalAmount: orderTotal + 8 }
+      data: { totalAmount: orderTotal + deliveryFee }
     });
 
     // Logging (Fire and forget)
@@ -140,6 +144,8 @@ export async function updateOrder(orderId: string, formData: FormData) {
   const customerPostalCode = formData.get("customerPostalCode") as string;
   const customerGovernorate = formData.get("customerGovernorate") as string;
   const customerDelegation = formData.get("customerDelegation") as string;
+  const isFreeDelivery = formData.get("isFreeDelivery") === "on";
+  const isExchange = formData.get("isExchange") === "on";
   const itemCount = parseInt(formData.get("itemCount") as string || "0");
 
   try {
@@ -156,6 +162,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
       data: {
         customerName, customerPhone, customerAddress,
         customerPostalCode, customerGovernorate, customerDelegation,
+        isFreeDelivery, isExchange,
       },
     });
 
@@ -207,15 +214,23 @@ export async function updateOrder(orderId: string, formData: FormData) {
           }
         }
       }
-
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { totalAmount: orderTotal + 8 }
-      });
     }
 
     revalidatePath("/orders");
     revalidatePath("/production");
+
+    // 3. Final Total Recalculation (Ensures delivery fee flags are respected)
+    const finalItems = await prisma.orderItem.findMany({
+      where: { orderId, parentItemId: null }
+    });
+    const itemTotal = finalItems.reduce((sum, i) => sum + i.price, 0);
+    const deliveryFee = (isFreeDelivery || isExchange) ? 0 : 8;
+    
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { totalAmount: itemTotal + deliveryFee }
+    });
+
     return { success: true };
   } catch (e: any) {
     console.error("UPDATE_ORDER_ERROR:", e);

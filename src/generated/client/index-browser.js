@@ -142,9 +142,16 @@ exports.Prisma.OrderScalarFieldEnum = {
   customerName: 'customerName',
   customerPhone: 'customerPhone',
   customerAddress: 'customerAddress',
+  customerPostalCode: 'customerPostalCode',
+  customerGovernorate: 'customerGovernorate',
+  customerDelegation: 'customerDelegation',
   status: 'status',
-  parcelNumber: 'parcelNumber',
   totalAmount: 'totalAmount',
+  parcelNumber: 'parcelNumber',
+  jaxTrackingId: 'jaxTrackingId',
+  jaxReceiptUrl: 'jaxReceiptUrl',
+  isFreeDelivery: 'isFreeDelivery',
+  isExchange: 'isExchange',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

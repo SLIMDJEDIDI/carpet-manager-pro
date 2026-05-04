@@ -1,6 +1,7 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "windows"]
+  output        = "../src/generated/client"
 }
 
 datasource db {
@@ -38,6 +39,8 @@ model Order {
   parcelNumber       String?     // Keeping this for reference
   jaxTrackingId      String?     // New field for JAX integration
   jaxReceiptUrl      String?     // URL to the receipt image/PDF from JAX
+  isFreeDelivery     Boolean     @default(false)
+  isExchange         Boolean     @default(false)
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   items              OrderItem[]

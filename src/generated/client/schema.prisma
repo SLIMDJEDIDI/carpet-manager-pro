@@ -1,11 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/client"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+  output        = "../src/generated/client"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Brand {
@@ -25,17 +26,24 @@ model Design {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  reference       Int?        @unique
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  status          String      @default("PENDING")
-  parcelNumber    String?
-  totalAmount     Float       @default(0)
-  items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                  String      @id @default(cuid())
+  reference           Int?        @unique
+  customerName        String
+  customerPhone       String
+  customerAddress     String
+  customerPostalCode  String?
+  customerGovernorate String?
+  customerDelegation  String?
+  status              String      @default("PENDING")
+  totalAmount         Float       @default(0)
+  parcelNumber        String? // Keeping this for reference
+  jaxTrackingId       String? // New field for JAX integration
+  jaxReceiptUrl       String? // URL to the receipt image/PDF from JAX
+  isFreeDelivery      Boolean     @default(false)
+  isExchange          Boolean     @default(false)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  items               OrderItem[]
 }
 
 model OrderItem {
@@ -77,4 +85,12 @@ model ProductionList {
   batchName String
   createdAt DateTime    @default(now())
   items     OrderItem[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String // e.g., "CREATE_ORDER", "START_PRODUCTION", "SHIP_ORDER"
+  details   String // Text description
+  metadata  String? // JSON string for technical details
+  createdAt DateTime @default(now())
 }

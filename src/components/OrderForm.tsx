@@ -44,6 +44,9 @@ export default function OrderForm({
   const [governorate, setGovernorate] = useState(initialData?.customerGovernorate || "");
   const [delegation, setDelegation] = useState(initialData?.customerDelegation || "");
   
+  const [isFreeDelivery, setIsFreeDelivery] = useState(initialData?.isFreeDelivery || false);
+  const [isExchange, setIsExchange] = useState(initialData?.isExchange || false);
+  
   const [localDesigns, setLocalDesigns] = useState(designs);
   const [isRefreshingDesigns, setIsRefreshingDesigns] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(Date.now());
@@ -176,7 +179,7 @@ export default function OrderForm({
   };
 
   const totalPrice = items.length > 0 
-    ? items.reduce((sum, item) => sum + (item.price || 0), 0) + 8 
+    ? items.reduce((sum, item) => sum + (item.price || 0), 0) + (isFreeDelivery || isExchange ? 0 : 8) 
     : 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -320,6 +323,39 @@ export default function OrderForm({
             <Hash className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
           </div>
         </div>
+      </div>
+      
+      {/* Shipping Options */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100">
+        <label className="flex items-center gap-4 p-4 bg-white rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition-all cursor-pointer group">
+          <input 
+            type="checkbox" 
+            name="isFreeDelivery"
+            checked={isFreeDelivery}
+            onChange={(e) => setIsFreeDelivery(e.target.checked)}
+            className="w-6 h-6 rounded-lg border-2 border-slate-300 text-emerald-600 focus:ring-0 transition-all"
+          />
+          <div className="flex-1">
+            <p className="font-black text-slate-900 uppercase text-xs">Free Delivery</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Remove 8 DT Delivery Fee</p>
+          </div>
+          <Globe className={`w-5 h-5 transition-all ${isFreeDelivery ? 'text-emerald-500 scale-110' : 'text-slate-300'}`} />
+        </label>
+
+        <label className="flex items-center gap-4 p-4 bg-white rounded-2xl border-2 border-slate-200 hover:border-blue-500 transition-all cursor-pointer group">
+          <input 
+            type="checkbox" 
+            name="isExchange"
+            checked={isExchange}
+            onChange={(e) => setIsExchange(e.target.checked)}
+            className="w-6 h-6 rounded-lg border-2 border-slate-300 text-blue-600 focus:ring-0 transition-all"
+          />
+          <div className="flex-1">
+            <p className="font-black text-slate-900 uppercase text-xs">Exchange (Echange)</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Delivery already paid</p>
+          </div>
+          <RefreshCw className={`w-5 h-5 transition-all ${isExchange ? 'text-blue-500 scale-110' : 'text-slate-300'}`} />
+        </label>
       </div>
 
       {/* Articles Section */}
@@ -512,7 +548,7 @@ export default function OrderForm({
             {totalPrice} <span className="text-2xl text-slate-500 font-bold uppercase tracking-widest">DT</span>
           </div>
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">
-            (Includes 8 DT Delivery Cost)
+            {isFreeDelivery || isExchange ? "(Delivery Fee: 0 DT)" : "(Includes 8 DT Delivery Cost)"}
           </p>
         </div>
 

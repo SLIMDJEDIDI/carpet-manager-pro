@@ -3413,9 +3413,16 @@ export namespace Prisma {
     customerName: string | null
     customerPhone: string | null
     customerAddress: string | null
+    customerPostalCode: string | null
+    customerGovernorate: string | null
+    customerDelegation: string | null
     status: string | null
-    parcelNumber: string | null
     totalAmount: number | null
+    parcelNumber: string | null
+    jaxTrackingId: string | null
+    jaxReceiptUrl: string | null
+    isFreeDelivery: boolean | null
+    isExchange: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3426,9 +3433,16 @@ export namespace Prisma {
     customerName: string | null
     customerPhone: string | null
     customerAddress: string | null
+    customerPostalCode: string | null
+    customerGovernorate: string | null
+    customerDelegation: string | null
     status: string | null
-    parcelNumber: string | null
     totalAmount: number | null
+    parcelNumber: string | null
+    jaxTrackingId: string | null
+    jaxReceiptUrl: string | null
+    isFreeDelivery: boolean | null
+    isExchange: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3439,9 +3453,16 @@ export namespace Prisma {
     customerName: number
     customerPhone: number
     customerAddress: number
+    customerPostalCode: number
+    customerGovernorate: number
+    customerDelegation: number
     status: number
-    parcelNumber: number
     totalAmount: number
+    parcelNumber: number
+    jaxTrackingId: number
+    jaxReceiptUrl: number
+    isFreeDelivery: number
+    isExchange: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3464,9 +3485,16 @@ export namespace Prisma {
     customerName?: true
     customerPhone?: true
     customerAddress?: true
+    customerPostalCode?: true
+    customerGovernorate?: true
+    customerDelegation?: true
     status?: true
-    parcelNumber?: true
     totalAmount?: true
+    parcelNumber?: true
+    jaxTrackingId?: true
+    jaxReceiptUrl?: true
+    isFreeDelivery?: true
+    isExchange?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3477,9 +3505,16 @@ export namespace Prisma {
     customerName?: true
     customerPhone?: true
     customerAddress?: true
+    customerPostalCode?: true
+    customerGovernorate?: true
+    customerDelegation?: true
     status?: true
-    parcelNumber?: true
     totalAmount?: true
+    parcelNumber?: true
+    jaxTrackingId?: true
+    jaxReceiptUrl?: true
+    isFreeDelivery?: true
+    isExchange?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3490,9 +3525,16 @@ export namespace Prisma {
     customerName?: true
     customerPhone?: true
     customerAddress?: true
+    customerPostalCode?: true
+    customerGovernorate?: true
+    customerDelegation?: true
     status?: true
-    parcelNumber?: true
     totalAmount?: true
+    parcelNumber?: true
+    jaxTrackingId?: true
+    jaxReceiptUrl?: true
+    isFreeDelivery?: true
+    isExchange?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3590,9 +3632,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode: string | null
+    customerGovernorate: string | null
+    customerDelegation: string | null
     status: string
-    parcelNumber: string | null
     totalAmount: number
+    parcelNumber: string | null
+    jaxTrackingId: string | null
+    jaxReceiptUrl: string | null
+    isFreeDelivery: boolean
+    isExchange: boolean
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -3622,9 +3671,16 @@ export namespace Prisma {
     customerName?: boolean
     customerPhone?: boolean
     customerAddress?: boolean
+    customerPostalCode?: boolean
+    customerGovernorate?: boolean
+    customerDelegation?: boolean
     status?: boolean
-    parcelNumber?: boolean
     totalAmount?: boolean
+    parcelNumber?: boolean
+    jaxTrackingId?: boolean
+    jaxReceiptUrl?: boolean
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
@@ -3637,9 +3693,16 @@ export namespace Prisma {
     customerName?: boolean
     customerPhone?: boolean
     customerAddress?: boolean
+    customerPostalCode?: boolean
+    customerGovernorate?: boolean
+    customerDelegation?: boolean
     status?: boolean
-    parcelNumber?: boolean
     totalAmount?: boolean
+    parcelNumber?: boolean
+    jaxTrackingId?: boolean
+    jaxReceiptUrl?: boolean
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
@@ -3650,9 +3713,16 @@ export namespace Prisma {
     customerName?: boolean
     customerPhone?: boolean
     customerAddress?: boolean
+    customerPostalCode?: boolean
+    customerGovernorate?: boolean
+    customerDelegation?: boolean
     status?: boolean
-    parcelNumber?: boolean
     totalAmount?: boolean
+    parcelNumber?: boolean
+    jaxTrackingId?: boolean
+    jaxReceiptUrl?: boolean
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3674,9 +3744,16 @@ export namespace Prisma {
       customerName: string
       customerPhone: string
       customerAddress: string
+      customerPostalCode: string | null
+      customerGovernorate: string | null
+      customerDelegation: string | null
       status: string
-      parcelNumber: string | null
       totalAmount: number
+      parcelNumber: string | null
+      jaxTrackingId: string | null
+      jaxReceiptUrl: string | null
+      isFreeDelivery: boolean
+      isExchange: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -4078,9 +4155,16 @@ export namespace Prisma {
     readonly customerName: FieldRef<"Order", 'String'>
     readonly customerPhone: FieldRef<"Order", 'String'>
     readonly customerAddress: FieldRef<"Order", 'String'>
+    readonly customerPostalCode: FieldRef<"Order", 'String'>
+    readonly customerGovernorate: FieldRef<"Order", 'String'>
+    readonly customerDelegation: FieldRef<"Order", 'String'>
     readonly status: FieldRef<"Order", 'String'>
-    readonly parcelNumber: FieldRef<"Order", 'String'>
     readonly totalAmount: FieldRef<"Order", 'Float'>
+    readonly parcelNumber: FieldRef<"Order", 'String'>
+    readonly jaxTrackingId: FieldRef<"Order", 'String'>
+    readonly jaxReceiptUrl: FieldRef<"Order", 'String'>
+    readonly isFreeDelivery: FieldRef<"Order", 'Boolean'>
+    readonly isExchange: FieldRef<"Order", 'Boolean'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -8364,9 +8448,16 @@ export namespace Prisma {
     customerName: 'customerName',
     customerPhone: 'customerPhone',
     customerAddress: 'customerAddress',
+    customerPostalCode: 'customerPostalCode',
+    customerGovernorate: 'customerGovernorate',
+    customerDelegation: 'customerDelegation',
     status: 'status',
-    parcelNumber: 'parcelNumber',
     totalAmount: 'totalAmount',
+    parcelNumber: 'parcelNumber',
+    jaxTrackingId: 'jaxTrackingId',
+    jaxReceiptUrl: 'jaxReceiptUrl',
+    isFreeDelivery: 'isFreeDelivery',
+    isExchange: 'isExchange',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -8631,9 +8722,16 @@ export namespace Prisma {
     customerName?: StringFilter<"Order"> | string
     customerPhone?: StringFilter<"Order"> | string
     customerAddress?: StringFilter<"Order"> | string
+    customerPostalCode?: StringNullableFilter<"Order"> | string | null
+    customerGovernorate?: StringNullableFilter<"Order"> | string | null
+    customerDelegation?: StringNullableFilter<"Order"> | string | null
     status?: StringFilter<"Order"> | string
-    parcelNumber?: StringNullableFilter<"Order"> | string | null
     totalAmount?: FloatFilter<"Order"> | number
+    parcelNumber?: StringNullableFilter<"Order"> | string | null
+    jaxTrackingId?: StringNullableFilter<"Order"> | string | null
+    jaxReceiptUrl?: StringNullableFilter<"Order"> | string | null
+    isFreeDelivery?: BoolFilter<"Order"> | boolean
+    isExchange?: BoolFilter<"Order"> | boolean
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -8645,9 +8743,16 @@ export namespace Prisma {
     customerName?: SortOrder
     customerPhone?: SortOrder
     customerAddress?: SortOrder
+    customerPostalCode?: SortOrderInput | SortOrder
+    customerGovernorate?: SortOrderInput | SortOrder
+    customerDelegation?: SortOrderInput | SortOrder
     status?: SortOrder
-    parcelNumber?: SortOrderInput | SortOrder
     totalAmount?: SortOrder
+    parcelNumber?: SortOrderInput | SortOrder
+    jaxTrackingId?: SortOrderInput | SortOrder
+    jaxReceiptUrl?: SortOrderInput | SortOrder
+    isFreeDelivery?: SortOrder
+    isExchange?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     items?: OrderItemOrderByRelationAggregateInput
@@ -8662,9 +8767,16 @@ export namespace Prisma {
     customerName?: StringFilter<"Order"> | string
     customerPhone?: StringFilter<"Order"> | string
     customerAddress?: StringFilter<"Order"> | string
+    customerPostalCode?: StringNullableFilter<"Order"> | string | null
+    customerGovernorate?: StringNullableFilter<"Order"> | string | null
+    customerDelegation?: StringNullableFilter<"Order"> | string | null
     status?: StringFilter<"Order"> | string
-    parcelNumber?: StringNullableFilter<"Order"> | string | null
     totalAmount?: FloatFilter<"Order"> | number
+    parcelNumber?: StringNullableFilter<"Order"> | string | null
+    jaxTrackingId?: StringNullableFilter<"Order"> | string | null
+    jaxReceiptUrl?: StringNullableFilter<"Order"> | string | null
+    isFreeDelivery?: BoolFilter<"Order"> | boolean
+    isExchange?: BoolFilter<"Order"> | boolean
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -8676,9 +8788,16 @@ export namespace Prisma {
     customerName?: SortOrder
     customerPhone?: SortOrder
     customerAddress?: SortOrder
+    customerPostalCode?: SortOrderInput | SortOrder
+    customerGovernorate?: SortOrderInput | SortOrder
+    customerDelegation?: SortOrderInput | SortOrder
     status?: SortOrder
-    parcelNumber?: SortOrderInput | SortOrder
     totalAmount?: SortOrder
+    parcelNumber?: SortOrderInput | SortOrder
+    jaxTrackingId?: SortOrderInput | SortOrder
+    jaxReceiptUrl?: SortOrderInput | SortOrder
+    isFreeDelivery?: SortOrder
+    isExchange?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -8697,9 +8816,16 @@ export namespace Prisma {
     customerName?: StringWithAggregatesFilter<"Order"> | string
     customerPhone?: StringWithAggregatesFilter<"Order"> | string
     customerAddress?: StringWithAggregatesFilter<"Order"> | string
+    customerPostalCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    customerGovernorate?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    customerDelegation?: StringNullableWithAggregatesFilter<"Order"> | string | null
     status?: StringWithAggregatesFilter<"Order"> | string
-    parcelNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
     totalAmount?: FloatWithAggregatesFilter<"Order"> | number
+    parcelNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    jaxTrackingId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    jaxReceiptUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    isFreeDelivery?: BoolWithAggregatesFilter<"Order"> | boolean
+    isExchange?: BoolWithAggregatesFilter<"Order"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -9094,9 +9220,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
     status?: string
-    parcelNumber?: string | null
     totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemCreateNestedManyWithoutOrderInput
@@ -9108,9 +9241,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
     status?: string
-    parcelNumber?: string | null
     totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -9122,9 +9262,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -9136,9 +9283,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -9150,9 +9304,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
     status?: string
-    parcelNumber?: string | null
     totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9163,9 +9324,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9176,9 +9344,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9643,15 +9818,27 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     reference?: SortOrder
     customerName?: SortOrder
     customerPhone?: SortOrder
     customerAddress?: SortOrder
+    customerPostalCode?: SortOrder
+    customerGovernorate?: SortOrder
+    customerDelegation?: SortOrder
     status?: SortOrder
-    parcelNumber?: SortOrder
     totalAmount?: SortOrder
+    parcelNumber?: SortOrder
+    jaxTrackingId?: SortOrder
+    jaxReceiptUrl?: SortOrder
+    isFreeDelivery?: SortOrder
+    isExchange?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9667,9 +9854,16 @@ export namespace Prisma {
     customerName?: SortOrder
     customerPhone?: SortOrder
     customerAddress?: SortOrder
+    customerPostalCode?: SortOrder
+    customerGovernorate?: SortOrder
+    customerDelegation?: SortOrder
     status?: SortOrder
-    parcelNumber?: SortOrder
     totalAmount?: SortOrder
+    parcelNumber?: SortOrder
+    jaxTrackingId?: SortOrder
+    jaxReceiptUrl?: SortOrder
+    isFreeDelivery?: SortOrder
+    isExchange?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9680,9 +9874,16 @@ export namespace Prisma {
     customerName?: SortOrder
     customerPhone?: SortOrder
     customerAddress?: SortOrder
+    customerPostalCode?: SortOrder
+    customerGovernorate?: SortOrder
+    customerDelegation?: SortOrder
     status?: SortOrder
-    parcelNumber?: SortOrder
     totalAmount?: SortOrder
+    parcelNumber?: SortOrder
+    jaxTrackingId?: SortOrder
+    jaxReceiptUrl?: SortOrder
+    isFreeDelivery?: SortOrder
+    isExchange?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9724,9 +9925,12 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ProductionListNullableRelationFilter = {
@@ -9805,14 +10009,6 @@ export namespace Prisma {
 
   export type OrderItemSumOrderByAggregateInput = {
     price?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ProductCountOrderByAggregateInput = {
@@ -10027,6 +10223,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type OrderItemUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10097,10 +10297,6 @@ export namespace Prisma {
     connectOrCreate?: OrderItemCreateOrConnectWithoutParentItemInput | OrderItemCreateOrConnectWithoutParentItemInput[]
     createMany?: OrderItemCreateManyParentItemInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type ProductionListUpdateOneWithoutItemsNestedInput = {
@@ -10337,6 +10533,11 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -10378,11 +10579,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -10640,9 +10836,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
     status?: string
-    parcelNumber?: string | null
     totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10653,9 +10856,16 @@ export namespace Prisma {
     customerName: string
     customerPhone: string
     customerAddress: string
+    customerPostalCode?: string | null
+    customerGovernorate?: string | null
+    customerDelegation?: string | null
     status?: string
-    parcelNumber?: string | null
     totalAmount?: number
+    parcelNumber?: string | null
+    jaxTrackingId?: string | null
+    jaxReceiptUrl?: string | null
+    isFreeDelivery?: boolean
+    isExchange?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10830,9 +11040,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10843,9 +11060,16 @@ export namespace Prisma {
     customerName?: StringFieldUpdateOperationsInput | string
     customerPhone?: StringFieldUpdateOperationsInput | string
     customerAddress?: StringFieldUpdateOperationsInput | string
+    customerPostalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGovernorate?: NullableStringFieldUpdateOperationsInput | string | null
+    customerDelegation?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
     totalAmount?: FloatFieldUpdateOperationsInput | number
+    parcelNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
+    isExchange?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

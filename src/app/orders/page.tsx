@@ -125,10 +125,20 @@ export default async function OrdersPage({
             <p className="font-bold text-black text-xs tracking-tight">{order.customerPhone}</p>
           </div>
           
-          <div>
+          <div className="flex flex-col gap-1 items-end">
             <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
               {order.status === "PENDING" ? "RECEIVED" : order.status}
             </span>
+            {order.isFreeDelivery && (
+              <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 uppercase tracking-tighter">
+                Free Delivery
+              </span>
+            )}
+            {order.isExchange && (
+              <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 uppercase tracking-tighter">
+                Exchange
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1 pl-4 border-l border-slate-200">
