@@ -126,9 +126,28 @@ export default async function OrdersPage({
           </div>
           
           <div className="flex flex-col gap-1 items-end">
-            <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
-              {order.status === "PENDING" ? "RECEIVED" : order.status}
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1.5 ${getStatusColor(order.status)}`}>
+                {order.status === "PENDING" ? "RECEIVED" : order.status}
+              </span>
+              
+              {/* ORDER DESIGN READINESS INDICATOR */}
+              {order.status === "CONFIRMED" && (
+                <>
+                  {order.items.every((i: any) => i.designStatus === "READY") ? (
+                    <div className="flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                      <CheckCircle2 className="w-2 h-2" />
+                      Design: Ready
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-[8px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                      <Clock className="w-2 h-2" />
+                      Design: Pending
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             {order.status === "CONFIRMED" && (
               <p className="text-[8px] font-black text-emerald-500 uppercase tracking-widest text-right">
                 order in production list

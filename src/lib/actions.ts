@@ -254,6 +254,20 @@ export async function setDesignStatus(itemId: string, status: "PENDING" | "READY
       data: { designStatus: status }
     });
     revalidatePath("/production");
+    revalidatePath("/designer");
+    revalidatePath("/designs");
+    return { success: true };
+  } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function setDesignStatusBulk(itemIds: string[], status: "PENDING" | "READY") {
+  try {
+    await prisma.orderItem.updateMany({
+      where: { id: { in: itemIds } },
+      data: { designStatus: status }
+    });
+    revalidatePath("/production");
+    revalidatePath("/designer");
     revalidatePath("/designs");
     return { success: true };
   } catch (e: any) { return { success: false, error: e.message }; }
