@@ -3423,6 +3423,7 @@ export namespace Prisma {
     jaxReceiptUrl: string | null
     isFreeDelivery: boolean | null
     isExchange: boolean | null
+    note: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3443,6 +3444,7 @@ export namespace Prisma {
     jaxReceiptUrl: string | null
     isFreeDelivery: boolean | null
     isExchange: boolean | null
+    note: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3463,6 +3465,7 @@ export namespace Prisma {
     jaxReceiptUrl: number
     isFreeDelivery: number
     isExchange: number
+    note: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3495,6 +3498,7 @@ export namespace Prisma {
     jaxReceiptUrl?: true
     isFreeDelivery?: true
     isExchange?: true
+    note?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3515,6 +3519,7 @@ export namespace Prisma {
     jaxReceiptUrl?: true
     isFreeDelivery?: true
     isExchange?: true
+    note?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3535,6 +3540,7 @@ export namespace Prisma {
     jaxReceiptUrl?: true
     isFreeDelivery?: true
     isExchange?: true
+    note?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3642,6 +3648,7 @@ export namespace Prisma {
     jaxReceiptUrl: string | null
     isFreeDelivery: boolean
     isExchange: boolean
+    note: string | null
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -3681,6 +3688,7 @@ export namespace Prisma {
     jaxReceiptUrl?: boolean
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
@@ -3703,6 +3711,7 @@ export namespace Prisma {
     jaxReceiptUrl?: boolean
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["order"]>
@@ -3723,6 +3732,7 @@ export namespace Prisma {
     jaxReceiptUrl?: boolean
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3754,6 +3764,7 @@ export namespace Prisma {
       jaxReceiptUrl: string | null
       isFreeDelivery: boolean
       isExchange: boolean
+      note: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -4165,6 +4176,7 @@ export namespace Prisma {
     readonly jaxReceiptUrl: FieldRef<"Order", 'String'>
     readonly isFreeDelivery: FieldRef<"Order", 'Boolean'>
     readonly isExchange: FieldRef<"Order", 'Boolean'>
+    readonly note: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -8458,6 +8470,7 @@ export namespace Prisma {
     jaxReceiptUrl: 'jaxReceiptUrl',
     isFreeDelivery: 'isFreeDelivery',
     isExchange: 'isExchange',
+    note: 'note',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -8732,6 +8745,7 @@ export namespace Prisma {
     jaxReceiptUrl?: StringNullableFilter<"Order"> | string | null
     isFreeDelivery?: BoolFilter<"Order"> | boolean
     isExchange?: BoolFilter<"Order"> | boolean
+    note?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -8753,6 +8767,7 @@ export namespace Prisma {
     jaxReceiptUrl?: SortOrderInput | SortOrder
     isFreeDelivery?: SortOrder
     isExchange?: SortOrder
+    note?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     items?: OrderItemOrderByRelationAggregateInput
@@ -8777,6 +8792,7 @@ export namespace Prisma {
     jaxReceiptUrl?: StringNullableFilter<"Order"> | string | null
     isFreeDelivery?: BoolFilter<"Order"> | boolean
     isExchange?: BoolFilter<"Order"> | boolean
+    note?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     items?: OrderItemListRelationFilter
@@ -8798,6 +8814,7 @@ export namespace Prisma {
     jaxReceiptUrl?: SortOrderInput | SortOrder
     isFreeDelivery?: SortOrder
     isExchange?: SortOrder
+    note?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -8826,6 +8843,7 @@ export namespace Prisma {
     jaxReceiptUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
     isFreeDelivery?: BoolWithAggregatesFilter<"Order"> | boolean
     isExchange?: BoolWithAggregatesFilter<"Order"> | boolean
+    note?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -9230,6 +9248,7 @@ export namespace Prisma {
     jaxReceiptUrl?: string | null
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemCreateNestedManyWithoutOrderInput
@@ -9251,6 +9270,7 @@ export namespace Prisma {
     jaxReceiptUrl?: string | null
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -9272,6 +9292,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
@@ -9293,6 +9314,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -9314,6 +9336,7 @@ export namespace Prisma {
     jaxReceiptUrl?: string | null
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9334,6 +9357,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9354,6 +9378,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9839,6 +9864,7 @@ export namespace Prisma {
     jaxReceiptUrl?: SortOrder
     isFreeDelivery?: SortOrder
     isExchange?: SortOrder
+    note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9864,6 +9890,7 @@ export namespace Prisma {
     jaxReceiptUrl?: SortOrder
     isFreeDelivery?: SortOrder
     isExchange?: SortOrder
+    note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9884,6 +9911,7 @@ export namespace Prisma {
     jaxReceiptUrl?: SortOrder
     isFreeDelivery?: SortOrder
     isExchange?: SortOrder
+    note?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -10846,6 +10874,7 @@ export namespace Prisma {
     jaxReceiptUrl?: string | null
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10866,6 +10895,7 @@ export namespace Prisma {
     jaxReceiptUrl?: string | null
     isFreeDelivery?: boolean
     isExchange?: boolean
+    note?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11050,6 +11080,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11070,6 +11101,7 @@ export namespace Prisma {
     jaxReceiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isFreeDelivery?: BoolFieldUpdateOperationsInput | boolean
     isExchange?: BoolFieldUpdateOperationsInput | boolean
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

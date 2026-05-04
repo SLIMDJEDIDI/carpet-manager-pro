@@ -215,6 +215,16 @@ export default async function OrdersPage({
         </div>
       </div>
 
+      {/* Notes Display */}
+      {order.note && (
+        <div className="px-4 py-3 bg-emerald-50/20 border-t border-slate-100/50 flex items-start gap-3">
+          <MessageSquare className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
+          <p className="text-[10px] font-bold text-slate-600 leading-relaxed italic line-clamp-2">
+            "{order.note}"
+          </p>
+        </div>
+      )}
+
       {/* Bottom Line: Address & Total */}
       <div className="px-4 py-2 flex items-center justify-between bg-slate-50/30 border-t border-slate-100/50">
         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 truncate max-w-[70%]">

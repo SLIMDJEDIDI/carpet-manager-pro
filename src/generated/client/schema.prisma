@@ -41,6 +41,7 @@ model Order {
   jaxReceiptUrl       String? // URL to the receipt image/PDF from JAX
   isFreeDelivery      Boolean     @default(false)
   isExchange          Boolean     @default(false)
+  note                String? // Internal notes for the order
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   items               OrderItem[]

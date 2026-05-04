@@ -152,6 +152,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   jaxReceiptUrl: 'jaxReceiptUrl',
   isFreeDelivery: 'isFreeDelivery',
   isExchange: 'isExchange',
+  note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -28,6 +28,7 @@ export async function createOrder(formData: FormData) {
   const customerDelegation = formData.get("customerDelegation") as string;
   const isFreeDelivery = formData.get("isFreeDelivery") === "on";
   const isExchange = formData.get("isExchange") === "on";
+  const note = formData.get("note") as string;
   const itemCountStr = formData.get("itemCount") as string;
   const itemCount = parseInt(itemCountStr || "0");
 
@@ -66,7 +67,7 @@ export async function createOrder(formData: FormData) {
       data: {
         customerName, customerPhone, customerAddress, 
         customerPostalCode, customerGovernorate, customerDelegation,
-        isFreeDelivery, isExchange,
+        isFreeDelivery, isExchange, note,
         reference: nextReference, totalAmount: 0,
       },
     });
@@ -149,6 +150,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
   const customerDelegation = formData.get("customerDelegation") as string;
   const isFreeDelivery = formData.get("isFreeDelivery") === "on";
   const isExchange = formData.get("isExchange") === "on";
+  const note = formData.get("note") as string;
   const itemCount = parseInt(formData.get("itemCount") as string || "0");
 
   try {
@@ -165,7 +167,7 @@ export async function updateOrder(orderId: string, formData: FormData) {
       data: {
         customerName, customerPhone, customerAddress,
         customerPostalCode, customerGovernorate, customerDelegation,
-        isFreeDelivery, isExchange,
+        isFreeDelivery, isExchange, note,
       },
     });
 

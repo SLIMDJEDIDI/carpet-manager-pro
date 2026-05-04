@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2, RefreshCw, ExternalLink, Hash, Info, CheckCircle2 } from "lucide-react";
+import { Search, User, MapPin, Phone, Palette, ShoppingBag, Plus, Trash2, Globe, PlusCircle, Loader2, RefreshCw, ExternalLink, Hash, Info, CheckCircle2, MessageSquare } from "lucide-react";
 import { TUNISIA_LOCATIONS } from "@/lib/tunisia-locations";
 
 interface Item {
@@ -47,6 +47,7 @@ export default function OrderForm({
   
   const [isFreeDelivery, setIsFreeDelivery] = useState(initialData?.isFreeDelivery || false);
   const [isExchange, setIsExchange] = useState(initialData?.isExchange || false);
+  const [note, setNote] = useState(initialData?.note || "");
   
   const [localDesigns, setLocalDesigns] = useState(designs);
   const [isRefreshingDesigns, setIsRefreshingDesigns] = useState(false);
@@ -359,6 +360,26 @@ export default function OrderForm({
           </div>
           <RefreshCw className={`w-5 h-5 transition-all ${isExchange ? 'text-blue-500 scale-110' : 'text-slate-300'}`} />
         </label>
+      </div>
+
+      {/* Internal Notes Section */}
+      <div className="p-6 bg-white rounded-3xl border-2 border-slate-100 shadow-sm transition-all focus-within:border-emerald-500/30">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-emerald-50 p-2 rounded-xl">
+            <MessageSquare className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div>
+            <p className="font-black text-slate-900 uppercase text-xs tracking-wider">Internal Order Notes</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Instructions for production or special requests</p>
+          </div>
+        </div>
+        <textarea
+          name="note"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Type any special instructions or notes here..."
+          className="w-full min-h-[100px] rounded-2xl border-2 border-slate-50 bg-slate-50/30 p-4 font-bold text-sm text-slate-900 placeholder:text-slate-300 focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all resize-none"
+        />
       </div>
 
       {/* Articles Section */}
