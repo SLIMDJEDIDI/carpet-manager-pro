@@ -11,7 +11,6 @@ import {
   Calendar,
   User as UserIcon
 } from "lucide-react";
-import WorkflowGuide from "@/components/WorkflowGuide";
 
 export default async function AccountingPage({
   searchParams,
@@ -65,21 +64,13 @@ export default async function AccountingPage({
 
   return (
     <div className="space-y-8">
-      <WorkflowGuide 
-        step="Financial Records"
-        purpose="Track sales performance, delivery success, and agent payouts."
-        instruction="Review the real-time balance of your shipped orders. Track which agents are bringing in the most revenue and monitor delivery success rates."
-        nextStep="Operational Settings"
-        nextHref="/settings"
-      />
-
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter flex items-center gap-3">
+          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter flex items-center gap-3 leading-none">
             <BarChart3 className="w-8 h-8 text-emerald-600" />
             Financials
           </h1>
-          <p className="text-slate-500 font-bold uppercase text-xs tracking-widest mt-1">
+          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">
             Real-time delivery balance and performance
           </p>
         </div>

@@ -54,19 +54,19 @@ export default async function DesignerHubPage() {
   return (
     <div className="space-y-8">
       <WorkflowGuide 
-        step="Designer Hub"
+        step="Designer List"
         purpose="Prepare carpet designs grouped by same design and same size."
         instruction="Designers prepare carpet designs here. Items are grouped by same design and same size to avoid repeated work. Once all required designs are ready, the order can move to production."
-        prevStep="Production Management"
-        prevHref="/production"
-        nextStep="Production Queue (Batches)"
+        prevStep="Orders"
+        prevHref="/orders"
+        nextStep="Production List"
         nextHref="/production"
       />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">
-            Designer Hub
+            Designer List
           </h1>
           <p className="text-slate-500 font-bold uppercase text-xs tracking-widest mt-1 flex items-center gap-2">
             <Layers className="w-4 h-4 text-amber-500" />

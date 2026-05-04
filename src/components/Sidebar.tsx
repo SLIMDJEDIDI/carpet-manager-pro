@@ -22,17 +22,21 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { label: "Orders", href: "/orders", icon: ShoppingCart, roles: ["ADMIN", "ORDER"] },
-  { label: "Production", href: "/production", icon: Factory, roles: ["ADMIN", "PRODUCTION"] },
-  { label: "Shipping", href: "/shipping", icon: Truck, roles: ["ADMIN", "SHIPPING"] },
+  { label: "Designer List", href: "/designer", icon: Palette, roles: ["ADMIN", "DESIGNER"] },
+  { label: "Production List", href: "/production", icon: Factory, roles: ["ADMIN", "PRODUCTION"] },
+  { label: "Wrapping", href: "/shipping", icon: Truck, roles: ["ADMIN", "SHIPPING"] },
+  { label: "Shipping / JAX", href: "/jax", icon: Printer, roles: ["ADMIN", "SHIPPING"] },
+];
+
+const businessTools: NavItem[] = [
   { label: "Design Catalog", href: "/designs", icon: Palette, roles: ["ADMIN", "ORDER"] },
-  { label: "Designer Hub", href: "/designer", icon: Palette, roles: ["ADMIN", "DESIGNER"] },
-  { label: "JAX Dispatch", href: "/jax", icon: Printer, roles: ["ADMIN", "SHIPPING"] },
   { label: "Accounting", href: "/accounting", icon: BarChart3, roles: ["ADMIN", "ACCOUNTING"] },
   { label: "History", href: "/history", icon: History, roles: ["ADMIN"] },
 ];
 
 export default function Sidebar({ user }: { user: any }) {
-  const filteredItems = navItems.filter(item => item.roles.includes(user.role));
+  const filteredWorkflow = navItems.filter(item => item.roles.includes(user.role));
+  const filteredTools = businessTools.filter(item => item.roles.includes(user.role));
 
   return (
     <aside className="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
@@ -52,18 +56,39 @@ export default function Sidebar({ user }: { user: any }) {
         </div>
       </div>
       
-      <nav className="flex-1 px-4 space-y-1">
-        {filteredItems.map((item) => (
-          <Link 
-            key={item.href}
-            href={item.href} 
-            className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group"
-          >
-            <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      <div className="flex-1 overflow-y-auto px-4 space-y-8">
+        <div>
+          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Operational Tunnel</p>
+          <nav className="space-y-1">
+            {filteredWorkflow.map((item) => (
+              <Link 
+                key={item.href}
+                href={item.href} 
+                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group"
+              >
+                <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Business Tools</p>
+          <nav className="space-y-1">
+            {filteredTools.map((item) => (
+              <Link 
+                key={item.href}
+                href={item.href} 
+                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-slate-50 text-slate-600 hover:text-emerald-600 transition-all font-bold group"
+              >
+                <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </div>
 
       <div className="p-4 space-y-2 border-t border-slate-50">
         {user.role === "ADMIN" && (

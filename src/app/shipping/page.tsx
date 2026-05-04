@@ -32,16 +32,18 @@ export default async function ShippingPage() {
   return (
     <div className="space-y-6 md:space-y-8">
       <WorkflowGuide 
-        step="Shipping & Packaging"
+        step="Wrapping"
         purpose="Group articles into parcels and print shipping labels."
-        instruction="Mark items as 'Wrapped' when they are ready. Once all items in an order are wrapped, you can generate the JAX shipping request."
-        nextStep="JAX Dispatch"
+        instruction="Mark items as 'Wrapped' when they are ready. Once all items in an order are wrapped, the order is ready for JAX dispatch."
+        prevStep="Production List"
+        prevHref="/production"
+        nextStep="Shipping / JAX"
         nextHref="/jax"
       />
 
       <div className="flex items-center justify-between">
         <div className="border-l-8 border-blue-600 pl-4 md:pl-6">
-          <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight uppercase leading-tight">Shipping Desk</h1>
+          <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight uppercase leading-tight">Wrapping Desk</h1>
           <p className="text-slate-500 font-bold text-xs md:text-sm mt-1">Operational Tunnel: Grouping & Dispatching.</p>
         </div>
       </div>

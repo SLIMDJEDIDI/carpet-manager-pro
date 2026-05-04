@@ -76,17 +76,17 @@ export default async function ProductionPage() {
   return (
     <div className="space-y-6 md:space-y-8">
       <WorkflowGuide 
-        step="Production Management"
-        purpose="Group pending items into production lists."
-        instruction="This list contains carpet items from confirmed orders. Designers will use this list through the Designer Hub to prepare the required designs."
-        prevStep="Order Management"
-        prevHref="/orders"
-        nextStep="Designer Hub"
-        nextHref="/designer"
+        step="Production List"
+        purpose="Monitor and manage carpet production queue."
+        instruction="Only items with 'Design Ready' status appear here. Print the production list for the factory and mark items as 'Wrapped' when finished."
+        prevStep="Designer List"
+        prevHref="/designer"
+        nextStep="Wrapping"
+        nextHref="/shipping"
       />
 
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-slate-900 border-l-4 border-amber-500 pl-4 uppercase tracking-tight leading-tight">Production Control</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-slate-900 border-l-4 border-amber-500 pl-4 uppercase tracking-tight leading-tight">Production List</h1>
         <p className="text-slate-500 text-xs md:text-sm mt-1">Manage individual articles sent to the factory.</p>
       </div>
 

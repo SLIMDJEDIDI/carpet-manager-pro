@@ -38,18 +38,18 @@ export default async function JaxManagementPage({
   return (
     <div className="space-y-6 md:space-y-10">
       <WorkflowGuide 
-        step="JAX Dispatch"
+        step="Shipping / JAX"
         purpose="Print official shipping labels and notify pickup."
         instruction="Download the official JAX PDF labels for all parcels. Once sticked, mark the parcel as 'Dispatched' to move it to the archive."
-        nextStep="Accounting & Payouts"
-        nextHref="/accounting"
+        prevStep="Wrapping"
+        prevHref="/shipping"
       />
       
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-6">
         <div className="border-l-8 border-indigo-600 pl-4 md:pl-6">
           <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            JAX Dispatch
+            Shipping / JAX
           </h1>
           <p className="text-slate-500 font-bold text-xs md:text-sm mt-2 uppercase tracking-widest">
             {activeTab === "pending" ? "Manage labels for parcels waiting for JAX pickup" : "Archive of dispatched parcels with tracking info"}

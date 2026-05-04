@@ -19,11 +19,10 @@ interface WorkflowGuideProps {
 
 const steps = [
   "Orders",
-  "Production",
-  "Designer Hub",
-  "Shipping",
-  "JAX Dispatch",
-  "Accounting"
+  "Designer List",
+  "Production List",
+  "Wrapping",
+  "Shipping / JAX"
 ];
 
 export default function WorkflowGuide({

@@ -224,11 +224,11 @@ export default async function OrdersPage({
   return (
     <div className="space-y-8 md:space-y-12">
       <WorkflowGuide 
-        step="Order Management"
+        step="Orders"
         purpose="Review, Filter, and Confirm active customer orders."
         instruction="Every confirmed order is instantly exploded into production items. Use the quick stats below to manage your priority queue."
-        nextStep="Production List"
-        nextHref="/production"
+        nextStep="Designer List"
+        nextHref="/designer"
       />
 
       {/* TOP ANALYTICS SUMMARY BAR */}
