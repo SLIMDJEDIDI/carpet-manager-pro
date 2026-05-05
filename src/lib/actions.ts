@@ -67,33 +67,41 @@ export async function shipOrder(formData: FormData) {
   try {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { subItems: true } } }
+      include: { 
+        items: { include: { subItems: true, design: true } },
+        jaxLogs: { where: { status: "SUCCESS" } }
+      }
     });
     if (!order) return { success: false, error: "Order not found" };
 
     let itemsToShip: any[] = [];
     if (itemIdsJson) {
       const selectedIds = JSON.parse(itemIdsJson) as string[];
-      itemsToShip = order.items.filter(i => selectedIds.includes(i.id));
       
       // PACK INTEGRITY CHECK
-      for (const item of itemsToShip) {
+      for (const id of selectedIds) {
+        const item = order.items.find(x => x.id === id);
+        if (!item) continue;
+
         if (item.parentItemId) {
           const packParent = order.items.find(p => p.id === item.parentItemId);
           const packChildren = order.items.filter(c => c.parentItemId === item.parentItemId);
           const allChildrenSelected = packChildren.every(c => selectedIds.includes(c.id));
           if (!allChildrenSelected) {
-            return { success: false, error: `Pack Integrity Violation: All items of pack '${packParent?.id}' must be shipped together.` };
-          }
-        }
-        if (item.isPack) {
-          const children = order.items.filter(c => c.parentItemId === item.id);
-          const allChildrenSelected = children.every(c => selectedIds.includes(c.id));
-          if (!allChildrenSelected) {
-            return { success: false, error: "Pack Integrity Violation: All sub-items must be included." };
+            return { success: false, error: `Pack Integrity Violation: All items of pack '${packParent?.design?.code}' must be shipped together.` };
           }
         }
       }
+
+      // Auto-include parents to pick up their price
+      const parentsToInclude = new Set<string>();
+      for (const id of selectedIds) {
+        const it = order.items.find(x => x.id === id);
+        if (it?.parentItemId) parentsToInclude.add(it.parentItemId);
+      }
+      
+      const allIdsToShip = Array.from(new Set([...selectedIds, ...Array.from(parentsToInclude)]));
+      itemsToShip = order.items.filter(i => allIdsToShip.includes(i.id));
     } else {
       // Legacy behavior: ship all ready items
       itemsToShip = order.items.filter(i => !i.isPack && i.status === "WRAPPED");
@@ -101,10 +109,20 @@ export async function shipOrder(formData: FormData) {
 
     if (itemsToShip.length === 0) return { success: false, error: "No items selected or ready for shipping." };
 
-    const allWrapped = itemsToShip.every(i => i.status === "WRAPPED");
+    const allWrapped = itemsToShip.every(i => i.status === "WRAPPED" || i.isPack);
     if (!allWrapped) return { success: false, error: "Some selected items are not wrapped yet." };
 
-    const totalShipmentAmount = itemsToShip.reduce((sum, i) => sum + i.price, 0);
+    const isFirstShipment = order.jaxLogs.length === 0;
+    let totalShipmentAmount = itemsToShip.reduce((sum, i) => sum + i.price, 0);
+
+    // Add 8 DT delivery fee on the first shipment if applicable
+    if (isFirstShipment && !order.isFreeDelivery && !order.isExchange) {
+      totalShipmentAmount += 8;
+    }
+
+    if (totalShipmentAmount <= 0) {
+      return { success: false, error: `Invalid COD Amount: ${totalShipmentAmount}. Each shipment must have a value > 0.` };
+    }
 
     const jaxResponse = await createJaxReceipt({
       customerName: order.customerName,
