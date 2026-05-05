@@ -25,6 +25,9 @@ interface OrderPartialShipManagerProps {
   orderRef: number | string;
   customerName: string;
   items: Item[];
+  isFreeDelivery?: boolean;
+  isExchange?: boolean;
+  isFirstShipment?: boolean;
   onShip: (formData: FormData) => Promise<any>;
   onWrap: (formData: FormData) => Promise<any>;
   onBatchWrap: (itemIds: string[], status: string) => Promise<any>;
@@ -35,6 +38,9 @@ export default function OrderPartialShipManager({
   orderRef,
   customerName,
   items, 
+  isFreeDelivery = false,
+  isExchange = false,
+  isFirstShipment = true,
   onShip,
   onWrap,
   onBatchWrap
@@ -121,30 +127,45 @@ export default function OrderPartialShipManager({
   };
 
   const selectedCOD = calculateCOD();
+  const fee = (isFirstShipment && !isFreeDelivery && !isExchange) ? 8 : 0;
+  const finalCOD = selectedCOD > 0 ? selectedCOD + fee : 0;
 
   return (
     <div className="space-y-6">
       {/* SELECTION ACTIONS */}
-      <div className="flex items-center justify-between bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-3 rounded-2xl">
-            <Layers className="w-5 h-5 text-white" />
+      <div className="flex items-center justify-between bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl border-4 border-slate-800">
+        <div className="flex items-center gap-6">
+          <div className="bg-blue-600 p-4 rounded-3xl shadow-lg shadow-blue-500/20">
+            <Layers className="w-6 h-6 text-white" />
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Partial Dispatch</p>
-            <h3 className="text-lg font-black uppercase tracking-tighter">
-              {selectedItemIds.length} Items • <span className="text-emerald-400">{selectedCOD} DT</span>
-            </h3>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Partial Dispatch Status</p>
+            <div className="flex items-baseline gap-3">
+              <h3 className="text-2xl font-black uppercase tracking-tighter">
+                {selectedItemIds.length} <span className="text-slate-500">Items</span>
+              </h3>
+              <div className="h-6 w-px bg-slate-700 mx-1"></div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-emerald-400 tracking-tighter leading-none">
+                  {finalCOD} DT
+                </span>
+                {fee > 0 && selectedCOD > 0 && (
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                    Incl. 8 DT Delivery
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         
         <button
           onClick={handleShipSelected}
           disabled={selectedItemIds.length === 0 || isPending}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all disabled:opacity-30 disabled:grayscale flex items-center gap-3 shadow-xl shadow-emerald-900/20"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-[0.1em] transition-all disabled:opacity-20 disabled:grayscale flex items-center gap-3 shadow-2xl shadow-emerald-900/40 active:scale-95 hover:-translate-y-1"
         >
-          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Truck className="w-4 h-4" />}
-          Ship Selected Groups
+          {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Truck className="w-5 h-5" />}
+          Ship {selectedItemIds.length} Articles
         </button>
       </div>
 
@@ -188,18 +209,23 @@ export default function OrderPartialShipManager({
                       <div className={`p-3 rounded-2xl ${allChildrenSelected ? "bg-white text-blue-600" : "bg-blue-50 text-blue-600"}`}>
                         <Package className="w-6 h-6" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className={`text-base font-black uppercase tracking-tighter ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
-                            {parent.brand?.name} • {parent.size}
-                          </h4>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-black ${allChildrenSelected ? "bg-white/20 text-white" : "bg-blue-100 text-blue-700"}`}>
-                            {parent.price} DT
-                          </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <h4 className={`text-xl font-black uppercase tracking-tighter leading-tight ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
+                              {parent.brand?.name} • {parent.size}
+                            </h4>
+                            <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${allChildrenSelected ? "text-blue-100" : "text-slate-400"}`}>
+                              {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
+                            </p>
+                          </div>
+                          <div className={`px-5 py-3 rounded-2xl border-2 flex flex-col items-center justify-center min-w-[100px] ${
+                            allChildrenSelected ? "bg-white border-white text-blue-600 shadow-xl" : "bg-blue-50 border-blue-100 text-blue-700"
+                          }`}>
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Pack Price</span>
+                            <span className="text-2xl font-black tracking-tighter leading-none">{parent.price} DT</span>
+                          </div>
                         </div>
-                        <p className={`text-[10px] font-bold uppercase tracking-widest ${allChildrenSelected ? "text-blue-100" : "text-slate-400"}`}>
-                          {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
-                        </p>
                       </div>
                     </div>
 
@@ -305,6 +331,11 @@ function ItemSelectionCard({
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             REF: {item.design?.code} • {item.size}
           </p>
+          {!disabled && item.price > 0 && (
+            <p className="text-[11px] font-black text-emerald-600 mt-1 uppercase tracking-tighter">
+              {item.price} DT
+            </p>
+          )}
         </div>
       </div>
       

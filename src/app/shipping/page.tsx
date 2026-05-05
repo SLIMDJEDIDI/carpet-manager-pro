@@ -27,7 +27,10 @@ export default async function ShippingPage() {
         } 
       } 
     },
-    include: { items: { include: { design: true, brand: true } } },
+    include: { 
+      items: { include: { design: true, brand: true } },
+      jaxLogs: { where: { status: "SUCCESS" }, take: 1 }
+    },
     orderBy: { reference: 'desc' }
   });
 
@@ -141,6 +144,9 @@ export default async function ShippingPage() {
                   orderRef={order.reference || "N/A"}
                   customerName={order.customerName}
                   items={order.items}
+                  isFreeDelivery={order.isFreeDelivery}
+                  isExchange={order.isExchange}
+                  isFirstShipment={order.jaxLogs.length === 0}
                   onShip={shipOrder}
                   onWrap={markItemWrapped}
                   onBatchWrap={updateItemStatuses}
