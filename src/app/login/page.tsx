@@ -36,14 +36,14 @@ export default function LoginPage() {
         <form action={handleSubmit} className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-slate-200 border border-slate-100 space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">
-              Email Address
+              Username
             </label>
             <div className="relative">
               <input
                 name="email"
-                type="email"
+                type="text"
                 required
-                placeholder="admin@carpetmanager.pro"
+                placeholder="Enter your username"
                 className="w-full h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-4 font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:ring-0 transition-all"
               />
               <User className="w-5 h-5 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2" />
