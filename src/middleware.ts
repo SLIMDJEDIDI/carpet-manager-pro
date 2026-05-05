@@ -14,6 +14,12 @@ const protectedRoutes = [
   "/settings",
 ];
 
+const roleAccess: Record<string, string[]> = {
+  ADMIN: ["/", "/orders", "/designer", "/production", "/shipping", "/jax", "/history", "/designs", "/accounting", "/settings"],
+  MODERATOR: ["/orders", "/designer", "/production", "/shipping", "/jax", "/designs"],
+  DESIGNER: ["/designer", "/designs"],
+};
+
 const publicRoutes = ["/login"];
 
 export default async function middleware(req: NextRequest) {
@@ -24,8 +30,24 @@ export default async function middleware(req: NextRequest) {
   const cookie = req.cookies.get("session")?.value;
   const session = cookie ? await decrypt(cookie).catch(() => null) : null;
 
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  if (isProtectedRoute) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
+
+    const userRole = session.user?.role;
+    const allowedPaths = roleAccess[userRole] || [];
+    
+    // Check if the current path or its parent is allowed
+    const isAllowed = allowedPaths.some(allowedPath => 
+      path === allowedPath || path.startsWith(allowedPath + "/")
+    );
+
+    if (!isAllowed) {
+      // Redirect to the first allowed page for this role
+      const fallback = allowedPaths[0] || "/login";
+      return NextResponse.redirect(new URL(fallback, req.nextUrl));
+    }
   }
 
   if (isPublicRoute && session) {

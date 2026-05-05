@@ -9,14 +9,14 @@ import {
   Settings,
   LogOut
 } from "lucide-react";
-import { navItems } from "./Sidebar";
+import { navItems, businessTools } from "./Sidebar";
 import { logoutAction } from "@/lib/auth-actions";
 
 export default function MobileNav({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  const filteredItems = navItems.filter(item => item.roles.includes(user.role));
+  const filteredItems = [...navItems, ...businessTools].filter(item => item.roles.includes(user.role));
 
   return (
     <>

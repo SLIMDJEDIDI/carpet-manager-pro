@@ -69,11 +69,8 @@ export default async function SettingsPage() {
                 </div>
                 <div className="space-y-1">
                   <select name="role" required className="w-full h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 font-bold text-sm text-slate-900 focus:border-emerald-500 focus:bg-white transition-all uppercase">
-                    <option value="ORDER">Order User</option>
+                    <option value="MODERATOR">Moderator</option>
                     <option value="DESIGNER">Designer</option>
-                    <option value="PRODUCTION">Production/Wrapping</option>
-                    <option value="SHIPPING">Shipping/JAX</option>
-                    <option value="ACCOUNTING">Accounting/Viewer</option>
                     <option value="ADMIN">Administrator</option>
                   </select>
                 </div>

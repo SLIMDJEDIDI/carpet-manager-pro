@@ -21,16 +21,17 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { label: "Orders", href: "/orders", icon: ShoppingCart, roles: ["ADMIN", "ORDER"] },
-  { label: "Designer List", href: "/designer", icon: Palette, roles: ["ADMIN", "DESIGNER"] },
-  { label: "Production List", href: "/production", icon: Factory, roles: ["ADMIN", "PRODUCTION"] },
-  { label: "Wrapping", href: "/shipping", icon: Truck, roles: ["ADMIN", "SHIPPING"] },
-  { label: "Shipping / JAX", href: "/jax", icon: Printer, roles: ["ADMIN", "SHIPPING"] },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard, roles: ["ADMIN"] },
+  { label: "Orders", href: "/orders", icon: ShoppingCart, roles: ["ADMIN", "MODERATOR"] },
+  { label: "Designer Hub", href: "/designer", icon: Palette, roles: ["ADMIN", "MODERATOR", "DESIGNER"] },
+  { label: "Production List", href: "/production", icon: Factory, roles: ["ADMIN", "MODERATOR"] },
+  { label: "Wrapping", href: "/shipping", icon: Truck, roles: ["ADMIN", "MODERATOR"] },
+  { label: "Shipping / JAX", href: "/jax", icon: Printer, roles: ["ADMIN", "MODERATOR"] },
 ];
 
-const businessTools: NavItem[] = [
-  { label: "Design Catalog", href: "/designs", icon: Palette, roles: ["ADMIN", "ORDER"] },
-  { label: "Accounting", href: "/accounting", icon: BarChart3, roles: ["ADMIN", "ACCOUNTING"] },
+export const businessTools: NavItem[] = [
+  { label: "Design Catalog", href: "/designs", icon: Palette, roles: ["ADMIN", "MODERATOR", "DESIGNER"] },
+  { label: "Accounting", href: "/accounting", icon: BarChart3, roles: ["ADMIN"] },
   { label: "History", href: "/history", icon: History, roles: ["ADMIN"] },
 ];
 
