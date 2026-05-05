@@ -97,6 +97,31 @@ export default function OrderPartialShipManager({
   const wrappedCount = items.filter(i => i.status === "WRAPPED").length;
   const totalCount = items.filter(i => !i.isPack).length;
 
+  // COD CALCULATION
+  const calculateCOD = () => {
+    let cod = 0;
+    // For every selected child, if it belongs to a pack, add the pack price once.
+    // If it's a standalone item, add its price.
+    const selectedItems = items.filter(i => selectedItemIds.includes(i.id));
+    const processedPackParents = new Set<string>();
+
+    selectedItems.forEach(item => {
+      if (item.parentItemId) {
+        if (!processedPackParents.has(item.parentItemId)) {
+          const parent = items.find(p => p.id === item.parentItemId);
+          cod += parent?.price || 0;
+          processedPackParents.add(item.parentItemId);
+        }
+      } else {
+        cod += item.price;
+      }
+    });
+
+    return cod;
+  };
+
+  const selectedCOD = calculateCOD();
+
   return (
     <div className="space-y-6">
       {/* SELECTION ACTIONS */}
@@ -108,7 +133,7 @@ export default function OrderPartialShipManager({
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Partial Dispatch</p>
             <h3 className="text-lg font-black uppercase tracking-tighter">
-              {selectedItemIds.length} Items Selected
+              {selectedItemIds.length} Items • <span className="text-emerald-400">{selectedCOD} DT</span>
             </h3>
           </div>
         </div>
@@ -164,9 +189,14 @@ export default function OrderPartialShipManager({
                         <Package className="w-6 h-6" />
                       </div>
                       <div>
-                        <h4 className={`text-base font-black uppercase tracking-tighter ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
-                          {parent.brand?.name} • {parent.size}
-                        </h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className={`text-base font-black uppercase tracking-tighter ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
+                            {parent.brand?.name} • {parent.size}
+                          </h4>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-black ${allChildrenSelected ? "bg-white/20 text-white" : "bg-blue-100 text-blue-700"}`}>
+                            {parent.price} DT
+                          </span>
+                        </div>
                         <p className={`text-[10px] font-bold uppercase tracking-widest ${allChildrenSelected ? "text-blue-100" : "text-slate-400"}`}>
                           {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
                         </p>
