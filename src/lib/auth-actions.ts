@@ -13,8 +13,13 @@ export async function loginAction(formData: FormData) {
     return { error: "Please provide both email and password." };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: { 
+      email: {
+        equals: email,
+        mode: 'insensitive'
+      }
+    },
   });
 
   if (!user) {
