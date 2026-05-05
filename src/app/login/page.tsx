@@ -40,9 +40,11 @@ export default function LoginPage() {
             </label>
             <div className="relative">
               <input
+                id="username-input"
                 name="email"
                 type="text"
                 required
+                autoComplete="off"
                 placeholder="Enter your username"
                 className="w-full h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-4 font-bold text-slate-900 focus:border-emerald-500 focus:bg-white focus:ring-0 transition-all"
               />
