@@ -20,15 +20,12 @@ async function main() {
       role: 'MODERATOR',
     },
     {
-      email: 'deign',
+      email: 'design',
       name: 'Designer',
       password: 'admin123',
       role: 'DESIGNER',
     },
   ];
-
-  // Clear existing users to ensure only the requested 3 exist (Optional but matches user request "only these 3")
-  // await prisma.user.deleteMany({ where: { NOT: { email: { in: users.map(u => u.email) } } } });
 
   for (const u of users) {
     const hashedPassword = await bcrypt.hash(u.password, 10);
@@ -41,7 +38,7 @@ async function main() {
         role: u.role,
       },
       create: {
-        id: u.email === 'SLIM' ? 'admin-id' : undefined, // Keep admin-id for SLIM to maintain protection
+        id: u.email === 'SLIM' ? 'admin-id' : undefined,
         email: u.email,
         name: u.name,
         password: hashedPassword,
@@ -52,10 +49,10 @@ async function main() {
     console.log(`User ${user.email} (${user.role}) created/updated.`);
   }
 
-  // Delete the old default admin if it exists and isn't SLIM
+  // Cleanup: Delete old default account and the typo 'deign' account
   await prisma.user.deleteMany({
     where: {
-      email: 'admin@carpetmanager.pro',
+      email: { in: ['admin@carpetmanager.pro', 'deign'] },
       NOT: { email: 'SLIM' }
     }
   });
