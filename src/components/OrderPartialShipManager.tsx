@@ -269,11 +269,11 @@ function ItemSelectionCard({
           {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-slate-900 leading-tight mb-0.5 whitespace-normal">
-            {item.design?.name || item.design?.code || '???'}
+          <p className="text-sm font-black text-slate-900 leading-tight mb-1 whitespace-normal break-words">
+            {item.design?.name || '???'}
           </p>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            {item.design?.code && item.design.code !== item.design.name ? `${item.design.code} • ` : ''}{item.size}
+            REF: {item.design?.code} • {item.size}
           </p>
         </div>
       </div>
