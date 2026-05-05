@@ -165,7 +165,7 @@ export default function OrderPartialShipManager({
                       </div>
                       <div>
                         <h4 className={`text-base font-black uppercase tracking-tighter ${allChildrenSelected ? "text-white" : "text-slate-900"}`}>
-                          {parent.brand?.name} • {parent.design?.code} • {parent.size}
+                          {parent.brand?.name} • {parent.size}
                         </h4>
                         <p className={`text-[10px] font-bold uppercase tracking-widest ${allChildrenSelected ? "text-blue-100" : "text-slate-400"}`}>
                           {children.length} Articles • {allChildrenShipped ? 'ALREADY SHIPPED' : 'READY TO WRAP'}
@@ -269,11 +269,11 @@ function ItemSelectionCard({
           {item.design?.imageUrl && <img src={item.design.imageUrl} className="w-full h-full object-cover" />}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-slate-900 leading-tight mb-1 whitespace-normal">
+          <p className="text-sm font-black text-slate-900 leading-tight mb-0.5 whitespace-normal">
             {item.design?.name || item.design?.code || '???'}
           </p>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            {item.size}
+            {item.design?.code && item.design.code !== item.design.name ? `${item.design.code} • ` : ''}{item.size}
           </p>
         </div>
       </div>
